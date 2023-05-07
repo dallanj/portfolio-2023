@@ -1,0 +1,15 @@
+html,
+body {
+    @apply text-white font-sans m-0 w-full min-h-screen overflow-hidden;
+}
+
+* {
+    @apply tracking-normal;
+    font-size: 16px;
+    line-height: 24px;
+}
+
+.wallpaper {
+    @apply object-cover bg-cover bg-center bg-no-repeat;
+    background-image: url('../images/wallpaper.jpg');
+}

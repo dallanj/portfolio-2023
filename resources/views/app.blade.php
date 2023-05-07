@@ -7,7 +7,7 @@
         @inertiaHead
     </head>
 
-    <body>
+    <body class="wallpaper">
         @inertia
     </body>
 </html>
