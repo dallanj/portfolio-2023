@@ -1,8 +1,11 @@
 <template>
     <div>
         <TopHeader />
-        <SideNav />
-        <slot />
+
+        <div class="flex">
+            <SideNav />
+            <slot />
+        </div>
     </div>
 </template>
 

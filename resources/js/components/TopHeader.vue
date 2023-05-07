@@ -1,13 +1,13 @@
 <template>
     <header class="grid grid-cols-3 w-full h-8 bg-topbar-grey py-1 drop-shadow-md">
-        <div class="flex space-x-3 col-span-2 md:col-span-1">
+        <div class="flex col-span-2 md:col-span-1 md:space-x-2">
             <button
                 v-for="item in [menu.activities, menu.current]"
-                :key="item.value"
+                :key="`header-${item.value}`"
                 class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
                 :class="active === item
-                ? activeClass
-                : inactiveClass"
+                    ? activeClass
+                    : inactiveClass"
                 v-click-outside="select"
                 @click="select(item)"
                 @click.stop>
@@ -17,7 +17,7 @@
 
         <button
             v-for="item in [menu.date, menu.settings]"
-            :key="item.value"
+            :key="`header-${item.value}`"
             class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
             :class="{
                 [activeClass]: active === item,
@@ -34,7 +34,11 @@
 </template>
 
 <script lang="ts">
+import actionsMixin from './../mixins/actionsMixin';
+
 export default {
+    mixins: [actionsMixin],
+
     data() {
         return {
             active: null,
@@ -79,16 +83,6 @@ export default {
         inactiveClass() {
             return 'text-topbar-white hover:bg-topbar-button';
         }
-    },
-
-    methods: {
-        select(tab) {
-            this.active = tab;
-
-            if (this.active?.action) {
-                this.active?.action();
-            }
-        },
     },
 }
 </script>
