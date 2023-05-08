@@ -8,12 +8,14 @@ export default {
 
             this.active = item;
 
+            // Call actionable tabs or applications
             if (this.active?.action) {
                 this.active?.action();
             }
 
+            // Open application windows
             if (app && !this.activities.find(activity => activity === item)) {
-                this.activities.push(item);
+                if (item.application) this.activities.push(item);
             }
         },
     },

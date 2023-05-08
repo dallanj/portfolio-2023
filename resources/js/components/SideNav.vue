@@ -1,5 +1,5 @@
 <template>
-    <nav class="relative min-h-full h-screen w-20">
+    <nav class="relative min-h-full h-screen w-20 z-20">
         <ul class="nav-menu bg-black bg-opacity-50 border-r border-black scrollbar-hidden overflow-auto h-full p-0.5">
             <li
                 v-for="item in menu"
@@ -22,11 +22,11 @@
                         v-if="activities.find(activity => activity === item)"
                         class="absolute rounded-full active-tab top-1/2 bg-orange" />
                 </button>
-                <div
+                <span
                     :id="`tooltip-${item.value}`"
-                    class="inline-block whitespace-nowrap transition duration-200 ease-in-out absolute opacity-0 text-topbar-white bg-topbar-grey px-3 py-1 rounded-full z-20 border border-topbar-button-active text-sm">
+                    class="pointer-events-none inline-block whitespace-nowrap transition duration-200 ease-in-out absolute opacity-0 text-topbar-white bg-topbar-grey px-3 py-1 rounded-full z-20 border border-topbar-button-active text-sm">
                         {{ item.label }}
-                </div>
+                </span>
             </li>
         </ul>
     </nav>
@@ -38,38 +38,54 @@ import actionsMixin from './../mixins/actionsMixin';
 export default {
     mixins: [actionsMixin],
 
+    props: {
+        activities: {
+            type: Array,
+            required: true
+        },
+    },
+
     data() {
         return {
             active: null,
-            activities: [],
             menu: [
                 {
                     label: 'Terminal',
                     value: 'terminal',
+                    application: true,
                 },
                 {
                     label: 'About',
                     value: 'about',
+                    application: true,
                 },
                 {
                     label: 'Projects',
                     value: 'projects',
+                    application: true,
                 },
                 {
                     label: 'Contact',
                     value: 'contact',
+                    application: true,
                 },
                 {
                     label: 'Linked-In',
                     value: 'linkedin',
+                    application: false,
+                    action: () => window.open('https://www.linkedin.com/in/dallanj', '_blank'),
                 },
                 {
                     label: 'Github',
                     value: 'github',
+                    application: false,
+                    action: () => window.open('https://github.com/dallanj', '_blank'),
                 },
                 {
                     label: 'Resume',
                     value: 'resume',
+                    application: false,
+                    action: () => window.open('https://dallan.ca/resume.pdf', '_blank'),
                 },
             ]
         };

@@ -1,5 +1,5 @@
 <template>
-    <header class="grid grid-cols-3 w-full h-8 bg-topbar-grey py-1 drop-shadow-md">
+    <header class="grid grid-cols-3 w-full h-8 bg-topbar-grey py-1 drop-shadow-md relative z-20">
         <div class="flex col-span-2 md:col-span-1 md:space-x-2">
             <button
                 v-for="item in [menu.activities, menu.current]"
