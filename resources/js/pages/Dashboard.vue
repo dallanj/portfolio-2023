@@ -14,16 +14,5 @@ export default {
     components: {
         ApplicationWindow,
     },
-
-    props: {
-        // activities: {
-        //     type: Object,
-        //     required: true
-        // }
-    },
-
-    mounted() {
-        console.log(this.state);
-    }
 };
 </script>

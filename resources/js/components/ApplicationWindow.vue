@@ -15,6 +15,7 @@
 
     <ApplicationWindowHeader
         :application="application"
+        :boundary="boundary"
         @dragging-positions="draggingPositions" />
 </article>
 </template>
@@ -31,7 +32,7 @@ export default {
         application: {
             type: Object,
             required: true,
-        }
+        },
     },
 
     data() {
@@ -50,6 +51,10 @@ export default {
             left: 300,
             direction: null,
             cursor: 'cursor-default',
+            boundary: {
+                y: 32,
+                x: 80,
+            }
         }
     },
 
@@ -194,13 +199,13 @@ export default {
                 position = startPosition + (startSize - minSize);
             }
 
-            // Update the position of the application window
+            // Update the position of the application window including boundaries
             if (left) {
-                this.left = position;
-                this.width = size;
+                this.left = position <= this.boundary.x ? this.boundary.x : position;
+                this.width = position <= this.boundary.x ? this.width : size;
             } else {
-                this.top = position;
-                this.height = size;
+                this.top = position <= this.boundary.y ? this.boundary.y : position;
+                this.height = position <= this.boundary.y ? this.height : size;
             }
         },
 

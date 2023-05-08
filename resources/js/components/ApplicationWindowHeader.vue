@@ -16,6 +16,10 @@ export default {
         application: {
             type: Object,
             required: true,
+        },
+        boundary: {
+            type: Object,
+            required: true,
         }
     },
 
@@ -72,10 +76,16 @@ export default {
 
             // Update the position of the application window with the new coordinates
             if (this.applicationWindow) {
-                this.$emit('dragging-positions', {
+                let newPos = {
                     x: this.applicationWindow.offsetLeft - this.last.x,
-                    y: this.applicationWindow.offsetTop - this.last.y,
-                });
+                    y: this.applicationWindow.offsetTop - this.last.y
+                };
+
+                // Top header and side navigation boundaries
+                if (newPos.y <= this.boundary.y) newPos.y = this.boundary.y;
+                if (newPos.x <= this.boundary.x) newPos.x = this.boundary.x;
+                
+                this.$emit('dragging-positions', newPos);
             }
         },
 
