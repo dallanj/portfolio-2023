@@ -5,6 +5,9 @@ import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 // Components
 import MainLayout from './layouts/MainLayout.vue';
 
+// Plugins
+import vClickOutside from 'click-outside-vue3';
+
 createInertiaApp({
     resolve: name => resolvePageComponent(`./pages/${name}.vue`, import.meta.glob('./pages/**/*.vue')),
     setup({ el, App, props, plugin }) {
@@ -13,6 +16,12 @@ createInertiaApp({
         // Components
         app.component('MainLayout', MainLayout);
 
+        // Plugins
+        app.use(vClickOutside);
+
+        // Configurations
+        app.config.devtools = true;
+        
         app.use(plugin).mount(el);
     },
 });
