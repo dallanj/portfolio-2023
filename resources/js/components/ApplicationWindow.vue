@@ -9,7 +9,7 @@
         top: top + 'px',
         left: left + 'px'
     }"
-    @mousedown="startResize"
+    @mousedown="startActions"
     @mouseup="stopResize"
     @mousemove="setCursor">
 
@@ -31,6 +31,10 @@ export default {
     props: {
         application: {
             type: Object,
+            required: true,
+        },
+        activities: {
+            type: Array,
             required: true,
         },
     },
@@ -59,6 +63,24 @@ export default {
     },
 
     methods: {
+        startActions(event) {
+            // Set window at the top of any others
+            this.setActiveWindow();
+
+            // Begin resizing the application window
+            this.startResize(event);
+        },
+
+        setActiveWindow(event) {
+            // Find index of application in activities
+            const index = this.activities.indexOf(this.application);
+
+            // Set application to be the last activity used (window will be at the top of UI)
+            this.activities.splice(index, 1);
+            this.activities.push(this.application);
+
+        },
+
         setCursor(event) {
             if (!event.target.classList.contains('resizeable')) {
                 this.cursor = 'cursor-default';

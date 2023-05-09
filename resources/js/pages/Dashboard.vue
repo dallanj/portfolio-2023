@@ -3,7 +3,8 @@
     <ApplicationWindow
         v-for="activity in state.activities"
         :key="`window_${activity.value}`"
-        :application="activity" />
+        :application="activity"
+        :activities="state.activities" />
 </MainLayout>
 </template>
 
