@@ -16,17 +16,27 @@
     <ApplicationWindowHeader
         :application="application"
         :boundary="boundary"
-        @dragging-positions="draggingPositions" />
+        @dragging-positions="draggingPositions">
+        <h2 class="select-none">{{ application.label }}</h2>
+        <ApplicationWindowActions
+            :application="application"
+            @close-window="closeWindow" />
+    </ApplicationWindowHeader>
 </article>
 </template>
     
 <script>
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
+import ApplicationWindowActions from './ApplicationWindowActions.vue';
+import actionsMixin from './../mixins/actionsMixin';
 
 export default {
     components: {
         ApplicationWindowHeader,
+        ApplicationWindowActions,
     },
+
+    mixins: [actionsMixin],
 
     props: {
         application: {
@@ -62,24 +72,31 @@ export default {
         }
     },
 
+    computed: {
+        position() {
+            return this.activities.indexOf(this.application);
+        }
+    },
+
     methods: {
+        closeWindow() {
+            this.activities.splice(this.position, 1)
+        },
+
         startActions(event) {
             // Set window at the top of any others
-            this.setActiveWindow();
+            this.setActiveWindow(this.position);
 
             // Begin resizing the application window
             this.startResize(event);
         },
 
-        setActiveWindow(event) {
-            // Find index of application in activities
-            const index = this.activities.indexOf(this.application);
-
-            // Set application to be the last activity used (window will be at the top of UI)
-            this.activities.splice(index, 1);
-            this.activities.push(this.application);
-
-        },
+        // setActiveWindow() {
+        //     // Set application to be the last activity used (window will be at the top of UI)
+        //     if (this.position !== -1) {
+        //         this.activities.push(this.activities.splice(this.position, 1)[0]);
+        //     }
+        // },
 
         setCursor(event) {
             if (!event.target.classList.contains('resizeable')) {

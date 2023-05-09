@@ -5,13 +5,15 @@
                 v-for="item in [menu.activities, menu.current]"
                 :key="`header-${item.value}`"
                 class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
-                :class="active === item
-                    ? activeClass
-                    : inactiveClass"
+                :class="{
+                    [activeClass]: activeTab === item,
+                    [inactiveClass]: activeTab !== item,
+                    'hidden': item === menu.current && !active,
+                }"
                 v-click-outside="select"
                 @click="select(item)"
                 @click.stop>
-                {{ item.label }}
+                {{ item === menu.current ? active?.label : item.label }}
             </button>
         </div>
 
@@ -20,8 +22,8 @@
             :key="`header-${item.value}`"
             class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
             :class="{
-                [activeClass]: active === item,
-                [inactiveClass]: active !== item,
+                [activeClass]: activeTab === item,
+                [inactiveClass]: activeTab !== item,
                 'justify-self-end md:justify-self-center': item.value !== 'settings',
                 'hidden md:block justify-self-end': item.value === 'settings',
             }"
@@ -38,10 +40,17 @@ import actionsMixin from './../mixins/actionsMixin';
 
 export default {
     mixins: [actionsMixin],
+    
+    props: {
+        activities: {
+            type: Array,
+            required: true
+        },
+    },
 
     data() {
         return {
-            active: null,
+            activeTab: null,
             menu: {
                 activities: {
                     label: 'Activities',
@@ -76,6 +85,10 @@ export default {
     },
 
     computed: {
+        active() {
+            return this.activities.length > 0 ? this.activities[this.activities.length - 1] : null;
+        },
+
         activeClass() {
             return 'text-white bg-topbar-button hover:bg-topbar-button-active';
         },

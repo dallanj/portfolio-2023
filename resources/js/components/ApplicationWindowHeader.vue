@@ -1,11 +1,11 @@
 <template>
 <section
-    class="window-header h-10 rounded-t-xl flex items-center justify-center"
+    class="window-header h-10 rounded-t-xl flex items-center justify-center relative"
     :class="cursor"
     @mousedown="startDrag"
     @mouseup="stopDrag"
     @mouseleave="setCursor(false)">
-    <h2 class="select-none">{{ application.label }}</h2>
+    <slot />
 </section>
 </template>
 
