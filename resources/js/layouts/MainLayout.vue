@@ -1,6 +1,6 @@
 <template>
     <div>
-        <TopHeader />
+        <TopHeader ref="top-header" :activities="state.activities" />
 
         <div class="flex">
             <SideNav :activities="state.activities" />

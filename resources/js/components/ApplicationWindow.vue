@@ -1,7 +1,7 @@
 <template>
 <article
     :id="`${application.value}-application`"
-    class="resizeable fixed"
+    class="app-window fixed"
     :class="cursor"
     :style="{
         width: width + 'px',
@@ -9,29 +9,44 @@
         top: top + 'px',
         left: left + 'px'
     }"
-    @mousedown="startResize"
+    @mousedown="startActions"
     @mouseup="stopResize"
     @mousemove="setCursor">
 
     <ApplicationWindowHeader
         :application="application"
-        @dragging-positions="draggingPositions" />
+        :boundary="boundary"
+        @dragging-positions="draggingPositions">
+        <h2 class="select-none">{{ application.label }}</h2>
+        <ApplicationWindowActions
+            :application="application"
+            @close-window="closeWindow" />
+    </ApplicationWindowHeader>
 </article>
 </template>
     
 <script>
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
+import ApplicationWindowActions from './ApplicationWindowActions.vue';
+import actionsMixin from './../mixins/actionsMixin';
 
 export default {
     components: {
         ApplicationWindowHeader,
+        ApplicationWindowActions,
     },
+
+    mixins: [actionsMixin],
 
     props: {
         application: {
             type: Object,
             required: true,
-        }
+        },
+        activities: {
+            type: Array,
+            required: true,
+        },
     },
 
     data() {
@@ -50,12 +65,41 @@ export default {
             left: 300,
             direction: null,
             cursor: 'cursor-default',
+            boundary: {
+                y: 32,
+                x: 80,
+            }
+        }
+    },
+
+    computed: {
+        position() {
+            return this.activities.indexOf(this.application);
         }
     },
 
     methods: {
+        closeWindow() {
+            this.activities.splice(this.position, 1)
+        },
+
+        startActions(event) {
+            // Set window at the top of any others
+            this.setActiveWindow(this.position);
+
+            // Begin resizing the application window
+            this.startResize(event);
+        },
+
+        // setActiveWindow() {
+        //     // Set application to be the last activity used (window will be at the top of UI)
+        //     if (this.position !== -1) {
+        //         this.activities.push(this.activities.splice(this.position, 1)[0]);
+        //     }
+        // },
+
         setCursor(event) {
-            if (!event.target.classList.contains('resizeable')) {
+            if (!event.target.classList.contains('app-window')) {
                 this.cursor = 'cursor-default';
                 return;
             }
@@ -85,7 +129,7 @@ export default {
             event.preventDefault();
 
             // Application window is only resizeable when the borders are held by mouse
-            if (!event.target.classList.contains('resizeable')) return;
+            if (!event.target.classList.contains('app-window')) return;
 
             // Current mouse coordinates
             this.startX = event.clientX;
@@ -194,13 +238,13 @@ export default {
                 position = startPosition + (startSize - minSize);
             }
 
-            // Update the position of the application window
+            // Update the position of the application window including boundaries
             if (left) {
-                this.left = position;
-                this.width = size;
+                this.left = position <= this.boundary.x ? this.boundary.x : position;
+                this.width = position <= this.boundary.x ? this.width : size;
             } else {
-                this.top = position;
-                this.height = size;
+                this.top = position <= this.boundary.y ? this.boundary.y : position;
+                this.height = position <= this.boundary.y ? this.height : size;
             }
         },
 

@@ -16,7 +16,7 @@
                     class="w-14 relative"
                     :class="active === item ? 'cursor-default' : 'cursor-pointer'">
                     <img
-                        :src="`/images/icons/${item.value}.png`"
+                        :src="`/images/icons/apps/${item.value}.png`"
                         :alt="`${item.label} Application`">
                     <span
                         v-if="activities.find(activity => activity === item)"
@@ -47,7 +47,6 @@ export default {
 
     data() {
         return {
-            active: null,
             menu: [
                 {
                     label: 'Terminal',
@@ -89,6 +88,12 @@ export default {
                 },
             ]
         };
+    },
+
+    computed: {
+        active() {
+            return this.activities.length > 0 ? this.activities[this.activities.length - 1] : null;
+        }
     },
 
     methods: {

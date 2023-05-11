@@ -1,12 +1,16 @@
 html,
 body {
-    @apply text-white font-sans m-0 w-full min-h-screen overflow-hidden;
+    @apply
+        text-white
+        font-sans
+        m-0
+        w-full
+        min-h-screen
+        overflow-hidden;
 }
 
 * {
-    @apply tracking-normal;
-    font-size: 16px;
-    line-height: 24px;
+    @apply tracking-normal text-base;
 }
 
 .wallpaper {
@@ -26,16 +30,19 @@ body {
     }
 }
 
-$application-window-border: #231e24;
-
-.resizeable {
-    @apply rounded-t-xl drop-shadow-lg;
-    border: 1px solid $application-window-border;
-    background-color: #343434;
+.app-window {
+    @apply
+        rounded-t-xl
+        drop-shadow-lg
+        bg-app-window-bg
+        border
+        border-app-window-b;
 }
 
-.window-header {
-    background-color: #2c2c2c;
-    border-top: 1px solid #3a3a3a;
-    border-bottom: 1px solid $application-window-border;
+.app-header {
+    @apply
+        bg-app-header-bg
+        border-y
+        border-t-app-header-bt
+        border-b-app-header-bb;
 }
