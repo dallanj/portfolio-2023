@@ -14,6 +14,20 @@ module.exports = {
           white: '#dddddd',
           button: '#2c2c2c',
           'button-active': '#424241',
+        },
+        app: {
+          window: {
+            bg: '#343434',
+            b: '#231E24',
+          },
+          header: {
+            bg: '#2C2C2C',
+            bt: '#3A3A3A',
+            bb: '#231E24',
+            actions: {
+              icon: '#4A4A4A',
+            }
+          },
         }
       },
     },

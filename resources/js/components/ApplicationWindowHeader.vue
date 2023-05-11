@@ -1,6 +1,6 @@
 <template>
 <section
-    class="window-header h-10 rounded-t-xl flex items-center justify-center relative"
+    class="app-header h-10 rounded-t-xl flex items-center justify-center relative"
     :class="cursor"
     @mousedown="startDrag"
     @mouseup="stopDrag"

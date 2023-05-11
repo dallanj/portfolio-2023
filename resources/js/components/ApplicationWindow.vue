@@ -1,7 +1,7 @@
 <template>
 <article
     :id="`${application.value}-application`"
-    class="resizeable fixed"
+    class="app-window fixed"
     :class="cursor"
     :style="{
         width: width + 'px',
@@ -99,7 +99,7 @@ export default {
         // },
 
         setCursor(event) {
-            if (!event.target.classList.contains('resizeable')) {
+            if (!event.target.classList.contains('app-window')) {
                 this.cursor = 'cursor-default';
                 return;
             }
@@ -129,7 +129,7 @@ export default {
             event.preventDefault();
 
             // Application window is only resizeable when the borders are held by mouse
-            if (!event.target.classList.contains('resizeable')) return;
+            if (!event.target.classList.contains('app-window')) return;
 
             // Current mouse coordinates
             this.startX = event.clientX;
