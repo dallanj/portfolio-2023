@@ -6,9 +6,9 @@
                 :key="`header-${option.value}`"
                 class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
                 :class="{
-                    [activeClass]: dropdown=== option,
-                    [inactiveClass]: dropdown!== option,
-                    'hidden': option === menu.current && !active,
+                    [activeClass]: dropdown === option,
+                    [inactiveClass]: dropdown !== option,
+                    'hidden': option === menu.current && (!active || !isApplicationVisible(active)),
                 }"
                 v-click-outside="selectOption"
                 @click="selectOption(option)"
@@ -39,7 +39,7 @@
 import { defineComponent } from 'vue';
 import { topBar } from '@/state/options';
 import activities from '@/state/activities';
-import actionsMixin from './../mixins/actionsMixin';
+import actionsMixin from '@/mixins/actionsMixin';
 
 export default defineComponent({
     mixins: [actionsMixin],

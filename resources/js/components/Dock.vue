@@ -6,7 +6,7 @@
                 :key="`nav-${app.value}`"
                 :id="`nav-item-${app.value}`"
                 class="flex flex-col items-center static p-2 mb-1 rounded-md"
-                :class="active === app ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25' : 'cursor-pointer hover:bg-white hover:bg-opacity-10'"
+                :class="active === app && isApplicationVisible(app) ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25' : 'cursor-pointer hover:bg-white hover:bg-opacity-10'"
                 v-click-outside="openApp"
                 @mouseover="toggleTooltip(app)"
                 @mouseout="toggleTooltip(app, false)"
@@ -36,7 +36,7 @@
 import { defineComponent } from 'vue';
 import { applications } from '@/state/options';
 import activities from '@/state/activities';
-import actionsMixin from './../mixins/actionsMixin';
+import actionsMixin from '@/mixins/actionsMixin';
 
 export default defineComponent({
     mixins: [actionsMixin],
@@ -76,6 +76,7 @@ export default defineComponent({
 
             this.addActivity(app);
             this.setActiveWindow(app);
+            this.toggleApplicationVisibility(app);
         },
 
         toggleTooltip(item, show = true) {

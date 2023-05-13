@@ -1,7 +1,8 @@
 <template>
 <article
+    :ref="`${application.value}-application`"
     :id="`${application.value}-application`"
-    class="app-window fixed"
+    class="app-window fixed block"
     :class="cursor"
     :style="{
         width: width + 'px',
@@ -18,7 +19,9 @@
         :boundary="boundary"
         @dragging-positions="draggingPositions">
         <h2 class="select-none">{{ application.label }}</h2>
-        <ApplicationWindowActions :application="application" />
+        <ApplicationWindowActions
+            :application="application"
+            @minimize-application="minimizeApplication" />
     </ApplicationWindowHeader>
 </article>
 </template>
@@ -28,6 +31,7 @@ import { defineComponent } from 'vue';
 import activities from '@/state/activities';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
+import actionsMixin from '@/mixins/actionsMixin';
 
 export default defineComponent({
     components: {
@@ -35,16 +39,20 @@ export default defineComponent({
         ApplicationWindowActions,
     },
 
+    mixins: [actionsMixin],
+
     setup() {
         const all = activities.state.all;
         const active = activities.getActiveWindow;
         const setActiveWindow = activities.setActiveWindow;
+        const removeActiveWindow = activities.removeActiveWindow
         const removeActivity = activities.removeActivity;
 
         return {
             all,
             active,
             setActiveWindow,
+            removeActiveWindow,
             removeActivity,
         };
     },
@@ -248,6 +256,13 @@ export default defineComponent({
             this.left = positions.x;
             this.top = positions.y;
         },
+
+        minimizeApplication() {
+            this.toggleApplicationVisibility(this.application, false);
+
+            // Minimize window in activities
+            this.removeActiveWindow(this.application);
+        }
     },
 });
 </script>
