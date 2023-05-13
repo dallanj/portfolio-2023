@@ -28,6 +28,6 @@ export default {
             }
 
             return applicationElement.classList.contains('block');
-        }
+        },
     },
 }

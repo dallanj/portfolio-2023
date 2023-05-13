@@ -5,8 +5,8 @@
     class="app-window fixed block"
     :class="cursor"
     :style="{
-        width: width + 'px',
-        height: height + 'px',
+        width: windowWidth,
+        height: windowHeight,
         top: top + 'px',
         left: left + 'px'
     }"
@@ -19,9 +19,10 @@
         :boundary="boundary"
         @dragging-positions="draggingPositions">
         <h2 class="select-none">{{ application.label }}</h2>
-        <ApplicationWindowActions
+        <ApplicationWindowActions 
             :application="application"
-            @minimize-application="minimizeApplication" />
+            @minimize-application="minimizeApplication"
+            @maximize-application="maximizeApplication" />
     </ApplicationWindowHeader>
 </article>
 </template>
@@ -83,7 +84,17 @@ export default defineComponent({
             boundary: {
                 y: 32,
                 x: 80,
-            }
+            },
+        }
+    },
+
+    computed: {
+        windowWidth() {
+            return Number.isInteger(this.width) ? `${this.width}px` : this.width;
+        },
+
+        windowHeight() {
+            return Number.isInteger(this.height) ? `${this.height}px` : this.height;
         }
     },
 
@@ -91,6 +102,8 @@ export default defineComponent({
         startActions(event) {
             // Set window at the top of any others
             this.setActiveWindow(this.application);
+
+            if (!event.target.classList.contains('app-window')) return;
 
             // Begin resizing the application window
             this.startResize(event);
@@ -262,6 +275,19 @@ export default defineComponent({
 
             // Minimize window in activities
             this.removeActiveWindow(this.application);
+        },
+
+        maximizeApplication() {
+            const applicationElement = document.getElementById(`${this.application.value}-application`);
+        
+            if (!applicationElement) {
+                return;
+            }
+
+            this.top = this.boundary.y;
+            this.left = this.boundary.x;
+            this.width = `calc(100% - ${this.boundary.x}px)`;
+            this.height = '100%';
         }
     },
 });

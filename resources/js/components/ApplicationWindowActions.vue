@@ -57,6 +57,7 @@ export default defineComponent({
                     label: 'Maximize',
                     value: 'maximize',
                     icon: 'maximize.png',
+                    event: () => this.$emit('maximize-application')
                 },
                 {
                     label: 'Close',
