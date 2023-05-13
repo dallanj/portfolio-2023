@@ -10,8 +10,10 @@
 </template>
 
 
-<script lang="ts">
-export default {
+<script>
+import { defineComponent } from 'vue';
+
+export default defineComponent({
     props: {
         application: {
             type: Object,
@@ -95,5 +97,5 @@ export default {
             document.removeEventListener('mouseup', this.stopDrag);
         }
     }
-};
+});
 </script>

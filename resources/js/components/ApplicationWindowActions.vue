@@ -15,12 +15,23 @@
 
 
 <script>
-export default {
+import { defineComponent } from 'vue';
+import activities from '@/state/activities';
+
+export default defineComponent({
     props: {
         application: {
             type: Object,
             required: true,
         },
+    },
+
+    setup() {
+        const removeActivity = activities.removeActivity;
+
+        return {
+            removeActivity,
+        };
     },
 
     data() {
@@ -50,17 +61,10 @@ export default {
                     label: 'Close',
                     value: 'close',
                     icon: 'close.png',
-                    event: () => this.$emit('close-window'),
+                    event: () => this.removeActivity(this.application),
                 },
             ],
         }
     },
-
-    methods: {
-        closeWindow() {
-            // Todo: Run closing application window animation
-            this.$emit('close-window');
-        }
-    }
-};
+});
 </script>

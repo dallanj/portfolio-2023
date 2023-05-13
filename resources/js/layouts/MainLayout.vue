@@ -1,33 +1,23 @@
 <template>
     <div>
-        <TopHeader ref="top-header" :activities="state.activities" />
+        <TopBar ref="top-bar" />
 
         <div class="flex">
-            <SideNav :activities="state.activities" />
-            <slot :activities="state.activities" />
+            <Dock />
+            <slot />
         </div>
     </div>
 </template>
 
 <script>
-import { reactive } from 'vue';
-import TopHeader from '@/components/TopHeader.vue';
-import SideNav from '@/components/SideNav.vue';
+import TopBar from '@/components/TopBar.vue';
+import Dock from '@/components/Dock.vue';
+import { defineComponent } from 'vue';
 
-export default {
+export default defineComponent({
     components: {
-        TopHeader,
-        SideNav
+        TopBar,
+        Dock
     },
-
-    setup() {
-        const state = reactive({
-            activities: []
-        });
-
-        return {
-            state
-        };
-    }
-};
+});
 </script>

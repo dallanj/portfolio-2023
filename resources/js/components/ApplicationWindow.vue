@@ -18,33 +18,40 @@
         :boundary="boundary"
         @dragging-positions="draggingPositions">
         <h2 class="select-none">{{ application.label }}</h2>
-        <ApplicationWindowActions
-            :application="application"
-            @close-window="closeWindow" />
+        <ApplicationWindowActions :application="application" />
     </ApplicationWindowHeader>
 </article>
 </template>
     
 <script>
+import { defineComponent } from 'vue';
+import activities from '@/state/activities';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
-import actionsMixin from './../mixins/actionsMixin';
 
-export default {
+export default defineComponent({
     components: {
         ApplicationWindowHeader,
         ApplicationWindowActions,
     },
 
-    mixins: [actionsMixin],
+    setup() {
+        const all = activities.state.all;
+        const active = activities.getActiveWindow;
+        const setActiveWindow = activities.setActiveWindow;
+        const removeActivity = activities.removeActivity;
+
+        return {
+            all,
+            active,
+            setActiveWindow,
+            removeActivity,
+        };
+    },
 
     props: {
         application: {
             type: Object,
-            required: true,
-        },
-        activities: {
-            type: Array,
             required: true,
         },
     },
@@ -72,31 +79,14 @@ export default {
         }
     },
 
-    computed: {
-        position() {
-            return this.activities.indexOf(this.application);
-        }
-    },
-
     methods: {
-        closeWindow() {
-            this.activities.splice(this.position, 1)
-        },
-
         startActions(event) {
             // Set window at the top of any others
-            this.setActiveWindow(this.position);
+            this.setActiveWindow(this.application);
 
             // Begin resizing the application window
             this.startResize(event);
         },
-
-        // setActiveWindow() {
-        //     // Set application to be the last activity used (window will be at the top of UI)
-        //     if (this.position !== -1) {
-        //         this.activities.push(this.activities.splice(this.position, 1)[0]);
-        //     }
-        // },
 
         setCursor(event) {
             if (!event.target.classList.contains('app-window')) {
@@ -259,6 +249,6 @@ export default {
             this.top = positions.y;
         },
     },
-}
+});
 </script>
     
