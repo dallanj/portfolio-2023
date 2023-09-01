@@ -51,11 +51,13 @@ export default defineComponent({
                     label: 'Minimize',
                     value: 'minimize',
                     icon: 'minimize.png',
+                    event: () => this.$emit('minimize-application')
                 },
                 {
                     label: 'Maximize',
                     value: 'maximize',
                     icon: 'maximize.png',
+                    event: () => this.$emit('maximize-application')
                 },
                 {
                     label: 'Close',

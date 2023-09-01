@@ -47,6 +47,16 @@ const setActiveWindow = app => {
 }
 
 /**
+ * Remove the active window
+ *
+ * @param {Object} app
+ */
+const removeActiveWindow = app => {
+    state.all.splice(state.all.indexOf(app), 1);
+    state.all.unshift(app);
+}
+
+/**
  * Set dropdown menu
  *
  * @param {Object} dropdown
@@ -73,6 +83,7 @@ export default {
     state,
     getActiveWindow,
     setActiveWindow,
+    removeActiveWindow,
     addActivity,
     removeActivity,
     setDropdown,
