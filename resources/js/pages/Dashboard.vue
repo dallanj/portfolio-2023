@@ -3,26 +3,15 @@
     <ApplicationWindow
         v-for="activity in all"
         :key="`window_${activity.value}`"
-        :application="activity" />
+        :activity="activity" />
 </MainLayout>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
-import activities from '@/state/activities';
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useActivitiesStore } from '@/stores/activities';
 import ApplicationWindow from '@/components/ApplicationWindow.vue';
 
-export default defineComponent({
-    components: {
-        ApplicationWindow,
-    },
-
-    setup() {
-        const all = activities.state.all;
-
-        return {
-            all,
-        };
-    },
-});
+const activitiesStore = useActivitiesStore();
+const { all } = useActivitiesStore();
 </script>
