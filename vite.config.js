@@ -4,15 +4,29 @@ import vue from '@vitejs/plugin-vue';
 
 export default defineConfig({
     plugins: [
-        vue(),
         laravel({
-            input: ['resources/sass/app.scss', 'resources/js/app.js'],
+            input: [
+                'resources/css/app.scss',
+                'resources/js/app.js',
+            ],
             refresh: true,
         }),
+        vue({
+            template: {
+                transformAssetUrls: {
+                    base: null,
+                    includeAbsolute: false,
+                },
+            },
+        }),
     ],
-    resolve: {
-        alias: {
-            '@': require('path').resolve(__dirname, 'resources', 'js')
+    server: {
+        cors: true, // This enables CORS
+        watch: {
+            ignored: ['**/node_modules/**', '**/dist/**']
         }
+    },
+    optimizeDeps: {
+        extensions: ['.scss', '.sass'],
     }
 });
