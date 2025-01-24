@@ -10,7 +10,6 @@
                     [inactiveClass]: dropdown !== option,
                     'hidden': option === menu.current && (!active || !isApplicationVisible(active)),
                 }"
-                v-click-outside="selectOption"
                 @click="selectOption(option)"
                 @click.stop>
                 {{ option === menu.current ? active?.label : option.label }}
@@ -27,7 +26,6 @@
                 'justify-self-end md:justify-self-center': option.value !== 'settings',
                 'hidden md:block justify-self-end': option.value === 'settings',
             }"
-            v-click-outside="selectOption"
             @click="selectOption(option)"
             @click.stop>
             {{ typeof option.label === 'function' ? option.label() : option.label }}

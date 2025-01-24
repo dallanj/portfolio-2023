@@ -7,7 +7,6 @@
                 :id="`nav-item-${app.value}`"
                 class="flex flex-col items-center static p-2 mb-1 rounded-md"
                 :class="active === app && isApplicationVisible(app) ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25' : 'cursor-pointer hover:bg-white hover:bg-opacity-10'"
-                v-click-outside="openApp"
                 @mouseover="toggleTooltip(app)"
                 @mouseout="toggleTooltip(app, false)"
                 @click="openApp(app, true)"
