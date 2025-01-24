@@ -27,269 +27,200 @@
 </article>
 </template>
     
-<script>
-import { defineComponent } from 'vue';
-import activities from '@/state/activities';
+<script setup>
+import { ref, computed, onMounted } from 'vue';
+import { useActivitiesStore } from '@/stores/activities';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
-import actionsMixin from '@/mixins/actionsMixin';
+import actionsMixin from '@/mixins/actionsMixin'; // Mixin logic can be directly adapted or integrated.
+import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
 
-export default defineComponent({
-    components: {
-        ApplicationWindowHeader,
-        ApplicationWindowActions,
-    },
+const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
 
-    mixins: [actionsMixin],
-
-    setup() {
-        const all = activities.state.all;
-        const active = activities.getActiveWindow;
-        const setActiveWindow = activities.setActiveWindow;
-        const removeActiveWindow = activities.removeActiveWindow
-        const removeActivity = activities.removeActivity;
-
-        return {
-            all,
-            active,
-            setActiveWindow,
-            removeActiveWindow,
-            removeActivity,
-        };
-    },
-
-    props: {
-        application: {
-            type: Object,
-            required: true,
-        },
-    },
-
-    data() {
-        return {
-            startX: 0,
-            startY: 0,
-            startWidth: 0,
-            startHeight: 0,
-            startTop: 0,
-            startLeft: 0,
-            minWidth: 50,
-            minHeight: 50,
-            width: 200,
-            height: 200,
-            top: 100,
-            left: 300,
-            direction: null,
-            cursor: 'cursor-default',
-            boundary: {
-                y: 32,
-                x: 80,
-            },
-        }
-    },
-
-    computed: {
-        windowWidth() {
-            return Number.isInteger(this.width) ? `${this.width}px` : this.width;
-        },
-
-        windowHeight() {
-            return Number.isInteger(this.height) ? `${this.height}px` : this.height;
-        }
-    },
-
-    methods: {
-        startActions(event) {
-            // Set window at the top of any others
-            this.setActiveWindow(this.application);
-
-            if (!event.target.classList.contains('app-window')) return;
-
-            // Begin resizing the application window
-            this.startResize(event);
-        },
-
-        setCursor(event) {
-            if (!event.target.classList.contains('app-window')) {
-                this.cursor = 'cursor-default';
-                return;
-            }
-
-            // Set the cursor based on the direction of resizing
-            switch (this.findDirection(event)) {
-                case 'left':
-                case 'right':
-                    this.cursor = 'cursor-ew-resize';
-                    return;
-                case 'top':
-                case 'bottom':
-                    this.cursor = 'cursor-ns-resize';
-                    return;
-                case 'right-top':
-                case 'left-bottom':
-                    this.cursor = 'cursor-nesw-resize';
-                    return;
-                case 'left-top':
-                case 'right-bottom':
-                    this.cursor = 'cursor-nwse-resize';
-                return;
-            }
-        },
-
-        startResize(event) {
-            event.preventDefault();
-
-            // Application window is only resizeable when the borders are held by mouse
-            if (!event.target.classList.contains('app-window')) return;
-
-            // Current mouse coordinates
-            this.startX = event.clientX;
-            this.startY = event.clientY;
-
-            // Starting size and positioning of the application window
-            this.startWidth = this.width;
-            this.startHeight = this.height;
-            this.startTop = this.top;
-            this.startLeft = this.left;
-
-            // Which side(s) the element is being resized to
-            this.direction = this.findDirection(event);
-
-            // Listen for mouse movement
-            document.addEventListener('mousemove', this.resize);
-            document.addEventListener('mouseup', this.stopResize);
-        },
-
-        resize(event) {
-            // Change in position of current and initial mouse position
-            const deltaX = event.clientX - this.startX;
-            const deltaY = event.clientY - this.startY;
-
-            // Resize element based on direction
-            switch (this.direction) {
-                case 'left':
-                    this.dragLeftTop(deltaX);
-                    break;
-                case 'right':
-                    this.dragRightBottom(deltaX);
-                    break;
-                case 'top':
-                    this.dragLeftTop(deltaY, false);
-                    break;
-                case 'bottom':
-                    this.dragRightBottom(deltaY, false);
-                    break;
-                case 'left-top':
-                    this.dragLeftTop(deltaX);
-                    this.dragLeftTop(deltaY, false);
-                    break;
-                case 'right-top':
-                    this.dragRightBottom(deltaX);
-                    this.dragLeftTop(deltaY, false);
-                    break;
-                case 'left-bottom':
-                    this.dragLeftTop(deltaX);
-                    this.dragRightBottom(deltaY, false);
-                    break;
-                case 'right-bottom':
-                    this.dragRightBottom(deltaX);
-                    this.dragRightBottom(deltaY, false);
-                    break;
-            }
-        },
-
-        findDirection(event) {
-            event.preventDefault();
-            let direction = '';
-
-            if (event.offsetX < 10) {
-                direction = 'left';
-            } else if (event.offsetX > this.width - 10) {
-                direction = 'right';
-            } else {
-                direction = '';
-            }
-            
-            if (event.offsetY < 10) {
-                if (direction !== '') direction += '-';
-                direction += 'top';
-            } else if (event.offsetY > this.height - 10) {
-                if (direction !== '') direction += '-';
-                direction += 'bottom';
-            }
-
-            return direction;
-        },
-
-        dragRightBottom(mousePosChange, right = true) {
-            const startSize = right ? this.startWidth : this.startHeight;
-            const minSize = right ? this.minWidth : this.minHeight;
-            
-            if (right) {
-                this.width = Math.max(startSize + mousePosChange, minSize);
-            } else {
-                this.height = Math.max(startSize + mousePosChange, minSize);
-            }
-        },
-
-        dragLeftTop(mousePosChange, left = true) {
-            const startSize = left ? this.startWidth : this.startHeight;
-            const minSize = left ? this.minWidth : this.minHeight;
-            const startPosition = left ? this.startLeft : this.startTop;
-            const newSize = Math.max(startSize - mousePosChange, minSize);
-            let position, size;
-
-            if (newSize > minSize) {
-                // If the new width is greater than minWidth, update both the width and the left position
-                size = newSize;
-                position = startPosition + mousePosChange;
-            } else {
-                // If the new width is equal to or less than minWidth, only update the width and adjust the left position to keep the left edge in place
-                size = minSize;
-                position = startPosition + (startSize - minSize);
-            }
-
-            // Update the position of the application window including boundaries
-            if (left) {
-                this.left = position <= this.boundary.x ? this.boundary.x : position;
-                this.width = position <= this.boundary.x ? this.width : size;
-            } else {
-                this.top = position <= this.boundary.y ? this.boundary.y : position;
-                this.height = position <= this.boundary.y ? this.height : size;
-            }
-        },
-
-        stopResize() {
-            document.removeEventListener('mousemove', this.resize);
-            document.removeEventListener('mouseup', this.stopResize);
-        },
-
-        draggingPositions(positions) {
-            // Emitted positions from ApplicationWindowHeader when dragging
-            this.left = positions.x;
-            this.top = positions.y;
-        },
-
-        minimizeApplication() {
-            this.toggleApplicationVisibility(this.application, false);
-
-            // Minimize window in activities
-            this.removeActiveWindow(this.application);
-        },
-
-        maximizeApplication() {
-            const applicationElement = document.getElementById(`${this.application.value}-application`);
-        
-            if (!applicationElement) {
-                return;
-            }
-
-            this.top = this.boundary.y;
-            this.left = this.boundary.x;
-            this.width = `calc(100% - ${this.boundary.x}px)`;
-            this.height = '100%';
-        }
-    },
+const props = defineProps({
+  activity: {
+    type: Object,
+    required: true,
+  },
 });
+
+const application = ref(props.activity);
+
+const activitiesStore = useActivitiesStore();
+
+// Reactive state
+const startX = ref(0);
+const startY = ref(0);
+const startWidth = ref(0);
+const startHeight = ref(0);
+const startTop = ref(0);
+const startLeft = ref(0);
+const minWidth = ref(50);
+const minHeight = ref(50);
+const width = ref(200);
+const height = ref(200);
+const top = ref(100);
+const left = ref(300);
+const direction = ref(null);
+const cursor = ref('cursor-default');
+const boundary = ref({ x: 80, y: 32 });
+
+// Computed properties
+const windowWidth = computed(() => (Number.isInteger(width.value) ? `${width.value}px` : width.value));
+const windowHeight = computed(() => (Number.isInteger(height.value) ? `${height.value}px` : height.value));
+
+// Lifecycle hook
+onMounted(() => {
+  const savedActivity = activitiesStore?.findActivity(application.value);
+//   console.log('savedActivity', savedActivity)
+  if (savedActivity) {
+    Object.assign({ width, height, top, left }, savedActivity);
+    console.log('savedActivity', savedActivity)
+  }
+});
+
+// Methods
+function startActions(event) {
+  activitiesStore.setActiveWindow(application.value);
+
+  if (!event.target.classList.contains('app-window')) return;
+
+  startResize(event);
+}
+
+function setCursor(event) {
+  if (!event.target.classList.contains('app-window')) {
+    cursor.value = 'cursor-default';
+    return;
+  }
+
+  switch (findDirection(event)) {
+    case 'left':
+    case 'right':
+      cursor.value = 'cursor-ew-resize';
+      break;
+    case 'top':
+    case 'bottom':
+      cursor.value = 'cursor-ns-resize';
+      break;
+    case 'right-top':
+    case 'left-bottom':
+      cursor.value = 'cursor-nesw-resize';
+      break;
+    case 'left-top':
+    case 'right-bottom':
+      cursor.value = 'cursor-nwse-resize';
+      break;
+  }
+}
+
+function startResize(event) {
+  event.preventDefault();
+
+  if (!event.target.classList.contains('app-window')) return;
+
+  startX.value = event.clientX;
+  startY.value = event.clientY;
+  startWidth.value = width.value;
+  startHeight.value = height.value;
+  startTop.value = top.value;
+  startLeft.value = left.value;
+  direction.value = findDirection(event);
+
+  document.addEventListener('mousemove', resize);
+  document.addEventListener('mouseup', stopResize);
+}
+
+function resize(event) {
+  const deltaX = event.clientX - startX.value;
+  const deltaY = event.clientY - startY.value;
+
+  switch (direction.value) {
+    case 'left':
+      dragLeftTop(deltaX);
+      break;
+    case 'right':
+      dragRightBottom(deltaX);
+      break;
+    case 'top':
+      dragLeftTop(deltaY, false);
+      break;
+    case 'bottom':
+      dragRightBottom(deltaY, false);
+      break;
+    case 'left-top':
+      dragLeftTop(deltaX);
+      dragLeftTop(deltaY, false);
+      break;
+    case 'right-top':
+      dragRightBottom(deltaX);
+      dragLeftTop(deltaY, false);
+      break;
+    case 'left-bottom':
+      dragLeftTop(deltaX);
+      dragRightBottom(deltaY, false);
+      break;
+    case 'right-bottom':
+      dragRightBottom(deltaX);
+      dragRightBottom(deltaY, false);
+      break;
+  }
+}
+
+function findDirection(event) {
+  let dir = '';
+
+  if (event.offsetX < 10) dir = 'left';
+  else if (event.offsetX > width.value - 10) dir = 'right';
+
+  if (event.offsetY < 10) dir += dir ? '-top' : 'top';
+  else if (event.offsetY > height.value - 10) dir += dir ? '-bottom' : 'bottom';
+
+  return dir;
+}
+
+function dragRightBottom(mousePosChange, isWidth = true) {
+  if (isWidth) {
+    width.value = Math.max(startWidth.value + mousePosChange, minWidth.value);
+  } else {
+    height.value = Math.max(startHeight.value + mousePosChange, minHeight.value);
+  }
+}
+
+function dragLeftTop(mousePosChange, isLeft = true) {
+  const startSize = isLeft ? startWidth.value : startHeight.value;
+  const minSize = isLeft ? minWidth.value : minHeight.value;
+  const startPosition = isLeft ? startLeft.value : startTop.value;
+
+  const newSize = Math.max(startSize - mousePosChange, minSize);
+  if (isLeft) {
+    left.value = Math.max(startPosition + mousePosChange, boundary.value.x);
+    width.value = newSize;
+  } else {
+    top.value = Math.max(startPosition + mousePosChange, boundary.value.y);
+    height.value = newSize;
+  }
+}
+
+function stopResize() {
+  document.removeEventListener('mousemove', resize);
+  document.removeEventListener('mouseup', stopResize);
+}
+
+function draggingPositions(positions) {
+  left.value = positions.x;
+  top.value = positions.y;
+}
+
+function minimizeApplication() {
+  toggleApplicationVisibility(application.value, false);
+  activitiesStore.removeActiveWindow(application.value);
+}
+
+function maximizeApplication() {
+  top.value = boundary.value.y;
+  left.value = boundary.value.x;
+  width.value = `calc(100% - ${boundary.value.x}px)`;
+  height.value = '100%';
+}
 </script>
-    
