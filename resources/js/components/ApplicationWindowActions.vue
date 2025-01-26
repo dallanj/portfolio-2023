@@ -8,65 +8,43 @@
         @click="action.event && action.event()">
         <img
             :src="`/images/icons/actions/${action.icon}`"
-            :alt="`${action.label} ${application.label} Application`">
+            :alt="`${action.label} ${model.data.label} Application`">
     </li>
 </ul>
 </template>
 
+<script setup>
+import { useActivitiesStore } from '@/stores/activities';
 
-<script>
-import { defineComponent } from 'vue';
-import activities from '@/state/activities';
-
-export default defineComponent({
-    props: {
-        application: {
-            type: Object,
-            required: true,
-        },
-    },
-
-    setup() {
-        const removeActivity = activities.removeActivity;
-
-        return {
-            removeActivity,
-        };
-    },
-
-    data() {
-        return {
-            applicationWindow: null,
-            last: {
-                x: 0,
-                y: 0,
-            },
-            current: {
-                x: 0,
-                y: 0,
-            },
-            cursor: 'cursor-default',
-            actions: [
-                {
-                    label: 'Minimize',
-                    value: 'minimize',
-                    icon: 'minimize.png',
-                    event: () => this.$emit('minimize-application')
-                },
-                {
-                    label: 'Maximize',
-                    value: 'maximize',
-                    icon: 'maximize.png',
-                    event: () => this.$emit('maximize-application')
-                },
-                {
-                    label: 'Close',
-                    value: 'close',
-                    icon: 'close.png',
-                    event: () => this.removeActivity(this.application),
-                },
-            ],
-        }
-    },
+const model = defineModel({
+    type: Object,
+    required: true,
 });
+
+const {
+    removeActivity,
+    maximizeWindow,
+    minimizeWindow,
+} = useActivitiesStore();
+
+const actions = [
+    {
+        label: 'Minimize',
+        value: 'minimize',
+        icon: 'minimize.png',
+        event: () => minimizeWindow(model)
+    },
+    {
+        label: 'Maximize',
+        value: 'maximize',
+        icon: 'maximize.png',
+        event: () => maximizeWindow(model)
+    },
+    {
+        label: 'Close',
+        value: 'close',
+        icon: 'close.png',
+        event: () => removeActivity(model),
+    },
+];
 </script>
