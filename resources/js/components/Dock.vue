@@ -40,7 +40,6 @@
 import { ref, onMounted } from 'vue';
 import { useDashboardStore } from '@/stores/dashboard';
 import { useActivitiesStore } from '@/stores/activities';
-import activities from '@/state/activities';
 import { storeToRefs } from 'pinia';
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
 
@@ -55,9 +54,16 @@ const { applications } = storeToRefs(store);
 // Reactive state and getters
 const activitiesStore = useActivitiesStore();
 
-const { all, active } = storeToRefs(activitiesStore);
-const { setDropdown, setActiveWindow, addActivity, getActiveWindow, getDropdown } = activitiesStore;
-const dropdown = activities.getDropdown;
+const { activities, all, active } = storeToRefs(activitiesStore);
+const {
+    setDropdown,
+    setActiveWindow,
+    addActivity,
+    getActiveWindow,
+    
+    addActivities,
+    removeAllActivities,
+} = activitiesStore;
 
 // Lifecycle hook: Fetch data and update date label on mount
 onMounted(async () => {
@@ -69,11 +75,8 @@ onMounted(async () => {
 // Methods
 function openApp(app) {
     if (hasClickedOutside(app)) {
-        setDropdown(null);
         return;
     }
-
-    setDropdown(null);
 
     // Call actionable tabs or applications
     if (active?.action) {
@@ -81,6 +84,8 @@ function openApp(app) {
     }
 
     addActivity(app);
+
+    // addActivity(app);
     setActiveWindow(app);
     toggleApplicationVisibility(app);
 }
