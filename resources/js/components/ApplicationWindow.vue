@@ -1,37 +1,39 @@
 <template>
 <article
-    :ref="`${application.value}-application`"
-    :id="`${application.value}-application`"
+    :ref="`${application.data.value}-application`"
+    :id="`${application.data.value}-application`"
     class="app-window fixed block"
-    :class="cursor"
+    :class="[
+      cursor,
+      { 'rounded-t-xl': application.roundedBorder },
+      { 'z-40': application === getActiveWindow && Object.values(application.outOfBounds).some(val => val === true) }
+    ]"
     :style="{
         width: windowWidth,
         height: windowHeight,
-        top: top + 'px',
-        left: left + 'px'
+        top: application.top + 'px',
+        left: application.left + 'px'
     }"
     @mousedown="startActions"
     @mouseup="stopResize"
     @mousemove="setCursor">
 
     <ApplicationWindowHeader
-        :application="application"
-        :boundary="boundary"
+        v-model="application"
         @dragging-positions="draggingPositions">
-        <h2 class="select-none">{{ application.label }}</h2>
+        <h2 class="select-none">{{ application.data.label }}</h2>
         <ApplicationWindowActions 
-            :application="application"
-            @minimize-application="minimizeApplication"
-            @maximize-application="maximizeApplication" />
+            v-model="application" />
     </ApplicationWindowHeader>
 </article>
 </template>
     
 <script setup>
-import { ref, computed, onMounted } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useActivitiesStore } from '@/stores/activities';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
+
 import actionsMixin from '@/mixins/actionsMixin'; // Mixin logic can be directly adapted or integrated.
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
 
@@ -45,6 +47,10 @@ const props = defineProps({
 });
 
 const application = ref(props.activity);
+
+const {
+    getActiveWindow,
+} = useActivitiesStore();
 
 const activitiesStore = useActivitiesStore();
 
@@ -66,18 +72,8 @@ const cursor = ref('cursor-default');
 const boundary = ref({ x: 80, y: 32 });
 
 // Computed properties
-const windowWidth = computed(() => (Number.isInteger(width.value) ? `${width.value}px` : width.value));
-const windowHeight = computed(() => (Number.isInteger(height.value) ? `${height.value}px` : height.value));
-
-// Lifecycle hook
-onMounted(() => {
-  const savedActivity = activitiesStore?.findActivity(application.value);
-//   console.log('savedActivity', savedActivity)
-  if (savedActivity) {
-    Object.assign({ width, height, top, left }, savedActivity);
-    console.log('savedActivity', savedActivity)
-  }
-});
+const windowWidth = computed(() => (Number.isInteger(application.value.width) ? `${application.value.width}px` : application.value.width));
+const windowHeight = computed(() => (Number.isInteger(application.value.height) ? `${application.value.height}px` : application.value.height));
 
 // Methods
 function startActions(event) {
@@ -212,15 +208,9 @@ function draggingPositions(positions) {
   top.value = positions.y;
 }
 
-function minimizeApplication() {
-  toggleApplicationVisibility(application.value, false);
-  activitiesStore.removeActiveWindow(application.value);
+function closeActivity(event) {
+    console.log('closeActivity', event)
 }
 
-function maximizeApplication() {
-  top.value = boundary.value.y;
-  left.value = boundary.value.x;
-  width.value = `calc(100% - ${boundary.value.x}px)`;
-  height.value = '100%';
-}
+watch(application.value, closeActivity);
 </script>
