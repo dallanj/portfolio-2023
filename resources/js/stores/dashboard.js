@@ -5,6 +5,8 @@ import axios from 'axios';
 
 export const useDashboardStore = defineStore('dashboard', () => {
     // State
+    // const applications = ref(JSON.parse(localStorage.getItem('applications')) || []);
+
     const applications = ref([]);
     const topBar = ref({
         activities: { label: 'Activities', value: 'activities' },
