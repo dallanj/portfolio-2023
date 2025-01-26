@@ -127,6 +127,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         activities,
         addActivities,
         removeAllActivities,
+        activityExists,
 
         maximizeWindow,
         minimizeWindow,
