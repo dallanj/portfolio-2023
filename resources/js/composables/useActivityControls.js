@@ -46,6 +46,7 @@ export function useActivityControls(activities) {
 			this.id = `${activity.value}-activity`;
 			this.minimized = false;
 			this.maximized = false;
+			this.halfScreen = false;
 			this.minimizing = false;
 			this.maximizing = false;
 			this.closing = false;
