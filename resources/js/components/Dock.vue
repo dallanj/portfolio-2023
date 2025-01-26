@@ -1,6 +1,6 @@
 <template>
     <nav
-        class="relative min-h-full h-screen w-20 z-20">
+        class="relative z-50 min-h-full h-screen w-20">
         <ul
             :class="{ 'dock-ready': isReady, 'dock-hidden': !isReady }"
             class="nav-menu bg-black bg-opacity-50 border-r border-black scrollbar-hidden overflow-auto h-full p-0.5 transition-all duration-500">
