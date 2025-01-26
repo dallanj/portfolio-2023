@@ -13,7 +13,7 @@ export function useWindowControls(activities) {
 		// activitiesStore.removeActiveWindow(application.value);
 	}
 
-	const maximizeWindow = (activity) => {
+	const maximizeWindow = (activity, halfScreen = false) => {
 		console.log('maximize', activity.value);
 		activity.value.outOfBounds = {
 			x: false,
@@ -21,13 +21,16 @@ export function useWindowControls(activities) {
 		}
 
 		// Mark the activity as being removed
-		if (activity.value.maximized) {
+		if (activity.value.maximized && !activity.value.halfScreen) {
 			unMaximizeWindow(activity);
 		} else {
-			activity.value.previousTop = activity.value.top;
-			activity.value.previousLeft = activity.value.left;
-			activity.value.previousWidth = activity.value.width;
-			activity.value.previousHeight = activity.value.height;
+			if (!halfScreen && !activity.value.halfScreen) {
+				activity.value.previousTop = activity.value.top;
+				activity.value.previousLeft = activity.value.left;
+				activity.value.previousWidth = activity.value.width;
+				activity.value.previousHeight = activity.value.height;
+			}
+			
 			activity.value.maximizing = true;
   
 			// Wait for the animation to complete before actually removing the file from the list
@@ -35,9 +38,10 @@ export function useWindowControls(activities) {
 				activity.value.roundedBorder = false;
 				activity.value.top = activity.value.boundary.y;
 				activity.value.left = activity.value.boundary.x;
-				activity.value.width = `calc(100% - ${activity.value.boundary.x}px)`;
+				activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${activity.value.boundary.x}px)`;
 				activity.value.height = '100%';
 				activity.value.maximized = true;
+				activity.value.halfScreen = halfScreen;
 				activity.value.maximizing = false;
 			}, 500);
 		}	
@@ -56,6 +60,7 @@ export function useWindowControls(activities) {
 			activity.value.left = activity.value.previousLeft;
 			activity.value.width = activity.value.previousWidth;
 			activity.value.height = activity.value.previousHeight;
+			activity.value.halfScreen = false;
 			activity.value.maximized = false;
 			activity.value.maximizing = false;
 		}, 500);	

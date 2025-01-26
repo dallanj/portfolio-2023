@@ -16,6 +16,6 @@ const fullOverlay = computed(() => active?.value.outOfBounds.y === true);
 <template>
 <div
     v-if="showOverlay"
-    class="h-screen bg-opacity-50 relative z-30 bg-purple-600 border border-purple-300"
-    :class="fullOverlay ? 'w-full' : 'w-1/2'" />
+    class="h-screen opacity-50 bg-opacity-50 relative z-30 bg-purple-500 border border-purple-600"
+    :style="fullOverlay ? `width: calc(100% - 80px)` : 'width: 50%'" />
 </template>
