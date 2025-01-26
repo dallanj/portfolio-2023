@@ -159,7 +159,7 @@ const onDrag = ({ delta, currentMousePosition, initialMousePosition, target }) =
         model.value.left += delta.x
         model.value.outOfBounds.x = false;
         
-    } else if (mousex >= initialMousePosition.x) {
+    } else {
         model.value.outOfBounds.x = true;
         console.log('left', model.value.outOfBounds.x);
     }
@@ -179,7 +179,7 @@ const onDrop = ({ delta, initalPosition, container, target }) => {
   }
 
   if (model.value.outOfBounds.x) {
-    maximizeWindow(model);
+    maximizeWindow(model, true);
   }
 };
 
