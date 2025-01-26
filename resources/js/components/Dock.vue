@@ -10,7 +10,7 @@
                     :key="`nav-${app.value}`"
                     :id="`nav-item-${app.value}`"
                     class="flex flex-col items-center static p-2 mb-1 rounded-md"
-                    :class="active === app && isApplicationVisible(app) ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25' : 'cursor-pointer hover:bg-white hover:bg-opacity-10'"
+                    :class="active.data.value === app.value && activityExists(`${app.value}-activity`) ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25' : 'cursor-pointer hover:bg-white hover:bg-opacity-10'"
                     @mouseover="toggleTooltip(app)"
                     @mouseout="toggleTooltip(app, false)"
                     @click="openApp(app, true)"
@@ -22,7 +22,7 @@
                             :src="`/images/icons/apps/${app.value}.png`"
                             :alt="`${app.label} Application`">
                         <span
-                            v-if="all.find(activity => activity === app)"
+                            v-if="activityExists(`${app.value}-activity`)"
                             class="absolute rounded-full active-tab top-1/2 bg-orange" />
                     </button>
                     <span
@@ -60,6 +60,7 @@ const {
     setActiveWindow,
     addActivity,
     getActiveWindow,
+    activityExists,
     
     addActivities,
     removeAllActivities,
