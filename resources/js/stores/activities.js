@@ -41,17 +41,19 @@ export const useActivitiesStore = defineStore('activities', () => {
      * @param {Object} app
      */
     const setActiveWindow = activity => {
-        const index = activities.value.indexOf(activity);
+        const index = activities.value.findIndex(a => a.data.value === activity.value);
+
         if (index > -1) {
+            // Push the activity to the bottom of the array
             activities.value.push(
                 activities.value.splice(
-                    activities.value.indexOf(activity),
+                    index,
                     1
                 )[0]
             );
+            // Set the activity as active
+            active.value = activities.value[activities.value.length - 1];
         }
-        
-        active.value = activity;
     }
 
     // Getters (computed properties)
