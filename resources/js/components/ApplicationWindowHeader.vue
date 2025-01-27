@@ -136,7 +136,7 @@ const onDrag = ({ delta, currentMousePosition, initialMousePosition, target }) =
     //     target: Math.min(currentMousePosition.x - rect.left, 0),
     // });
 
-    if (model.value.boundary.y <= rect.y && currentMousePosition.y > 0) {
+    if (model.value.boundary.y < rect.y && currentMousePosition.y > 0) {
         model.value.top += delta.y
         
         model.value.outOfBounds.y = false;
@@ -150,7 +150,7 @@ const onDrag = ({ delta, currentMousePosition, initialMousePosition, target }) =
         console.log('top', model.value.outOfBounds.y);
     }
 
-    if (model.value.boundary.x <= rect.x && currentMousePosition.x > 0) {
+    if (model.value.boundary.x < rect.x && currentMousePosition.x > 0) {
         model.value.left += delta.x
         
         model.value.outOfBounds.x = false;

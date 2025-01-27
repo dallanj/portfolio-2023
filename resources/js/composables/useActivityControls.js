@@ -50,6 +50,7 @@ export function useActivityControls(activities) {
 			this.minimizing = false;
 			this.maximizing = false;
 			this.closing = false;
+
 			this.startX = 100;
 			this.startY = 75;
 			this.startWidth = 200;
@@ -57,10 +58,13 @@ export function useActivityControls(activities) {
             this.startTop = 0;
             this.startLeft = 0;
 
-            this.width = 200;
-            this.height = 200;
+            this.width = 300;
+            this.height = 300;
             this.top = 100;
             this.left = 100;
+
+			this.minWidth = 300
+			this.minHeight = 300;
 
 			this.previousWidth = this.width;
 			this.previousHeight = this.height;
