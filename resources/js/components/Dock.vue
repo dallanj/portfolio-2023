@@ -1,8 +1,7 @@
 <template>
-    <nav
-        class="relative z-50 min-h-full h-screen w-20">
-        <ul
-            :class="{ 'dock-ready': isReady, 'dock-hidden': !isReady }"
+    <nav>
+        <menu
+            :class="{ 'dock-ready': isReady, 'dock-hidden': !isReady, 'flex': layoutType === 'type2' }"
             class="nav-menu bg-black bg-opacity-50 border-r border-black scrollbar-hidden overflow-auto h-full p-0.5 transition-all duration-500">
             <template v-if="isReady">
                 <li
@@ -23,7 +22,11 @@
                             :alt="`${app.label} Application`">
                         <span
                             v-if="activityExists(`${app.value}-activity`)"
-                            class="absolute rounded-full active-tab top-1/2 bg-orange" />
+                            class="absolute rounded-full top-1/2 bg-orange"
+                            :class="{
+                                'active-tab-left': layoutType === 'type1',
+                                'active-tab-bottom': layoutType === 'type2',
+                            }" />
                     </button>
                     <span
                         :id="`tooltip-${app.value}`"
@@ -32,7 +35,7 @@
                     </span>
                 </li>
             </template>
-        </ul>
+        </menu>
     </nav>
 </template>
 
@@ -44,7 +47,7 @@ import { storeToRefs } from 'pinia';
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
 
 const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
-
+const layoutType = 'type1';
 const isReady = ref(false);
 // Use the Pinia store
 const store = useDashboardStore();
@@ -108,3 +111,23 @@ function toggleTooltip(item, show = true) {
     }
 }
 </script>
+
+<style scoped lang="scss">
+.nav-menu {
+    scrollbar-width: none;
+    
+    .active-tab-left {
+        transform: translateY(-50%);
+        left: -7.5px;
+        width: 6px;
+        height: 6px;
+    }
+
+    .active-tab-bottom {
+        transform: translate(-50%, -99%);
+        top: 65px;
+        width: 6px;
+        height: 6px;
+    }
+}
+</style>
