@@ -18,18 +18,6 @@ body {
     background-image: url('../images/wallpaper.jpg');
 }
 
-
-.nav-menu {
-    scrollbar-width: none;
-    
-    .active-tab {
-        transform: translateY(-50%);
-        left: -7.5px;
-        width: 6px;
-        height: 6px;
-    }
-}
-
 .app-window {
     @apply
         drop-shadow-lg
