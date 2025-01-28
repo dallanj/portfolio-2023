@@ -55,8 +55,6 @@ const layoutType = 'type1';
 }
 
 #mainLayout > main {
-  @apply object-cover bg-cover bg-center bg-no-repeat;
   grid-area: main;
-  background-image: url('../images/wallpaper.jpg');
 }
 </style>
