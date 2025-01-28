@@ -47,8 +47,7 @@ export function useWindowControls(activities) {
 		}	
 	}
 
-	const unMaximizeWindow = (activity) => {
-		console.log('un-maximize', activity.value);
+	const unMaximizeWindow = (activity, coords = null) => {
 		// Mark the activity as being removed
 		activity.value.maximizing = true;
 		activity.value.roundedBorder = true;
@@ -56,8 +55,14 @@ export function useWindowControls(activities) {
   
 		// Wait for the animation to complete before actually removing the file from the list
 		setTimeout(() => {
-			activity.value.top = activity.value.previousTop;
-			activity.value.left = activity.value.previousLeft;
+			if (coords) {
+				activity.value.top = coords.y;
+				activity.value.left = coords.x;
+			} else {
+				activity.value.top = activity.value.previousTop;
+				activity.value.left = activity.value.previousLeft;
+			}
+			
 			activity.value.width = activity.value.previousWidth;
 			activity.value.height = activity.value.previousHeight;
 			activity.value.halfScreen = false;
@@ -69,5 +74,6 @@ export function useWindowControls(activities) {
     return {
 		minimizeWindow,
 		maximizeWindow,
+		unMaximizeWindow,
     };
 }
