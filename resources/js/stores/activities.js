@@ -12,7 +12,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     const { removeActivity, addActivity, removeAllActivities, addActivities, activityExists } =
         useActivityControls(activities);
 
-    const { maximizeWindow, minimizeWindow } =
+    const { maximizeWindow, minimizeWindow, unMaximizeWindow } =
         useWindowControls(activities);
 
     const { startDrag, onDrag, stopDrag, setCursor } =
@@ -133,6 +133,7 @@ export const useActivitiesStore = defineStore('activities', () => {
 
         maximizeWindow,
         minimizeWindow,
+        unMaximizeWindow,
 
         startDrag,
         onDrag,
