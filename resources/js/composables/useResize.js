@@ -136,8 +136,10 @@ export function useResize(application) {
     const dragRightBottom = (mousePosChange, isWidth = true) => {
         if (isWidth) {
             application.value.width = Math.max(application.value.startWidth + mousePosChange, application.value.minWidth);
+            application.value.previousWidth = application.value.width;
         } else {
             application.value.height = Math.max(application.value.startHeight + mousePosChange, application.value.minHeight);
+            application.value.previousHeight = application.value.height;
         }
     }
 
@@ -153,11 +155,15 @@ export function useResize(application) {
             if (newSize <= application.value.minWidth) return;
             application.value.left = Math.max(startPosition + mousePosChange, application.value.boundary.x);
             application.value.width = newSize;
+            application.value.previousLeft = application.value.left;
+            application.value.previousWidth = application.value.width;
         } else {
             // Return if new size is the minimum height
             if (newSize <= application.value.minHeight) return;
             application.value.top = Math.max(startPosition + mousePosChange, application.value.boundary.y);
             application.value.height = newSize;
+            application.value.previousTop = application.value.top;
+            application.value.previousHeight = application.value.height;
         }
     }
 
