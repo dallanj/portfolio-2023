@@ -31,4 +31,9 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'geolocation' => [
+        'location' => env('GEOLOCATION_LOCATION'),
+        'ip' => env('GEOLOCATION_IP'),
+    ],
+
 ];
