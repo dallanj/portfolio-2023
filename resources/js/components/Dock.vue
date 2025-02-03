@@ -47,7 +47,7 @@ import { storeToRefs } from 'pinia';
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
 
 const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
-const layoutType = 'type1';
+const layoutType = 'type2';
 const isReady = ref(false);
 // Use the Pinia store
 const store = useDashboardStore();

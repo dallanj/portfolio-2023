@@ -17,7 +17,7 @@ import TopBar from '@/components/TopBar.vue';
 import Dock from '@/components/Dock.vue';
 import { computed } from 'vue';
 
-const layoutType = 'type1';
+const layoutType = 'type2';
 </script>
 
 <style scoped lang="scss">
