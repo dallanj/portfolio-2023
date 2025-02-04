@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Enums\Applications;
+use App\Services\GeoLocationService;
 
 /*
 |--------------------------------------------------------------------------
@@ -15,7 +16,7 @@ use App\Enums\Applications;
 |
 */
 
-Route::get('/v1/applications', function () {
+Route::get('/v1/applications', function (Request $request) {
     $applications = collect(Applications::cases())->map(fn($app) => [
         'label' => $app->label(),
         'value' => $app->value,
@@ -24,6 +25,12 @@ Route::get('/v1/applications', function () {
     ]);
 
     return response()->json($applications);
+});
+
+Route::get('/v1/settings', function (Request $request) {
+    // dd($request->userAgent());
+
+    // return response()->json($applications);
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
