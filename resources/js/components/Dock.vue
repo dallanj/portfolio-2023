@@ -1,7 +1,22 @@
 <template>
+    <div class="top-20 left-40 absolute block flex flex-col gap-4">
+        <p>
+            <b>Dock:</b><br>
+            {{ `dock position: ${dockPosition}` }}<br>
+            {{ `boundary top: ${boundaries.top}` }}<br>
+            {{ `boundary left: ${boundaries.left}` }}<br>
+            {{ `boundary bottom: ${boundaries.bottom}` }}<br>
+        </p>
+
+        <p class="">
+            <b>Activities:</b><br>
+            {{ `active window: ${active?.data.label}` }}<br>
+            {{ `# of opened windows: ${activities.length}` }}<br>
+        </p>
+    </div>
     <nav>
         <menu
-            :class="{ 'dock-ready': isReady, 'dock-hidden': !isReady, 'flex': layoutType === 'type2' }"
+            :class="{ 'dock-ready': isReady, 'dock-hidden': !isReady, 'flex': dockPosition === 'bottom' }"
             class="nav-menu bg-black bg-opacity-50 border-r border-black scrollbar-hidden overflow-auto h-full p-0.5 transition-all duration-500">
             <template v-if="isReady">
                 <li
@@ -24,13 +39,13 @@
                             v-if="activityExists(`${app.value}-activity`)"
                             class="absolute rounded-full top-1/2 bg-orange"
                             :class="{
-                                'active-tab-left': layoutType === 'type1',
-                                'active-tab-bottom': layoutType === 'type2',
+                                'active-tab-left': dockPosition === 'left',
+                                'active-tab-bottom': dockPosition === 'bottom',
                             }" />
                     </button>
                     <span
                         :id="`tooltip-${app.value}`"
-                        class="select-none pointer-events-none inline-block whitespace-nowrap transition duration-200 ease-in-out absolute opacity-0 text-topbar-white bg-topbar-grey px-3 py-1 rounded-full z-20 border border-topbar-button-active text-sm">
+                        class="select-none pointer-events-none inline-block whitespace-nowrap transition duration-200 ease-in-out absolute opacity-0 text-topbar-white bg-topbar-grey px-3 py-1 rounded-full z-50 border border-topbar-button-active text-sm">
                             {{ app.label }}
                     </span>
                 </li>
@@ -41,10 +56,16 @@
 
 <script setup>
 import { ref, onMounted } from 'vue';
+import { useSettingsStore } from '@/stores/settings';
 import { useDashboardStore } from '@/stores/dashboard';
 import { useActivitiesStore } from '@/stores/activities';
 import { storeToRefs } from 'pinia';
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
+
+const {
+    boundaries,
+    dockPosition
+} = storeToRefs(useSettingsStore());
 
 const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
 const layoutType = 'type2';
@@ -114,6 +135,7 @@ function toggleTooltip(item, show = true) {
 
 <style scoped lang="scss">
 .nav-menu {
+    @apply relative z-50;
     scrollbar-width: none;
     
     .active-tab-left {
