@@ -69,5 +69,6 @@ export const topBar = reactive({
     settings: {
         label: 'Settings',
         value: 'settings',
+        action: 'toggleSettingsMenu'
     }
 });
