@@ -1,4 +1,10 @@
+import { useSettingsStore } from "@/stores/settings";
+
 export function useWindowControls(activities) {
+
+	const { boundaries, dockPosition } =
+        useSettingsStore();
+
 	const minimizeWindow = (activity) => {
 		console.log('minimize', activity.value);
 		// Mark the activity as being removed
@@ -36,10 +42,18 @@ export function useWindowControls(activities) {
 			// Wait for the animation to complete before actually removing the file from the list
 			setTimeout(() => {
 				activity.value.roundedBorder = false;
-				activity.value.top = activity.value.boundary.y;
-				activity.value.left = activity.value.boundary.x;
-				activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${activity.value.boundary.x}px)`;
-				activity.value.height = '100%';
+
+				activity.value.top = boundaries.top;
+				activity.value.left = boundaries.left;
+				
+				if (dockPosition.value === 'left') {
+					activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`;
+					activity.value.height = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.top}px)`; //'100%';
+				} else {
+					activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
+					activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`; //'100%';
+				}
+				
 				activity.value.maximized = true;
 				activity.value.halfScreen = halfScreen;
 				activity.value.maximizing = false;

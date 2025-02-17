@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watchEffect } from 'vue';
 import { useActivitiesStore } from '@/stores/activities';
 import { useResize } from '@/composables/useResize';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
@@ -33,7 +33,7 @@ const updated = (event) => {
     // Apply animations
 }
 
-watch(application.value, updated);
+watchEffect(application.value, updated);
 </script>
 
 <template>

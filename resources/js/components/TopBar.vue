@@ -33,58 +33,53 @@
     </header>
 </template>
 
-<script>
-import { defineComponent } from 'vue';
+<script setup>
+import { computed, inject } from 'vue';
 import { topBar } from '@/state/options';
 import activities from '@/state/activities';
 import actionsMixin from '@/mixins/actionsMixin';
+import { useSettingsStore } from '@/stores/settings';
+import { storeToRefs } from 'pinia';
+const { openModal } = inject('modals');
+const {
+    setDockPosition,
+    toggleSettingsMenu,
+    settingsMenu,
+} = useSettingsStore();
+import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
+const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
 
-export default defineComponent({
-    mixins: [actionsMixin],
+const menu = topBar;
+const all = activities.state.all;
+const active = activities.getActiveWindow;
+const setDropdown = activities.setDropdown;
+const dropdown = activities.getDropdown;
 
-    setup() {
-        const menu = topBar;
-        const all = activities.state.all;
-        const active = activities.getActiveWindow;
-        const setDropdown = activities.setDropdown;
-        const dropdown = activities.getDropdown;
-
-        return {
-            menu,
-            all,
-            active,
-            setDropdown,
-            dropdown,
-            activities
-        };
-    },
-
-    computed: {
-        activeClass() {
-            return 'text-white bg-topbar-button hover:bg-topbar-button-active';
-        },
-        
-        inactiveClass() {
-            return 'text-topbar-white hover:bg-topbar-button';
-        }
-    },
-
-
-    methods: {
-        selectOption(option) {
-            if (this.hasClickedOutside(option)) {
-                this.setDropdown(null);
-                return;
-            }
-
-            // Select menu option
-            this.setDropdown(option);
-
-            // Trigger action if applicable
-            if (this.dropdown?.action) {
-                this.dropdown?.action();
-            }
-        },
-    }
+const activeClass = computed(() => {
+    return 'text-white bg-topbar-button hover:bg-topbar-button-active';
 });
+
+const inactiveClass = computed(() => {
+    return 'text-topbar-white hover:bg-topbar-button';
+});
+
+const selectOption = (option) => {
+    // console.log(option.action);
+    // setDockPosition();
+    if (hasClickedOutside(option)) {
+        // toggleSettingsMenu(false);
+        return;
+    }
+    // Select menu option
+    // console.log(true, option.action);
+    useSettingsStore()[option.action]();
+    // action();
+    openModal('SettingsMenuModal', {
+        position: 'justify-content: flex-end',
+    });
+    // // Trigger action if applicable
+    // if (dropdown?.action) {
+    //     dropdown?.action();
+    // }
+};
 </script>

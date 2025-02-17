@@ -28,5 +28,5 @@ const {
 
 onMounted(() => {
     fetchUserAgent();
-})
+});
 </script>

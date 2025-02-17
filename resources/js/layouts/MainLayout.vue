@@ -2,22 +2,38 @@
     <div
         id="mainLayout"
         :class="{
-            'grid-template-layout-1': layoutType === 'type1',
-            'grid-template-layout-2': layoutType === 'type2',
+            'grid-template-layout-1': dockPosition === 'left',
+            'grid-template-layout-2': dockPosition === 'bottom',
         }">
         <TopBar ref="top-bar" />
 
         <Dock />
         <main><slot /></main>
+        <ModalBase v-if="isModalValid" />
     </div>
 </template>
 
 <script setup>
+import { computed, inject } from 'vue';
 import TopBar from '@/components/TopBar.vue';
 import Dock from '@/components/Dock.vue';
-import { computed } from 'vue';
+import { useSettingsStore } from '@/stores/settings';
+import { storeToRefs } from 'pinia';
+import { useComponentValidator } from '@/composables/useComponentValidator';
+
+const { isValidComponent } = useComponentValidator();
+const { activeModal } = inject('modals');
+
+const {
+    boundaries,
+    dockPosition
+} = storeToRefs(useSettingsStore());
 
 const layoutType = 'type2';
+// Validate that the modal has been registered
+const isModalValid = computed(() => {
+    return isValidComponent(activeModal.value);
+});
 </script>
 
 <style scoped lang="scss">

@@ -12,7 +12,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
         activities: { label: 'Activities', value: 'activities' },
         current: { label: 'Current Window', value: 'current', action: null },
         date: { label: '', value: 'date' },
-        settings: { label: 'Settings', value: 'settings' },
+        settings: { label: 'Settings', value: 'settings', action: 'toggleSettingsMenu' },
     });
 
     // Actions

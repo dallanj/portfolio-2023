@@ -1,6 +1,10 @@
 import { ref, reactive } from 'vue';
+import { useSettingsStore } from '@/stores/settings';
 
 export function useDrag(activities) {
+	const { boundaries, dockPosition } =
+        useSettingsStore();
+
 	const applicationWindow = ref(null);
 	const last = reactive({
 		x: 0,
@@ -66,8 +70,8 @@ export function useDrag(activities) {
 			});
 	
 			// Top header and side navigation boundaries
-			if (newPos.y <= activity.boundary.y) activity.top = activity.boundary.y;
-			if (newPos.x <= activity.boundary.x) activity.left = activity.boundary.x;
+			if (newPos.y <= boundaries.top) activity.top = boundaries.top;
+			if (newPos.x <= boundaries.left) activity.left = boundaries.left;
 			
 			activity.top = newPos.y;
 			activity.left = newPos.x;

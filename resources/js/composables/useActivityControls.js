@@ -51,17 +51,17 @@ export function useActivityControls(activities) {
 			this.maximizing = false;
 			this.closing = false;
 
-			this.startX = 100;
-			this.startY = 75;
-			this.startWidth = 200;
-            this.startHeight = 200;
-            this.startTop = 0;
-            this.startLeft = 0;
+			this.startX = activity.left;
+			this.startY = activity.top;
+			this.startWidth = activity.width;
+            this.startHeight = activity.height;
+            this.startTop = this.startY;
+            this.startLeft = this.startX;
 
-            this.width = 300;
-            this.height = 300;
-            this.top = 100;
-            this.left = 100;
+            this.width = this.startWidth;
+            this.height = this.startHeight;
+            this.top = this.startTop;
+            this.left = this.startLeft;
 
 			this.minWidth = 300
 			this.minHeight = 300;
@@ -75,7 +75,7 @@ export function useActivityControls(activities) {
 
             this.direction = null;
             this.cursor = 'cursor-default';
-            this.boundary = { x: 80, y: 32 };
+            // this.boundary = { x: 80, y: 32 };
 			this.outOfBounds = { x: false, y: false }
 		}
 	};

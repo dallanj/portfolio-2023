@@ -1,0 +1,95 @@
+.simple-modal {
+    @apply drop-shadow-2xl text-dropdown-text shadow border border-dropdown-border;
+
+    // Dark overlay for modal popup used in ModalBase.vue
+    &__overlay {
+        @apply fixed top-0 left-0 w-full h-full flex z-50 bg-black/[.55] cursor-pointer;
+    }
+
+    &__container {
+        @apply relative bg-dropdown-bg rounded-xl cursor-default;
+    }
+
+    // Modal sizing options
+    &__size-bg {
+        @apply fixed bg-white top-0 left-0 flex flex-wrap items-center justify-center p-4 overflow-scroll;
+    }
+    
+    &__size-sm {
+        @apply min-w-viewport-1/4;
+    }
+
+    &__size-md {
+        @apply min-w-viewport-1/2 max-w-viewport-1/2;
+    }
+
+    &__size-base {
+        @apply min-w-viewport-1/2;
+    }
+
+    &__size-lg {
+        @apply min-w-viewport-2/3;
+    }
+
+    &__size-xl {
+        @apply min-w-viewport-3/4;
+    }
+
+    // Modal header styling
+    &__hgroup {
+        @apply px-3 py-4 flex flex-col gap-y-2 border-b-2 text-black border-black/[.45];
+
+        &-exit {
+            @apply cursor-pointer hover:text-black transition-transform hover:scale-110 transition ease-in-out duration-150;
+        }
+
+        &-exit,
+        &-subtitle {
+            @apply text-black;
+        }
+
+        // Header styling
+        &-text-base {
+            @apply text-base;
+        }
+
+        &-text-lg {
+            @apply text-lg;
+        }
+
+        &-text-xl {
+            @apply text-xl;
+        }
+
+        &-text-2xl {
+            @apply text-2xl;
+        }
+    }
+
+    // Modal section styling
+    &__section {
+        @apply px-1.5 py-1.5;
+    }
+
+    // Modal header styling
+    &__footer {
+        @apply p-3;
+
+        // Header styling
+        &-text-base {
+            @apply text-base;
+        }
+
+        &-text-lg {
+            @apply text-lg;
+        }
+
+        &-text-xl {
+            @apply text-xl;
+        }
+
+        &-text-2xl {
+            @apply text-2xl;
+        }
+    }
+}
