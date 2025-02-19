@@ -1,6 +1,7 @@
 <template>
     <div
         id="mainLayout"
+        class="overflow-hidden wallpaper"
         :class="{
             'grid-template-layout-1': dockPosition === 'left',
             'grid-template-layout-2': dockPosition === 'bottom',
@@ -29,7 +30,6 @@ const {
     dockPosition
 } = storeToRefs(useSettingsStore());
 
-const layoutType = 'type2';
 // Validate that the modal has been registered
 const isModalValid = computed(() => {
     return isValidComponent(activeModal.value);

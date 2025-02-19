@@ -68,7 +68,7 @@ const {
 } = storeToRefs(useSettingsStore());
 
 const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
-const layoutType = 'type2';
+
 const isReady = ref(false);
 // Use the Pinia store
 const store = useDashboardStore();
