@@ -1,5 +1,5 @@
 <template>
-<ModalContainer class="simple-modal__container" modal-size="md" @close="$emit('close')">
+<ModalContainer class="simple-modal__container" modal-size="sm" @close="$emit('close')">
     <template #header>{{ title }}</template>
     <template v-if="subtitle" #subtitle>{{ subtitle }}</template>
 
