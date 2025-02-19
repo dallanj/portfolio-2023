@@ -14,7 +14,7 @@ export const useSettingsStore = defineStore('settings', () => {
     const settingsMenu = ref(false);
     watchEffect(settingsMenu.value, () => openModal('SettingsMenuModal'));
 
-    const dockPosition = ref('bottom');
+    const dockPosition = ref('left');
 
     const setBoundaries = () => {
         switch (dockPosition.value) {
