@@ -2,9 +2,8 @@
 
 namespace App\Providers;
 
-// use App\Services\GeoLocationService;
+use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
-use Illuminate\Support\Arr;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -21,14 +20,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        // $location = GeoLocationService::getLocation(GeoLocationService::getPublicIpAddress());
-
-        // if (Arr::isAssoc($location)) {
-        //     // dd($location['country']);
-        //     if ($location['country'] === 'Canada') {
-        //         // throw new \Exception('Leave', 404);
-        //     }
-        // }
-        // // dd();
+        Vite::prefetch(concurrency: 3);
     }
 }
