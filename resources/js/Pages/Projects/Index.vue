@@ -13,6 +13,7 @@ defineProps({ projects: Object });
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                 Projects
             </h2>
+            <Link :href="route('projects.create')">Create</Link>
         </template>
 
         <div class="py-12">
