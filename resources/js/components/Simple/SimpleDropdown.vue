@@ -95,9 +95,4 @@ emit('update:modelValue', getOptionValue(option));
 
 const alignmentClasses = computed(() => props.sideLabel ? 'flex-row items-center gap-2' : 'flex-col');
 </script>
-
-<style scoped>
-.relative { position: relative; }
-.absolute { position: absolute; }
-</style>
   
