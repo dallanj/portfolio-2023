@@ -2,9 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Enums\Applications;
-use App\Enums\Settings;
-use App\Services\GeoLocationService;
+use App\Http\Controllers\api\ProjectController;
 use App\PiniaStation\Facades\PiniaLoader;
 
 /*
@@ -18,24 +16,34 @@ use App\PiniaStation\Facades\PiniaLoader;
 |
 */
 
-Route::get('/v1/applications', function (Request $request) {
-    PiniaLoader::load('dashboard', 'applications');
+Route::prefix('v1')->group(function () {
+    Route::get('/applications', function (Request $request) {
+        PiniaLoader::load('dashboard', 'applications');
 
-    return PiniaLoader::toApiResponse();
-});
+        return PiniaLoader::toApiResponse();
+    });
 
-Route::get('/v1/settings', function (Request $request) {
-    PiniaLoader::load('settings', 'all');
+    Route::get('/settings', function (Request $request) {
+        PiniaLoader::load('settings', 'all');
 
-    return PiniaLoader::toApiResponse();
-});
+        return PiniaLoader::toApiResponse();
+    });
 
-Route::get('/v1/projects', function (Request $request) {
-    PiniaLoader::load('projects', 'all');
+    Route::get('/projects', function (Request $request) {
+        PiniaLoader::load('projects', 'all');
 
-    return PiniaLoader::toApiResponse();
-});
+        return PiniaLoader::toApiResponse();
+    });
 
-Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
-    return $request->user();
+    Route::prefix('/projects')->controller(ProjectController::class)->group(function () {
+        Route::get('/', 'search');
+    });
+
+    Route::resource('projects', ProjectController::class)->only([
+        'store', 'update', 'destroy'
+    ]);
+
+    Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
+        return $request->user();
+    });
 });
