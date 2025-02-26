@@ -124,7 +124,7 @@ const { getItemValue, hasActions, headers } = useHeaders(props);
 
 // Selectable - Select data rows
 const selectedItems = ref([]);
-const allSelected = computed(() => selectedItems.value.length === props.data.data.length);
+const allSelected = computed(() => selectedItems.value.length === props.data?.data?.length);
 const toggleSelectAll = () => {
     selectedItems.value = allSelected.value
         ? []

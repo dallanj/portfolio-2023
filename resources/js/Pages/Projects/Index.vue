@@ -15,7 +15,7 @@ const store = useProjectsStore();
 import { useAsyncState } from '@vueuse/core';
 const { isLoading, state, isReady } = useAsyncState(
   async () => {
-    return await store.fetchProjects();
+    return await store.search({});
   },
   {},
   {
@@ -44,14 +44,18 @@ const headers = computed(() => {
 });
 
 const search = () => {
-    // store.search({ ...searchParams.value });
+    console.log({ ...searchParams.value });
+    // router.post(item.destroy_url);
+    store.search({ ...searchParams.value });
 };
 
-const show = (item) => router.visit(item.show_url);
+const create = () => router.visit('/projects/create');
 
-const update = (item) => router.visit(item.update_url);
+const show = (item) => router.visit(`/projects/${item.hash}`);
 
-const destroy = (item) => router.post(item.destroy_url);
+const edit = (item) => router.visit(`/projects/${item.hash}/edit`);
+
+const destroy = (item) => router.delete(`/api/v1/projects/${item.hash}`);
 
 const searchParams = ref({
     term: '',
@@ -86,7 +90,7 @@ const activeClass = (active) => {
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                 Projects
             </h2>
-            <Link :href="all?.meta?.create_url">Create</Link>
+            <a class="cursor-pointer" @click.prevent="create">Create</a>
         </template>
 
         <div class="py-12">
@@ -102,7 +106,7 @@ const activeClass = (active) => {
                                 headers: headers,
                                 actions: [
                                     { title: 'View', icon: 'file', action: item => show(item) },
-                                    { title: 'Edit', icon: 'file-pen', action: item => update(item) },
+                                    { title: 'Edit', icon: 'file-pen', action: item => edit(item) },
                                     { title: 'Delete', icon: 'file-circle-xmark', action: item => destroy(item) },
                                 ],
                                 selectable: true,

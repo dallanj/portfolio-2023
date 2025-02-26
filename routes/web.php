@@ -19,8 +19,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/dashboard', function () {
         return Inertia::render('Dashboard', []);
     })->name('dashboard');
-
-    Route::resource('projects', ProjectController::class);
+    
+    Route::resource('projects', ProjectController::class)->only([
+        'index', 'show', 'create', 'edit'
+    ]);
 });
 
 Route::middleware('auth')->group(function () {
