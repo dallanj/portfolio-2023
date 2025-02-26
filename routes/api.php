@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Enums\Applications;
 use App\Enums\Settings;
 use App\Services\GeoLocationService;
+use App\PiniaStation\Facades\PiniaLoader;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,30 +19,21 @@ use App\Services\GeoLocationService;
 */
 
 Route::get('/v1/applications', function (Request $request) {
-    $applications = collect(Applications::cases())->map(fn($app) => [
-        'label' => $app->label(),
-        'value' => $app->value,
-        'application' => $app->isApplication(),
-        'action' => $app->action(),
-        'left' => $app->position()['left'] ?? 100,
-        'top' => $app->position()['top'] ?? 100,
-        'width' => $app->position()['width'] ?? 300,
-        'height' => $app->position()['height'] ?? 300,
-    ]);
+    PiniaLoader::load('dashboard', 'applications');
 
-    return response()->json($applications);
+    return PiniaLoader::toApiResponse();
 });
 
 Route::get('/v1/settings', function (Request $request) {
-    $settings = collect(Settings::cases())->map(fn($app) => [
-        'label' => $app->label(),
-        'value' => $app->value,
-    ]);
+    PiniaLoader::load('settings', 'all');
 
-    return response()->json($settings);
-    // dd($request->userAgent());
+    return PiniaLoader::toApiResponse();
+});
 
-    // return response()->json($applications);
+Route::get('/v1/projects', function (Request $request) {
+    PiniaLoader::load('projects', 'all');
+
+    return PiniaLoader::toApiResponse();
 });
 
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
