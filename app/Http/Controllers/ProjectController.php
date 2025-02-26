@@ -2,12 +2,8 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Project;
-use App\Http\Resources\ProjectResource;
-use App\Http\Resources\ProjectsCollection;
 use Inertia\Inertia;
-use App\PiniaStation\Facades\PiniaLoader;
 
 class ProjectController extends Controller
 {
@@ -16,11 +12,11 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Projects/Index', []);
+        return Inertia::render('Projects/Index');
     }
 
     /**
-     * Display a new instance of the resource.
+     * Show the form for creating a new resource.
      */
     public function create()
     {
@@ -28,42 +24,18 @@ class ProjectController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
-    public function store(Request $request)
-    {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'overview' => 'nullable|string',
-            'slug' => 'required|string|unique:projects,slug',
-        ]);
-
-        $project = Project::create($data);
-        return redirect()->route('projects.index');
-    }
-
-    /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show(Project $project)
     {
-        //
+        return Inertia::render('Projects/Show');
     }
 
     /**
-     * Update the specified resource in storage.
+     * Show the form for editing the specified resource.
      */
-    public function update(Request $request, string $id)
+    public function edit(Project $project)
     {
-        //
-    }
-
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(string $id)
-    {
-        //
+        return Inertia::render('Projects/Edit');
     }
 }
