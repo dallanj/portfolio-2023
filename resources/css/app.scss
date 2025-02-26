@@ -1,22 +1,8 @@
 @forward 'base';
 @forward 'simple-modal';
+@forward 'simple-data';
+@forward 'simple-loading-spinner';
 
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
-.simple-data-actions {
-    @apply relative inline-block;
-
-    &__container {
-        @apply block absolute z-40 rounded-md shadow-lg;
-    }
-
-    &__menu {
-        @apply rounded-md ring-1 ring-black ring-opacity-5;
-
-        &__item {
-            @apply flex justify-between px-4 py-2 text-start text-sm leading-5 text-gray-700 hover:bg-gray-100 focus:outline-none focus:bg-gray-100 cursor-pointer transition duration-150 ease-in-out;
-        }
-    }
-}
