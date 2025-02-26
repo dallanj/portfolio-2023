@@ -45,8 +45,7 @@ export const useSettingsStore = defineStore('settings', () => {
 
     const fetchUserAgent = async () => {
         try {
-            const { data } = await axios.get('/api/v1/settings');
-            settings.value = data;
+            await axios.get('/api/v1/settings');
         } catch (error) {
             console.error('Error:', error);
         }
