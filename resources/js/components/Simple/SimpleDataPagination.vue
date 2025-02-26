@@ -9,10 +9,10 @@
         <span>{{ pagination.total }}</span>
     </p>
     <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
-        <li class="page-item" :class="{ disabled: !pagination.prev_page_url }">
+        <li class="page-item" :class="{ disabled: !pagination.first_page_url }">
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                href="#"
+                :href="pagination.first_page_url"
                 @click.prevent="changePage(1)">
                 <FontAwesomeIcon icon="angles-left" />
             </a>
@@ -20,8 +20,8 @@
         <li class="page-item" :class="{ disabled: !pagination.prev_page_url }">
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                href="#"
-                @click.prevent="changePage(pagination.current_page - 1)">
+                :href="pagination.prev_page_url"
+                @click.prevent="changePage(pagination.prev_page)">
                 <FontAwesomeIcon icon="angle-left" />
             </a>
         </li>
@@ -32,23 +32,23 @@
             :class="{ 'active': page === pagination.current_page }">
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                href="#"
+                :href="`${pagination.path}?page=${page}`"
                 @click.prevent="changePage(page)">
                 {{ page }}
             </a>
         </li>
-        <li class="page-item" :class="{ disabled: !pagination.prev_page_url }">
+        <li class="page-item" :class="{ disabled: !pagination.next_page_url }">
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-                href="#"
-                @click.prevent="changePage(pagination.current_page + 1)">
+                :href="pagination.next_page_url"
+                @click.prevent="changePage(pagination.next_page)">
                 <FontAwesomeIcon icon="angle-right" />
             </a>
         </li>
         <li
             class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
-            :class="{ disabled: !pagination.next_page_url }">
-            <a class="page-link" href="#" @click.prevent="changePage(pagination.last_page)">
+            :class="{ disabled: !pagination.last_page_url }">
+            <a class="page-link" :href="pagination.last_page_url" @click.prevent="changePage(pagination.last_page)">
                 <FontAwesomeIcon icon="angles-right" />
             </a>
         </li>
