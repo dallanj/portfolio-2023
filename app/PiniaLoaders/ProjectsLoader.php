@@ -16,6 +16,6 @@ class ProjectsLoader
      */
     public function all()
     {
-        return (new ProjectsCollection(Project::paginate(2)))->resolve(request());    
+        return (new ProjectsCollection(Project::paginate(request()->per_page ?? 4)))->resolve(request());    
     }
 };

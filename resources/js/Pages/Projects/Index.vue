@@ -15,7 +15,7 @@ const store = useProjectsStore();
 import { useAsyncState } from '@vueuse/core';
 const { isLoading, state, isReady } = useAsyncState(
   async () => {
-    return await store.search({});
+    return await store.search();
   },
   {},
   {
@@ -60,7 +60,8 @@ const destroy = (item) => router.delete(`/api/v1/projects/${item.hash}`);
 const searchParams = ref({
     term: '',
     type: [],
-    page: 1
+    page: 1,
+    per_page: 4,
 });
 
 const fetchPage = ({page, itemsPerPage, sortBy}) => {
