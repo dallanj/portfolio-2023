@@ -1,3 +1,62 @@
+<script setup>
+import { Link, router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+
+const props = defineProps({
+    pagination: {
+        type: Object,
+        required: true
+    },
+    maxPageButtons: {
+        type: Number,
+        default: 5,
+    }
+});
+
+const emits = defineEmits(['page-changed']);
+
+const itemsPerPage = ref(2);
+const sortBy = ref('');
+
+const pages = computed(() => {
+    const pages = [];
+    const half = Math.floor(props.maxPageButtons / 2);
+    let start = props.pagination.current_page - half;
+    let end = props.pagination.current_page + half;
+
+    if (start < 1) {
+        start = 1;
+        end = start + props.maxPageButtons - 1;
+    }
+
+    if (end > props.pagination.last_page) {
+        end = props.pagination.last_page;
+        start = end - props.maxPageButtons + 1;
+        if (start < 1) {
+            start = 1;
+        }
+    }
+
+    for (let i = start; i <= end; i++) {
+        pages.push(i);
+    }
+
+    return pages;
+});
+
+const changePage = (page) => {
+    if (page >= 1 && page <= props.pagination.last_page) {
+        emits('page-changed', {
+            page: page,
+            itemsPerPage: itemsPerPage.value,
+            sortBy: sortBy.value,
+        });
+    }
+};
+
+const options = ref([1, 2, 3, 4]);
+</script>
+
 <template>
 <nav
     class="flex items-center flex-cols flex-wrap md:flex-row justify-between py-2 px-4"
@@ -53,67 +112,13 @@
             </a>
         </li>
     </ul>
-    <select v-model="itemsPerPage" @change="changePage(pagination.current_page)">
-        <option value="5">5</option>
-        <option value="10">10</option>
-        <option value="15">15</option>
-    </select>
+    <SimpleDropdown
+        v-model="itemsPerPage"
+        :options="options"
+        label="Items Per Page"
+        side-label
+        placeholder="Choose an option"
+        @update:modelValue="changePage(pagination.current_page)" />
 </nav>
 </template>
-
-<script setup>
-import { computed, ref } from 'vue';
-
-const props = defineProps({
-    pagination: {
-        type: Object,
-        required: true
-    },
-    maxPageButtons: {
-        type: Number,
-        default: 5,
-    }
-});
-
-const emits = defineEmits(['page-changed']);
-
-const itemsPerPage = ref(10);
-const sortBy = ref('');
-
-const pages = computed(() => {
-    const pages = [];
-    const half = Math.floor(props.maxPageButtons / 2);
-    let start = props.pagination.current_page - half;
-    let end = props.pagination.current_page + half;
-
-    if (start < 1) {
-        start = 1;
-        end = start + props.maxPageButtons - 1;
-    }
-
-    if (end > props.pagination.last_page) {
-        end = props.pagination.last_page;
-        start = end - props.maxPageButtons + 1;
-        if (start < 1) {
-            start = 1;
-        }
-    }
-
-    for (let i = start; i <= end; i++) {
-        pages.push(i);
-    }
-
-    return pages;
-});
-
-const changePage = (page) => {
-    if (page >= 1 && page <= props.pagination.last_page) {
-        emits('page-changed', {
-            page: page,
-            itemsPerPage: itemsPerPage.value,
-            sortBy: sortBy.value,
-        });
-    }
-};
-</script>
     
