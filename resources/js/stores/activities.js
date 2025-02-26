@@ -3,7 +3,6 @@ import { useActivityControls } from '@/composables/useActivityControls';
 import { useWindowControls } from '@/composables/useWindowControls';
 import { useDrag } from '@/composables/useDrag';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import axios from 'axios';
 
 export const useActivitiesStore = defineStore('activities', () => {
     const activities = ref([]);
@@ -63,24 +62,10 @@ export const useActivitiesStore = defineStore('activities', () => {
             : null;
     });
 
-    // Actions (methods)
-
     const findActivity = (app) => {
         console.log('find',app)
         return all?.value.find(activity => activity === app);
     };
-
-    // const setActiveWindow = (app) => {
-    //     const index = all.value.indexOf(app);
-    //     if (index > -1) {
-    //         console.log('setActiveWindow',index,app)
-    //         all.value.push(all.value.splice(index, 1)[0]);
-    //         // all.value.unshift(index);
-    //         // active.value = all.value.push(all.value.splice(index, 1)[0]);
-    //         active.value = all.value[0];
-    //         // saveToLocalStorage();
-    //     }
-    // };
 
     const removeActiveWindow = (app) => {
         const index = activities.value.indexOf(app);
@@ -110,7 +95,6 @@ export const useActivitiesStore = defineStore('activities', () => {
         const activity = findActivity(app);
         if (activity) {
             Object.assign(activity, updatedProperties);
-            // saveToLocalStorage();
         }
     };
 

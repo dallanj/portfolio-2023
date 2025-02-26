@@ -4,9 +4,6 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import axios from 'axios';
 
 export const useDashboardStore = defineStore('dashboard', () => {
-    // State
-    // const applications = ref(JSON.parse(localStorage.getItem('applications')) || []);
-
     const applications = ref([]);
     const topBar = ref({
         activities: { label: 'Activities', value: 'activities' },
@@ -18,8 +15,7 @@ export const useDashboardStore = defineStore('dashboard', () => {
     // Actions
     const fetchApplications = async () => {
         try {
-            const { data } = await axios.get('/api/v1/applications');
-            applications.value = data;
+            await axios.get('/api/v1/applications');
         } catch (error) {
             console.error('Error fetching applications:', error);
         }

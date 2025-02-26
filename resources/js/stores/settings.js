@@ -45,7 +45,6 @@ export const useSettingsStore = defineStore('settings', () => {
 
     const fetchUserAgent = async () => {
         try {
-            // console.log(window.navigator.geolocation.getCurrentPosition('50.65.170.72'));
             const { data } = await axios.get('/api/v1/settings');
             settings.value = data;
         } catch (error) {
