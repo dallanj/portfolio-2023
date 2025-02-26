@@ -1,0 +1,44 @@
+<template>
+<div
+    class="relative flex"
+    :class="alignmentClasses">
+    <label v-if="label">{{ label }}</label>
+    <div class="relative flex items-center gap-2.5 text-left rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none">
+        <input
+            :class="{
+                'rounded-t-lg': isOpen,
+                'divrounded-lg': !isOpen,
+            }"
+            class="w-full bg-transparent focus:outline-none border-none rounded-l-lg" />
+        <button class="w-8 h-8 flex items-center">
+            <FontAwesomeIcon class="fa-fw" size="md" icon="magnifying-glass" />
+        </button>
+    </div>
+</div>
+</template>
+
+<script setup>
+import { ref, computed, defineProps, defineEmits } from 'vue';
+
+const modelValue = defineModel({
+    type: [String, Number, Object],
+    required: true,
+});
+
+const props = defineProps({
+    placeholder: {
+        type: String,
+        default: 'Search...',
+    },
+    label: {
+        type: String,
+        default: '',
+    },
+    sideLabel: {
+        type: Boolean,
+        default: false,
+    }
+});
+
+const alignmentClasses = computed(() => props.sideLabel ? 'flex-row items-center gap-2' : 'flex-col');
+</script>

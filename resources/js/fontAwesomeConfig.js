@@ -56,5 +56,6 @@ export {
     faUserCog,
     faKey,
     faBell,
-    faBuildingUser
+    faBuildingUser,
+    faMagnifyingGlass
 } from '@fortawesome/free-solid-svg-icons';
