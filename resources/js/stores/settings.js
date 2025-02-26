@@ -1,18 +1,18 @@
-import { ref, inject, computed, reactive, watchEffect } from 'vue';
+import { ref, inject, computed, reactive, watch } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import axios from 'axios';
 
 export const useSettingsStore = defineStore('settings', () => {
     const { openModal } = inject('modals');
 
-    const settings = ref([]);
+    const all = ref([]);
     const boundaries = reactive({
         left: null, //80,
         top: null,//32,
         bottom: null, //0,
     });
     const settingsMenu = ref(false);
-    watchEffect(settingsMenu.value, () => openModal('SettingsMenuModal'));
+    watch(settingsMenu.value, () => openModal('SettingsMenuModal'));
 
     const dockPosition = ref('left');
 
@@ -41,11 +41,10 @@ export const useSettingsStore = defineStore('settings', () => {
     // Open/close settings menu
     const toggleSettingsMenu = () => settingsMenu.value = !settingsMenu.value;
 
-    watchEffect(dockPosition.value, setBoundaries());
+    watch(dockPosition.value, setBoundaries());
 
     const fetchUserAgent = async () => {
         try {
-            // console.log(window.navigator.geolocation.getCurrentPosition('50.65.170.72'));
             const { data } = await axios.get('/api/v1/settings');
             settings.value = data;
         } catch (error) {
@@ -54,7 +53,7 @@ export const useSettingsStore = defineStore('settings', () => {
     };
 
     return {
-        settings,
+        all,
         boundaries,
         // boundaryCoords,
         setDockPosition,

@@ -22,7 +22,7 @@ const {
 } = useActivitiesStore();
 
 const {
-    settings,
+    all,
     fetchUserAgent,
 } = useSettingsStore();
 
