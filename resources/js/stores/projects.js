@@ -5,18 +5,24 @@ import axios from 'axios';
 export const useProjectsStore = defineStore('projects', () => {
     const all = ref(null);
 
-    const fetchProjects = async () => {
-        try {
-            await axios.get('/api/v1/projects');
-            // applications.value = data;
-        } catch (error) {
-            console.error('Error fetching projects:', error);
-        }
-    };
+    const actions = {
+        search: (params) => {
+            return axios.get('/api/v1/projects', { params });
+        },
+        create: (payload) => {
+            return axios.post('/api/v1/projects', payload);
+        },
+        update: (payload) => {
+            return axios.patch(`/api/v1/projects/${payload.hash}`, payload);
+        },
+        destroy: (payload) => {
+            return axios.delete(`/api/v1/projects/${payload.hash}`, payload);
+        },
+    }
 
     return {
         all,
-        fetchProjects
+        ...actions
     };
 });
 
