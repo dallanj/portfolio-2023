@@ -98,6 +98,14 @@ const activeClass = (active) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                     <div v-if="isReady" class="p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-2">
+                        <form class="grid grid-cols-12 gap-x-4 mb-1" @submit.prevent>
+                            <SimpleSearch
+                                class="col-span-6"
+                                v-model="searchParams.term"
+                                placeholder="Search..."
+                                label="Search"
+                                @input="fetchPage" />
+                        </form>
                         <!-- Fix SimpleDataCard -->
                         <!-- Add is_active to projects table -->
                         <component
