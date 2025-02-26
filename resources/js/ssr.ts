@@ -4,6 +4,7 @@ import { renderToString } from '@vue/server-renderer';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
 import { createSSRApp, DefineComponent, h } from 'vue';
 import { ZiggyVue } from '../../vendor/tightenco/ziggy';
+import { piniaLoader } from '@/utils/pinia';
 
 const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
@@ -18,7 +19,15 @@ createServer((page) =>
                 import.meta.glob<DefineComponent>('./Pages/**/*.vue'),
             ),
         setup({ App, props, plugin }) {
-            return createSSRApp({ render: () => h(App, props) })
+            return createSSRApp({
+                mounted() {
+                    piniaLoader(this.$inertia?.page?.props); // Use piniaLoader utility function
+                    this.$inertia.on('finish', () => {
+                        piniaLoader(this.$inertia?.page?.props);
+                    });
+                },
+                render: () => h(App, props)
+            })
                 .use(plugin)
                 .use(ZiggyVue, {
                     ...page.props.ziggy,

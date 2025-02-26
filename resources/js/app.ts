@@ -1,4 +1,5 @@
 import '../css/app.scss';
+import './bootstrap';
 
 import { createInertiaApp } from '@inertiajs/vue3';
 import { resolvePageComponent } from 'laravel-vite-plugin/inertia-helpers';
@@ -9,6 +10,7 @@ const appName = import.meta.env.VITE_APP_NAME || 'Laravel';
 
 // Pinia
 import { createPinia } from 'pinia';
+import { piniaLoader } from '@/utils/pinia.js';
 const pinia = createPinia();
 
 // Components
@@ -28,6 +30,8 @@ const globalComponents = {
     Modals: import.meta.glob('./modals/**/*.vue'),
 };
 
+import { useScreenSize } from './composables/useScreenSize.vue';
+
 createInertiaApp({
     resolve: (name) =>
         resolvePageComponent(
@@ -36,15 +40,22 @@ createInertiaApp({
         ),
     title: (title) => `${title} - ${appName}`,
     setup({ el, App, props, plugin }: { el: any; App: any; props: any; plugin: any }) {
-        const app = createApp({ render: () => h(App, props) });
+        const app = createApp({
+            mounted() {
+                // piniaLoader(this.$inertia.page.props); // Use piniaLoader utility function
+                this.$inertia.on('finish', () => {
+                    piniaLoader(this.$inertia.page.props);
+                });
+            },
+            render: () => h(App, props)
+        });
 
         app.use(plugin)
             .use(pinia)
-
-        // Components
-        app.component('MainLayout', MainLayout)
-            .provide('modals', useModal())
             .use(ZiggyVue)
+            .component('MainLayout', MainLayout)
+            .provide('modals', useModal())
+            .provide('screenSize', useScreenSize())
             .component('FontAwesomeIcon', FontAwesomeIcon);
 
         RegisterGlobalComponents(app, globalComponents);
