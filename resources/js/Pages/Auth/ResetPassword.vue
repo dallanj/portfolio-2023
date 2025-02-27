@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import GuestLayout from '@/Layouts/GuestLayout.vue';
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -33,7 +32,7 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <InputLabel for="email" value="Email" />
+                <SimpleInputLabel for="email" value="Email" />
 
                 <TextInput
                     id="email"
@@ -49,7 +48,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel for="password" value="Password" />
+                <SimpleInputLabel for="password" value="Password" />
 
                 <TextInput
                     id="password"
@@ -64,7 +63,7 @@ const submit = () => {
             </div>
 
             <div class="mt-4">
-                <InputLabel
+                <SimpleInputLabel
                     for="password_confirmation"
                     value="Confirm Password"
                 />
