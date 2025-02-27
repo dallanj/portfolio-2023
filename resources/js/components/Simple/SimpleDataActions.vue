@@ -1,55 +1,3 @@
-<template>
-<div
-    class="simple-data-actions"
-    :class="isMobile ? '' : ''">
-    <div ref="button">
-        <SimpleButton
-            v-bind="{...$props, ...$attrs}"
-            state="action"
-            :class="isMobile ? 'justify-between' : ''"
-            :uppercase="false"
-            @click.prevent="toggleDropdown">
-            
-            <template v-if="state === 'action'">
-                Actions
-                <FontAwesomeIcon
-                    class="ml-2 fa-fw"
-                    :class="rotateAnimationClass"
-                    :icon="iconClass" />
-            </template>
-            <template v-else>
-                <div class="flex items-center justify-center w-8 h-8 transition duration-150 ease-in-out rounded-full hover:bg-blue-200/[.25]">
-                    <FontAwesomeIcon class="fa-fw" size="lg" :icon="state" />
-                </div>
-            </template>
-        </SimpleButton>  
-    </div>
-    <Transition
-        enter-active-class="fade-enter-active"
-        leave-active-class="fade-leave-active">
-        <div
-            v-if="isOpen"
-            ref="menu"
-            class="simple-data-actions__container"
-            :class="[menuWidth, align]">
-            <ul
-                class="simple-data-actions__menu"
-                :class="contentClasses">
-                <li
-                    v-for="action in actions"
-                    :key="action.title"
-                    class="simple-data-actions__menu__item"
-                    :class="textColourClass"
-                    @click="handleAction(action)">
-                    <FontAwesomeIcon :icon="action.icon" class="fa-fw" />
-                    {{ action.title }}
-                </li>
-            </ul>
-        </div>
-    </Transition>
-</div>
-</template>
-    
 <script setup>
 import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
 import SimpleButton from '@/components/Simple/SimpleButton.vue';
@@ -147,4 +95,56 @@ onUnmounted(() => {
     document.removeEventListener('keydown', closeOnEscape)
 });
 </script>
+
+<template>
+<div
+    class="simple-data-actions"
+    :class="isMobile ? '' : ''">
+    <div ref="button">
+        <SimpleButton
+            v-bind="{...$props, ...$attrs}"
+            state="action"
+            :class="isMobile ? 'justify-between' : ''"
+            :uppercase="false"
+            @click.prevent="toggleDropdown">
+            
+            <template v-if="state === 'action'">
+                Actions
+                <FontAwesomeIcon
+                    class="ml-2 fa-fw"
+                    :class="rotateAnimationClass"
+                    :icon="iconClass" />
+            </template>
+            <template v-else>
+                <div class="flex items-center justify-center w-8 h-8 transition duration-150 ease-in-out rounded-full hover:bg-blue-200/[.25]">
+                    <FontAwesomeIcon class="fa-fw" size="lg" :icon="state" />
+                </div>
+            </template>
+        </SimpleButton>  
+    </div>
+    <Transition
+        enter-active-class="fade-enter-active"
+        leave-active-class="fade-leave-active">
+        <div
+            v-if="isOpen"
+            ref="menu"
+            class="simple-data-actions__container"
+            :class="[menuWidth, align]">
+            <ul
+                class="simple-data-actions__menu"
+                :class="contentClasses">
+                <li
+                    v-for="action in actions"
+                    :key="action.title"
+                    class="simple-data-actions__menu__item"
+                    :class="textColourClass"
+                    @click="handleAction(action)">
+                    <FontAwesomeIcon :icon="action.icon" class="fa-fw" />
+                    {{ action.title }}
+                </li>
+            </ul>
+        </div>
+    </Transition>
+</div>
+</template>
     
