@@ -1,3 +1,129 @@
+<script setup>
+import { ref, computed } from 'vue';
+import Checkbox from '@/Components/Checkbox.vue';
+
+const props = defineProps({
+    headers: {
+        type: Array,
+        required: true
+    },
+    data: {
+        type: Object,
+        required: true
+    },
+    actions: {
+        type: Array,
+        default: () => []
+    },
+    selectable: {
+        type: Boolean,
+        default: false,
+    },
+    expandable: {
+        type: Boolean,
+        default: false,
+    },
+    pagination: {
+        type: Object,
+        default: null
+    },
+    isReady: {
+        type: Boolean,
+        default: false
+    }
+});
+
+import { useHeaders } from '@/composables/useHeaders.vue';
+const { getItemValue, hasActions, headers } = useHeaders(props);
+
+// Selectable - Select data rows
+const selectedItems = ref([]);
+const allSelected = computed(() => selectedItems.value.length === props.data?.data?.length);
+const toggleSelectAll = () => {
+    selectedItems.value = allSelected.value
+        ? []
+        : props.data?.data?.map(item => item.id);
+};
+const toggleSelectItem = (id) => {
+    selectedItems.value = selectedItems.value.includes(id)
+        ? selectedItems.value.filter(itemId => itemId !== id)
+        : selectedItems.value.push(id);
+};
+
+const expandedRows = ref([]);
+const isRowExpanded = (id) => expandedRows.value.includes(id);
+const toggleRowExpansion = (id) => {
+    expandedRows.value = isRowExpanded(id)
+    ? expandedRows.value.filter(rowId => rowId !== id)
+    : [...expandedRows.value, id];
+};
+
+// Pagination - Get pages
+const emit = defineEmits(['fetch-page']);
+
+const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = [] }) => {
+    console.log('SimpleDataTable', page, itemsPerPage, sortBy)
+    emit('fetch-page', {
+        page,
+        itemsPerPage,
+        sortBy,
+    });
+};
+
+// Tracks sorting state
+const sortedColumns = ref([]);
+
+// Sort order toggling logic
+const getNextSortOrder = (currentOrder) => {
+    if (currentOrder === "asc") return "desc";
+    if (currentOrder === "desc") return null;
+    return "asc";
+};
+
+// Check if column is sorted
+const isSorted = (key) => sortedColumns.value.some((sort) => sort.key === key);
+
+// Get sorting icon
+const getSortIcon = (key) => {
+    const sort = sortedColumns.value.find((s) => s.key === key);
+    return sort ? (sort.order === 'asc' ? 'sort-up' : 'sort-down') : "sort";
+};
+
+// Handle click (Single or Shift + Click)
+const handleSort = (key, event) => {
+    const existingSort = sortedColumns.value.find((s) => s.key === key);
+    const newOrder = getNextSortOrder(existingSort?.order);
+
+    if (event.shiftKey) {
+        // Shift + Click: Add multiple columns to sorting
+        if (newOrder) {
+        sortedColumns.value = [
+            ...sortedColumns.value.filter((s) => s.key !== key),
+            { key, order: newOrder },
+        ];
+        } else {
+        sortedColumns.value = sortedColumns.value.filter((s) => s.key !== key);
+        }
+    } else {
+        // Normal Click: Reset sorting to only this column
+        sortedColumns.value = newOrder ? [{ key, order: newOrder }] : [];
+    }
+
+    emitSorting();
+};
+
+// Emit sorting changes
+const emitSorting = () => {
+    emit('fetch-page', { sortBy: sortedColumns.value });
+};
+
+// Clear sorting
+const clearSorting = () => {
+    sortedColumns.value = [];
+    emitSorting();
+};
+</script>
+
 <template>
 <section class="simple-data-table">
     <table class="simple-data-table__container">
@@ -15,14 +141,11 @@
                     :key="header.key"
                     scope="col"
                     class="header cursor-pointer"
-                    :class="[header.width, sorting.find(s => s.key === header.key) ? 'sorted' : '']"
-                    @click="header.sortable ? toggleSort(header.key, $event) : null">
+                    :class="header.width"
+                    @click="handleSort(header.key, $event)">
                     {{ header.title }}
-                    <span v-if="header.sortable">
-                        <FontAwesomeIcon
-                            v-for="sort in sorting.filter(s => s.key === header.key)"
-                            :key="sort.key"
-                            :icon="sort.order === 'asc' ? 'chevron-up' : 'chevron-down'" />
+                    <span v-if="isSorted(header.key)">
+                        <FontAwesomeIcon class="fa-fw" :icon="getSortIcon(header.key)" />
                     </span>
                 </th>
             </tr>
@@ -87,105 +210,8 @@
         v-if="pagination"
         v-bind="$attrs"
         :pagination="pagination"
-        @page-changed="fetchPage" />
+        @page-changed="fetchPage"
+        @clear-sorting="clearSorting" />
 </section>
 </template>
-    
-<script setup>
-import { ref, computed } from 'vue';
-import Checkbox from '@/Components/Checkbox.vue';
-
-const props = defineProps({
-    headers: {
-        type: Array,
-        required: true
-    },
-    data: {
-        type: Object,
-        required: true
-    },
-    actions: {
-        type: Array,
-        default: () => []
-    },
-    selectable: {
-        type: Boolean,
-        default: false,
-    },
-    expandable: {
-        type: Boolean,
-        default: false,
-    },
-    pagination: {
-        type: Object,
-        default: null
-    },
-    isReady: {
-        type: Boolean,
-        default: false
-    }
-});
-
-import { useHeaders } from '@/composables/useHeaders.vue';
-const { getItemValue, hasActions, headers } = useHeaders(props);
-
-// Selectable - Select data rows
-const selectedItems = ref([]);
-const allSelected = computed(() => selectedItems.value.length === props.data?.data?.length);
-const toggleSelectAll = () => {
-    selectedItems.value = allSelected.value
-        ? []
-        : props.data?.data?.map(item => item.id);
-};
-const toggleSelectItem = (id) => {
-    selectedItems.value = selectedItems.value.includes(id)
-        ? selectedItems.value.filter(itemId => itemId !== id)
-        : selectedItems.value.push(id);
-};
-
-const expandedRows = ref([]);
-const isRowExpanded = (id) => expandedRows.value.includes(id);
-const toggleRowExpansion = (id) => {
-    expandedRows.value = isRowExpanded(id)
-    ? expandedRows.value.filter(rowId => rowId !== id)
-    : [...expandedRows.value, id];
-};
-
-const sorting = ref([]);
-
-// Toggle sorting for a column
-const toggleSort = (key, event) => {
-    let existingSort = sorting.value.find(s => s.key === key);
-
-    if (event.shiftKey) {
-        // Multi-column sorting (Shift + Click)
-        if (existingSort) {
-            existingSort.order = existingSort.order === 'asc' ? 'desc' : 'asc';
-        } else {
-            sorting.value.push({ key, order: 'asc' });
-        }
-    } else {
-        // Single-column sorting (Regular Click)
-        if (existingSort) {
-            existingSort.order = existingSort.order === 'asc' ? 'desc' : 'asc';
-        } else {
-            sorting.value = [{ key, order: 'asc' }]; // Reset to single-column sort
-        }
-    }
-
-    fetchPage({ sortBy: sorting.value });
-};
-
-// Pagination - Get pages
-const emit = defineEmits(['fetch-page']);
-
-const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = [] }) => {
-    console.log('SimpleDataTable', page, itemsPerPage, sortBy)
-    emit('fetch-page', {
-        page,
-        itemsPerPage,
-        sortBy,
-    });
-};
-</script>
     
