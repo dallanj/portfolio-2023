@@ -6,6 +6,8 @@ use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Support\Collection;
 use App\Http\Resources\ProjectsCollection;
+use Illuminate\Support\Facades\Pipeline;
+use App\Filters\BySearchable;
 
 class ProjectsLoader
 {
@@ -16,6 +18,11 @@ class ProjectsLoader
      */
     public function all()
     {
-        return (new ProjectsCollection(Project::paginate(request()->per_page ?? 4)))->resolve(request());    
+        $projects = Pipeline::send(Project::query())
+            ->through(BySearchable::class)
+            ->thenReturn()
+            ->paginate(request()->per_page ?? 4);
+
+        return (new ProjectsCollection($projects))->resolve(request());    
     }
 };
