@@ -42,10 +42,6 @@ const props = defineProps({
         type: Array,
         required: true,
     },
-    // modelValue: {
-    //     type: [String, Number, Object],
-    //     default: null,
-    // },
     placeholder: {
         type: String,
         default: 'Select an option',
@@ -76,20 +72,20 @@ const toggleDropdown = () => {
 };
 
 const getOptionLabel = (option) =>
-typeof option === 'object' ? option[props.labelKey] : option;
+    typeof option === 'object' ? option[props.labelKey] : option;
 
 const getOptionValue = (option) =>
-typeof option === 'object' ? option[props.valueKey] : option;
+    typeof option === 'object' ? option[props.valueKey] : option;
 
 const selectedLabel = computed(() => {
-const selected = props.options.find(
-    (opt) => getOptionValue(opt) === props.modelValue
-);
-return selected ? getOptionLabel(selected) : '';
+    const selected = props.options.find(
+        (opt) => getOptionValue(opt) === props.modelValue
+    );
+    return selected ? getOptionLabel(selected) : '';
 });
 
 const selectOption = (option) => {
-emit('update:modelValue', getOptionValue(option));
+    emit('update:modelValue', getOptionValue(option));
     isOpen.value = false;
 };
 
