@@ -62,12 +62,13 @@ const searchParams = ref({
     type: [],
     page: 1,
     per_page: 4,
+    sortBy: null,
 });
 
 const fetchPage = ({page, itemsPerPage, sortBy}) => {
-    searchParams.value.page = page;
-    searchParams.value.per_page = itemsPerPage;
-    searchParams.value.sortBy = sortBy;
+    searchParams.value.page = page ?? searchParams.value.page;
+    searchParams.value.per_page = itemsPerPage ?? searchParams.value.per_page;
+    searchParams.value.sortBy = sortBy ?? searchParams.value.sortBy;
     search();
 };
 
@@ -104,7 +105,8 @@ const activeClass = (active) => {
                                 v-model="searchParams.term"
                                 placeholder="Search..."
                                 label="Search"
-                                @input="fetchPage" />
+                                @input="search"
+                                @search="search" />
                         </form>
                         <!-- Fix SimpleDataCard -->
                         <!-- Add is_active to projects table -->
