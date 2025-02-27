@@ -5,12 +5,14 @@
     <label v-if="label">{{ label }}</label>
     <div class="relative flex items-center gap-2.5 text-left rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none">
         <input
+            v-model="modelValue"
             :class="{
                 'rounded-t-lg': isOpen,
                 'divrounded-lg': !isOpen,
             }"
+            :placeholder="placeholder"
             class="w-full bg-transparent focus:outline-none border-none rounded-l-lg" />
-        <button class="w-8 h-8 flex items-center">
+        <button class="w-8 h-8 flex items-center" @click="search">
             <FontAwesomeIcon class="fa-fw" size="md" icon="magnifying-glass" />
         </button>
     </div>
@@ -39,6 +41,11 @@ const props = defineProps({
         default: false,
     }
 });
+
+const emit = defineEmits(['update:modelValue']);
+const search = () => {
+    emit('search');
+};
 
 const alignmentClasses = computed(() => props.sideLabel ? 'flex-row items-center gap-2' : 'flex-col');
 </script>
