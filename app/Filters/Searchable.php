@@ -10,7 +10,7 @@ use App\Models\User as ModelsUser;
 use Illuminate\Support\Collection;
 use Illuminate\Support\Facades\DB;
 
-class BySearchable
+class Searchable
 {
     protected ModelsUser $user;
 

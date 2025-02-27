@@ -37,8 +37,8 @@ const headers = computed(() => {
         ];
     } else {
         return [
-            { title: 'Title', key: 'title', width: 'w-40', truncate: true },
-            { title: 'Created', key: 'created_at', width: 'w-40', value: item => new Date(item.created_at).toDateString() },
+            { title: 'Title', key: 'title', width: 'w-40', sortable: true, truncate: true },
+            { title: 'Created', key: 'created_at', width: 'w-40', sortable: true, value: item => new Date(item.created_at).toDateString() },
         ];
     }
 });
