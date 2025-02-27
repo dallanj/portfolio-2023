@@ -21,11 +21,7 @@ class PiniaPrefetcher
             PiniaLoader::load('user', 'profile', lazy: true);
             // PiniaLoader::load('options', [
             //     'roles',
-            //     'navigation'
             // ], lazy: true);
-            // dd(PiniaLoader::$results, PiniaLoader::$loaders);
-            // PiniaLoader::load('options', 'navigation');
-            // PiniaLoader::load('options', 'roles');
         }
 
         return $next($request);
