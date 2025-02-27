@@ -204,6 +204,10 @@ const clearSorting = () => {
         </tbody>
     </table>
 
+    <p v-if="data.data.length === 0" class="p-4 text-center w-full">
+        Sorry, but there are no results found.
+    </p>
+
     <SimpleLoadingSpinner v-if="!isReady || !data?.data" :size="'2xl'" />
     
     <SimpleDataPagination

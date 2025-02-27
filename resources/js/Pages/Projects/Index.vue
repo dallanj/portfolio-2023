@@ -62,7 +62,7 @@ const searchParams = ref({
     type: [],
     page: 1,
     per_page: 4,
-    sortBy: null,
+    sortBy: [],
 });
 
 const fetchPage = ({page, itemsPerPage, sortBy}) => {

@@ -20,9 +20,11 @@ class Sortable
         return $next($query)->when(
             $this->request->has('sortBy'),
             function ($query) {
-                foreach ($this->request->input('sortBy', []) as $sort) {
-                    if (isset($sort['key']) && isset($sort['order'])) {
-                        $query->orderBy($sort['key'], $sort['order']);
+                if ($this->request->input('sortBy') !== null) {
+                    foreach ($this->request->input('sortBy', []) as $sort) {
+                        if (isset($sort['key']) && isset($sort['order'])) {
+                            $query->orderBy($sort['key'], $sort['order']);
+                        }
                     }
                 }
             }
