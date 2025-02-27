@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { Link, useForm, usePage } from '@inertiajs/vue3';
@@ -35,7 +34,7 @@ const form = useForm({
             class="mt-6 space-y-6"
         >
             <div>
-                <InputLabel for="name" value="Name" />
+                <SimpleInputLabel for="name" value="Name" />
 
                 <TextInput
                     id="name"
@@ -51,7 +50,7 @@ const form = useForm({
             </div>
 
             <div>
-                <InputLabel for="email" value="Email" />
+                <SimpleInputLabel for="email" value="Email" />
 
                 <TextInput
                     id="email"

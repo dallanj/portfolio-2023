@@ -91,7 +91,7 @@ const buttonClasses = computed(_ => {
     // Add state classes
     switch (props.state) {
         case 'primary':
-            classes += ' bg-blue-200 text-white hover:bg-blue-200/[.80] focus:bg-blue-200/[.80] active:bg-blue-200 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-semibold rounded-md tracking-widest';
+            classes += ' bg-gray-800 hover:bg-gray-700 focus:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 active:bg-gray-900 dark:bg-gray-200 dark:text-gray-800 dark:hover:bg-white dark:focus:bg-white dark:focus:ring-offset-gray-800 dark:active:bg-gray-300 font-semibold rounded-md tracking-widest';
             break;
         case 'removing':
             classes += ' bg-red-500 text-white hover:bg-red-400 focus:bg-red-400 active:bg-red-600 focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 font-semibold rounded-md tracking-widest';
