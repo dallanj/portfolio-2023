@@ -2,12 +2,12 @@
 
 namespace App\PiniaLoaders;
 
-use App\Http\Resources\ProjectResource;
 use App\Models\Project;
 use Illuminate\Support\Collection;
 use App\Http\Resources\ProjectsCollection;
 use Illuminate\Support\Facades\Pipeline;
-use App\Filters\BySearchable;
+use App\Filters\Searchable;
+use App\Filters\Sortable;
 
 class ProjectsLoader
 {
@@ -19,7 +19,10 @@ class ProjectsLoader
     public function all()
     {
         $projects = Pipeline::send(Project::query())
-            ->through(BySearchable::class)
+            ->through([
+                Searchable::class,
+                Sortable::class,
+            ])
             ->thenReturn()
             ->paginate(request()->per_page ?? 4);
 
