@@ -1,34 +1,43 @@
 <script setup lang="ts">
 import InputError from '@/Components/InputError.vue';
-import InputLabel from '@/Components/InputLabel.vue';
-import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
-import { useForm } from '@inertiajs/vue3';
-import { ref } from 'vue';
+import { ref, watch, nextTick } from 'vue';
+import { useForm } from 'laravel-precognition-vue-inertia';
 
-const passwordInput = ref<HTMLInputElement | null>(null);
-const currentPasswordInput = ref<HTMLInputElement | null>(null);
+import { useUserStore } from '@/stores/user';
+import { storeToRefs } from 'pinia';
+const { profile } = storeToRefs(useUserStore());
+const user = ref(null);
 
-const form = useForm({
+watch(profile, async (user) => {
+    await nextTick();
+    user.value = user.hash;
+}, {
+    deep: true
+});
+const form = useForm('post', `/profile/${user?.value?.hash}/password`, {
     current_password: '',
     password: '',
     password_confirmation: '',
 });
 
+form.setValidationTimeout(3000);
+
+const currentPasswordInput = ref(null);
+const passwordInput = ref(null);
+
 const updatePassword = () => {
     form.put(route('password.update'), {
         preserveScroll: true,
-        onSuccess: () => {
-            form.reset();
-        },
+        onSuccess: () => form.reset(),
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
-                passwordInput.value?.focus();
+                passwordInput.value.focus();
             }
             if (form.errors.current_password) {
                 form.reset('current_password');
-                currentPasswordInput.value?.focus();
+                currentPasswordInput.value.focus();
             }
         },
     });
@@ -50,7 +59,7 @@ const updatePassword = () => {
 
         <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
             <div>
-                <InputLabel for="current_password" value="Current Password" />
+                <SimpleInputLabel for="current_password" value="Password" />
 
                 <TextInput
                     id="current_password"
@@ -59,34 +68,25 @@ const updatePassword = () => {
                     type="password"
                     class="mt-1 block w-full"
                     autocomplete="current-password"
-                />
-
-                <InputError
-                    :message="form.errors.current_password"
-                    class="mt-2"
-                />
+                    @change="form.validate('current_password')"
+                    @focus="form.forgetError('current_password')" />
+                <InputError v-if="form.invalid('current_password')" :message="form.errors.current_password" class="mt-2" />
             </div>
 
             <div>
-                <InputLabel for="password" value="New Password" />
-
-                <TextInput
+                <SimplePasswordField
                     id="password"
                     ref="passwordInput"
+                    name="password"
                     v-model="form.password"
-                    type="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                />
-
-                <InputError :message="form.errors.password" class="mt-2" />
+                    @change="form.validate('password')"
+                    @focus="form.forgetError('password')" />
             </div>
 
             <div>
-                <InputLabel
-                    for="password_confirmation"
-                    value="Confirm Password"
-                />
+                <SimpleInputLabel for="password_confirmation" value="Confirm Password" />
 
                 <TextInput
                     id="password_confirmation"
@@ -94,29 +94,28 @@ const updatePassword = () => {
                     type="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
-                />
-
-                <InputError
-                    :message="form.errors.password_confirmation"
-                    class="mt-2"
-                />
+                    @change="form.validate('password_confirmation')"
+                    @focus="form.forgetError('password_confirmation')" />
+    
+                <InputError :message="form.errors.password_confirmation" class="mt-2" />
             </div>
 
             <div class="flex items-center gap-4">
-                <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
+                <SimpleButton
+                    :disabled="form.processing || form.hasErrors"
+                    @click="form.touch(['password','current_password','password_confirmation']).validate({
+                        onValidationError: () => $toast.error('There was an error processing your password.'),
+                        onSuccess: () => $toast.success('This is a success message!'),
+                    })">
+                        Save
+                    </SimpleButton>
 
                 <Transition
                     enter-active-class="transition ease-in-out"
                     enter-from-class="opacity-0"
                     leave-active-class="transition ease-in-out"
-                    leave-to-class="opacity-0"
-                >
-                    <p
-                        v-if="form.recentlySuccessful"
-                        class="text-sm text-gray-600 dark:text-gray-400"
-                    >
-                        Saved.
-                    </p>
+                    leave-to-class="opacity-0">
+                    <p v-if="form.hasErrors" class="text-sm text-gray-600">Please fix the errors beforing saving.</p>
                 </Transition>
             </div>
         </form>
