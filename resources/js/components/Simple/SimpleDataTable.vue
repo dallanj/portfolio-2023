@@ -14,9 +14,16 @@
                     v-for="header in headers"
                     :key="header.key"
                     scope="col"
-                    class="header"
-                    :class="header.width">
+                    class="header cursor-pointer"
+                    :class="[header.width, sorting.find(s => s.key === header.key) ? 'sorted' : '']"
+                    @click="header.sortable ? toggleSort(header.key, $event) : null">
                     {{ header.title }}
+                    <span v-if="header.sortable">
+                        <FontAwesomeIcon
+                            v-for="sort in sorting.filter(s => s.key === header.key)"
+                            :key="sort.key"
+                            :icon="sort.order === 'asc' ? 'chevron-up' : 'chevron-down'" />
+                    </span>
                 </th>
             </tr>
         </thead>
@@ -144,16 +151,41 @@ const toggleRowExpansion = (id) => {
     : [...expandedRows.value, id];
 };
 
+const sorting = ref([]);
+
+// Toggle sorting for a column
+const toggleSort = (key, event) => {
+    let existingSort = sorting.value.find(s => s.key === key);
+
+    if (event.shiftKey) {
+        // Multi-column sorting (Shift + Click)
+        if (existingSort) {
+            existingSort.order = existingSort.order === 'asc' ? 'desc' : 'asc';
+        } else {
+            sorting.value.push({ key, order: 'asc' });
+        }
+    } else {
+        // Single-column sorting (Regular Click)
+        if (existingSort) {
+            existingSort.order = existingSort.order === 'asc' ? 'desc' : 'asc';
+        } else {
+            sorting.value = [{ key, order: 'asc' }]; // Reset to single-column sort
+        }
+    }
+
+    fetchPage({ sortBy: sorting.value });
+};
+
 // Pagination - Get pages
-import { usePagination } from '@/composables/usePagination.vue';
 const emit = defineEmits(['fetch-page']);
-const fetchPage = ({page, itemsPerPage, sortBy}) => {
-    console.log('SimpleDtatabable', page, itemsPerPage, sortBy)
+
+const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = [] }) => {
+    console.log('SimpleDataTable', page, itemsPerPage, sortBy)
     emit('fetch-page', {
-            page: page,
-            itemsPerPage: itemsPerPage,
-            sortBy: sortBy,
-        });
+        page,
+        itemsPerPage,
+        sortBy,
+    });
 };
 </script>
     
