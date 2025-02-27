@@ -14,6 +14,30 @@ class Project extends Model
         ModelHashingTrait,
         SoftDeletes;
 
+    /** @var array Searchable fields for model */
+    public array $searchable = [];
+
+    /**
+     * Constructor.
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        // Initialize searchable fields with dynamic role methods
+        $this->searchable = [
+            'title'         => [],
+            'overview'      => [],
+            'slug'          => [],
+            'description'   => [],
+        ];
+    }
+
+    /**
+     * The attributes that are mass assignable.
+     *
+     * @var array<int, string>
+     */
     protected $fillable = [
         'title',
         'description',
@@ -22,24 +46,25 @@ class Project extends Model
         'order'
     ];
 
-    // protected static function boot()
-    // {
-    //     parent::boot();
-    //     static::creating(function ($project) {
-    //         $project->hash = Str::uuid();
-    //     });
-    // }
-
+    /**
+     * Get the media.
+     */
     public function media()
     {
         return $this->hasMany(Media::class)->orderBy('order');
     }
 
+    /**
+     * Get the links.
+     */
     public function links()
     {
         return $this->hasMany(Link::class);
     }
 
+    /**
+     * Get the tags.
+     */
     public function tags()
     {
         return $this->belongsToMany(Tag::class)->withPivot(['order'])->orderBy('pivot_order');
