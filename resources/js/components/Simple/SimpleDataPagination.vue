@@ -1,4 +1,5 @@
 <script setup>
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
@@ -13,7 +14,11 @@ const props = defineProps({
     }
 });
 
-const emits = defineEmits(['page-changed']);
+const emits = defineEmits(['page-changed', 'clear-sorting']);
+
+const clearSorting = () => {
+    emits('clear-sorting');
+}
 
 const itemsPerPage = ref(2);
 const sortBy = ref('');
@@ -61,12 +66,18 @@ const options = ref([1, 2, 3, 4]);
 <nav
     class="flex items-center flex-cols flex-wrap md:flex-row justify-between py-2 px-4"
     aria-label="Table navigation">
-    <p class="font-semibold text-sm text-brand-dark-gray space-x-1">
-        <span class="text-brand-light-gray">Showing</span>
-        <span>{{ pagination.from }}-{{ pagination.to }}</span>
-        <span class="text-brand-light-gray">of</span>
-        <span>{{ pagination.total }}</span>
-    </p>
+    <div class="flex gap-2">
+        <button @click="clearSorting">
+            <FontAwesomeIcon icon="filter-circle-xmark" />
+        </button>
+        <p class="font-semibold text-sm text-brand-dark-gray space-x-1">
+            <span class="text-brand-light-gray">Showing</span>
+            <span>{{ pagination.from }}-{{ pagination.to }}</span>
+            <span class="text-brand-light-gray">of</span>
+            <span>{{ pagination.total }}</span>
+        </p>
+    </div>
+    
     <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
         <li class="page-item" :class="{ disabled: !pagination.first_page_url }">
             <a
