@@ -57,5 +57,9 @@ export {
     faKey,
     faBell,
     faBuildingUser,
-    faMagnifyingGlass
+    faMagnifyingGlass,
+    faSortUp,
+    faSortDown,
+    faFilter,
+    faFilterCircleXmark,
 } from '@fortawesome/free-solid-svg-icons';
