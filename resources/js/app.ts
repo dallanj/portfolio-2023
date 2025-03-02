@@ -18,6 +18,7 @@ import MainLayout from './layouts/MainLayout.vue';
 import { useModal } from '@/composables/useModal';
 
 import RegisterGlobalComponents from '@/helpers/registerGlobalComponents';
+import GlobalToastPlugin from '@/plugins/globalToastPlugin';
 
 // FontAwesomeIcons
 import * as fontAwesomeConfig from '@/fontAwesomeConfig';
@@ -53,6 +54,7 @@ createInertiaApp({
         app.use(plugin)
             .use(pinia)
             .use(ZiggyVue)
+            .use(GlobalToastPlugin)
             .component('MainLayout', MainLayout)
             .provide('modals', useModal())
             .provide('screenSize', useScreenSize())

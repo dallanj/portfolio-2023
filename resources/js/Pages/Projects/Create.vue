@@ -5,17 +5,16 @@ import { ref, watch, nextTick, computed } from 'vue';
 import { useForm } from 'laravel-precognition-vue-inertia';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
-
+import { useToast } from 'vue-toastification';
 import { useProjectsStore } from '@/stores/projects';
 import { storeToRefs } from 'pinia';
-
+const toast = useToast();
 const { active } = storeToRefs(useProjectsStore());
 const project = ref({
     title: '',
     overview: '',
     description: '',
 });
-
 
 watch(active, async (obj) => {
     await nextTick();
@@ -73,6 +72,7 @@ const submit = () => {
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                 Projects > New Project
             </h2>
+            <button class="cursor-pointer" @click="$toast.error('hello')">click me</button>
         </template>
 
         <div class="py-12">
@@ -129,8 +129,8 @@ const submit = () => {
                                 <SimpleButton
                                     :disabled="form.processing || form.hasErrors"
                                     @click="form.touch(['title','overview','description']).validate({
-                                        onValidationError: () => console.log('There was an error creating this project.'),
-                                        onSuccess: () => console.log('This is a success message!'),
+                                        onValidationError: () => $toast.error('There was an error creating this project.'),
+                                        onSuccess: () => $toast.success('This is a success message!'),
                                     })">
                                         Save
                                     </SimpleButton>

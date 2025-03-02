@@ -41,9 +41,7 @@ class ProjectController extends Controller
 
         PiniaLoader::load('projects', 'active', $project);
 
-        return inertia('Projects/Create', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -53,21 +51,16 @@ class ProjectController extends Controller
     {
         $data = $request->validated();
 
-        $project = Project::updateOrCreate(
-            [
-                'hash' => $project->hash,  // Match on language code
-            ],
-            [
-                ...$data,
-                'slug' => Str::slug($data['title'])
-            ]   
-        );
+        $project = Project::updateOrCreate([
+            'hash' => $project->hash,
+        ], [
+            ...$data,
+            'slug' => Str::slug($data['title'])
+        ]);
 
         PiniaLoader::load('projects', 'active', $project);
 
-        return inertia('Projects/Create', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -75,6 +68,12 @@ class ProjectController extends Controller
      */
     public function destroy(Project $project)
     {
-        //
+        $project->delete();
+
+        PiniaLoader::load('projects', 'all');
+
+        return inertia('Projects/Index', [
+            'pinia' => PiniaLoader::toJson()
+        ]);
     }
 }
