@@ -3,10 +3,11 @@ import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useProjectsStore } from '@/stores/projects';
 import { storeToRefs } from 'pinia';
-import { ref, inject, computed } from 'vue';
+import { watch, nextTick, ref, inject, computed } from 'vue';
 import { capitalizeFirstLetter } from '@/utils/formatting';
 
 const { all } = storeToRefs(useProjectsStore());
+const data = ref(null);
 
 // Use the Pinia store
 const store = useProjectsStore();
@@ -23,6 +24,15 @@ const { isLoading, state, isReady } = useAsyncState(
     resetOnExecute: false,
   },
 );
+
+watch(all, async (obj) => {
+    await nextTick();
+    if (obj) {
+        data.value = obj;
+    }
+}, {
+    deep: true
+});
 
 const { screenWidth } = inject('screenSize');
 const useCards = computed(_ => !(screenWidth.value >= 901)); // Fix this
@@ -113,7 +123,7 @@ const activeClass = (active) => {
                         <component
                             :is="useCards ? 'SimpleDataTable' : 'SimpleDataTable'"
                             v-bind="{
-                                data: all,
+                                data: data,
                                 headers: headers,
                                 actions: [
                                     { title: 'View', icon: 'file', action: item => show(item) },
