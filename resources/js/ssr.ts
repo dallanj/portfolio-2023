@@ -21,9 +21,9 @@ createServer((page) =>
         setup({ App, props, plugin }) {
             return createSSRApp({
                 mounted() {
-                    // piniaLoader(this.$inertia?.page?.props); // Use piniaLoader utility function
+                    piniaLoader(page?.props);
                     this.$inertia.on('finish', () => {
-                        // piniaLoader(this.$inertia?.page?.props);
+                        piniaLoader(page?.props);
                     });
                 },
                 render: () => h(App, props)

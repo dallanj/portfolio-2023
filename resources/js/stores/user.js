@@ -12,7 +12,6 @@ export const useUserStore = defineStore('user', () => {
         };
 
         if (key && resetMap[key]) {
-          console.log(key, 'hi');
             // Reset only the specific key passed
             resetMap[key]();
         } else {

@@ -4,6 +4,21 @@ import axios from 'axios';
 
 export const useProjectsStore = defineStore('projects', () => {
     const all = ref(null);
+    const active = ref(null);
+
+    function $reset(key = null) {
+        const resetMap = {
+            all: () => { all.value = null; },
+            active: () => { active.value = null; },
+        };
+
+        if (key && resetMap[key]) {
+            // Reset only the specific key passed
+            resetMap[key]();
+        } else {
+            // Reset all if no key or invalid key is provided
+        }
+    }
 
     const actions = {
         search: (params) => {
@@ -22,6 +37,8 @@ export const useProjectsStore = defineStore('projects', () => {
 
     return {
         all,
+        active,
+        $reset,
         ...actions
     };
 });
