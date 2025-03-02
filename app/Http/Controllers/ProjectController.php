@@ -39,7 +39,7 @@ class ProjectController extends Controller
     {
         PiniaLoader::load('projects', 'active', $project);
 
-        return inertia('Projects/Create', [
+        return inertia('Projects/Edit', [
             'pinia' => PiniaLoader::toJson()
         ]);
     }
