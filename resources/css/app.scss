@@ -2,7 +2,8 @@
 @forward 'simple-modal';
 @forward 'simple-data';
 @forward 'simple-loading-spinner';
-
+// Vue Toastification CSS
+@forward 'vue-toastification/dist/index.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
