@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Http\JsonResponse;
 use App\Models\Project;
+use Illuminate\Support\Str;
 
 class ProjectController extends Controller
 {
@@ -31,15 +32,18 @@ class ProjectController extends Controller
      */
     public function store(StoreProjectRequest $request)
     {
-        $data = $request->validate([
-            'title' => 'required|string|max:255',
-            'description' => 'nullable|string',
-            'overview' => 'nullable|string',
-            'slug' => 'required|string|unique:projects,slug',
+        $data = $request->validated();
+
+        $project = Project::create([
+            ...$data,
+            'slug' => Str::slug($data['title'])
         ]);
 
-        $project = Project::create($data);
-        return redirect()->route('projects.index');
+        PiniaLoader::load('projects', 'active', $project);
+
+        return inertia('Projects/Create', [
+            'pinia' => PiniaLoader::toJson()
+        ]);
     }
 
     /**
@@ -47,7 +51,23 @@ class ProjectController extends Controller
      */
     public function update(UpdateProjectRequest $request, Project $project)
     {
-        //
+        $data = $request->validated();
+
+        $project = Project::updateOrCreate(
+            [
+                'hash' => $project->hash,  // Match on language code
+            ],
+            [
+                ...$data,
+                'slug' => Str::slug($data['title'])
+            ]   
+        );
+
+        PiniaLoader::load('projects', 'active', $project);
+
+        return inertia('Projects/Create', [
+            'pinia' => PiniaLoader::toJson()
+        ]);
     }
 
     /**

@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\ProjectController;
 use App\PiniaStation\Facades\PiniaLoader;
+use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 
 /*
 |--------------------------------------------------------------------------
@@ -41,7 +42,7 @@ Route::prefix('v1')->group(function () {
 
     Route::resource('projects', ProjectController::class)->only([
         'store', 'update', 'destroy'
-    ]);
+    ])->middleware([HandlePrecognitiveRequests::class]);
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();

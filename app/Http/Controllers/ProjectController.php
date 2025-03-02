@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Project;
 use Inertia\Inertia;
+use App\PiniaStation\Facades\PiniaLoader;
 
 class ProjectController extends Controller
 {
@@ -12,7 +13,7 @@ class ProjectController extends Controller
      */
     public function index()
     {
-        return Inertia::render('Projects/Index');
+        return inertia('Projects/Index');
     }
 
     /**
@@ -20,7 +21,7 @@ class ProjectController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Projects/Create');
+        return inertia('Projects/Create');
     }
 
     /**
@@ -28,7 +29,7 @@ class ProjectController extends Controller
      */
     public function show(Project $project)
     {
-        return Inertia::render('Projects/Show');
+        return inertia('Projects/Show');
     }
 
     /**
@@ -36,6 +37,10 @@ class ProjectController extends Controller
      */
     public function edit(Project $project)
     {
-        return Inertia::render('Projects/Edit');
+        PiniaLoader::load('projects', 'active', $project);
+
+        return inertia('Projects/Create', [
+            'pinia' => PiniaLoader::toJson()
+        ]);
     }
 }
