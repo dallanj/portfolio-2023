@@ -42,9 +42,9 @@ createInertiaApp({
     setup({ el, App, props, plugin }: { el: any; App: any; props: any; plugin: any }) {
         const app = createApp({
             mounted() {
-                // piniaLoader(this.$inertia.page.props); // Use piniaLoader utility function
+                piniaLoader(this.$page.props);
                 this.$inertia.on('finish', () => {
-                    // piniaLoader(this.$inertia.page.props);
+                    piniaLoader(this.$page.props);
                 });
             },
             render: () => h(App, props)
