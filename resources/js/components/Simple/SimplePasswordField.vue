@@ -75,7 +75,7 @@ watch(model, calculateStrength);
                 type="button"
                 class="absolute right-10 inset-y-0 flex items-center text-gray-500 hover:text-blue-500"
                 @click="generatePassword">
-                <FontAwesomeIcon icon="cog" size="sm" class="fa-fw text-brand-light-gray transition ease-in-out duration-300 hover:text-brand-orange" />
+                <FontAwesomeIcon icon="cog" size="sm" class="fa-fw text-brand-light-gray transition ease-in-out duration-300 hover:text-blue-500" />
             </button>
 
             <!-- Toggle Password Visibility Icon -->
@@ -83,7 +83,7 @@ watch(model, calculateStrength);
                 type="button"
                 class="absolute right-2 inset-y-0 flex items-center text-gray-500 hover:text-blue-500"
                 @click="toggleVisibility">
-                <FontAwesomeIcon :icon="showPassword ? 'eye' : 'eye-slash'" size="sm" class="fa-fw text-brand-light-gray transition ease-in-out duration-300 hover:text-brand-orange" />
+                <FontAwesomeIcon :icon="showPassword ? 'eye' : 'eye-slash'" size="sm" class="fa-fw text-brand-light-gray transition ease-in-out duration-300 hover:text-blue-500" />
             </button>
         </div>
 

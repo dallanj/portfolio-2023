@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import UploadMediaForm from './Partials/UploadMediaForm.vue';
 import { Head, Link } from '@inertiajs/vue3';
 import { ref, watch, nextTick, computed } from 'vue';
 import { useForm } from 'laravel-precognition-vue-inertia';
@@ -80,52 +81,58 @@ const submit = () => {
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                     <div class="p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-2">
                         <form @submit.prevent="submit" class="mt-6 space-y-6">
-                            <div>
-                                <SimpleInputLabel for="title" value="Title" />
+                            <div class="grid grid-cols-2 gap-4">
+                                <UploadMediaForm class="max-w-xl" />
 
-                                <TextInput
-                                    id="title"
-                                    ref="title"
-                                    v-model="form.title"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    autocomplete="title"
-                                    @change="form.validate('title')"
-                                    @focus="form.forgetError('title')" />
-                                <InputError v-if="form.invalid('title')" :message="form.errors.title" class="mt-2" />
+                                <div class="flex flex-col gap-3">
+                                    <div>
+                                        <SimpleInputLabel for="title" value="Title" />
+
+                                        <TextInput
+                                            id="title"
+                                            ref="title"
+                                            v-model="form.title"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            autocomplete="title"
+                                            @change="form.validate('title')"
+                                            @focus="form.forgetError('title')" />
+                                        <InputError v-if="form.invalid('title')" :message="form.errors.title" class="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <SimpleInputLabel for="overview" value="Overview" />
+
+                                        <TextInput
+                                            id="overview"
+                                            ref="overview"
+                                            v-model="form.overview"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            autocomplete="overview"
+                                            @change="form.validate('overview')"
+                                            @focus="form.forgetError('overview')" />
+                                        <InputError v-if="form.invalid('overview')" :message="form.errors.overview" class="mt-2" />
+                                    </div>
+
+                                    <div>
+                                        <SimpleInputLabel for="description" value="Description" />
+
+                                        <TextInput
+                                            id="description"
+                                            ref="description"
+                                            v-model="form.description"
+                                            type="text"
+                                            class="mt-1 block w-full"
+                                            autocomplete="description"
+                                            @change="form.validate('description')"
+                                            @focus="form.forgetError('description')" />
+                                        <InputError v-if="form.invalid('description')" :message="form.errors.description" class="mt-2" />
+                                    </div>
+                                </div>
                             </div>
 
-                            <div>
-                                <SimpleInputLabel for="overview" value="Overview" />
-
-                                <TextInput
-                                    id="overview"
-                                    ref="overview"
-                                    v-model="form.overview"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    autocomplete="overview"
-                                    @change="form.validate('overview')"
-                                    @focus="form.forgetError('overview')" />
-                                <InputError v-if="form.invalid('overview')" :message="form.errors.overview" class="mt-2" />
-                            </div>
-
-                            <div>
-                                <SimpleInputLabel for="description" value="Description" />
-
-                                <TextInput
-                                    id="description"
-                                    ref="description"
-                                    v-model="form.description"
-                                    type="text"
-                                    class="mt-1 block w-full"
-                                    autocomplete="description"
-                                    @change="form.validate('description')"
-                                    @focus="form.forgetError('description')" />
-                                <InputError v-if="form.invalid('description')" :message="form.errors.description" class="mt-2" />
-                            </div>
-
-                            <div class="flex items-center gap-4">
+                            <div class="flex items-center gap-4 justify-center">
                                 <SimpleButton
                                     :disabled="form.processing || form.hasErrors"
                                     @click="form.touch(['title','overview','description']).validate({

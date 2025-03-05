@@ -26,6 +26,8 @@ export default {
                     border: '#3e3e3e',
                     hover: '#323232',
                 },
+                'brand-white': '#efefef',
+                'brand-light-gray': '#686d77',
                 'purple-500': '#c800de',
                 'purple-600': '#a800b7',
                 orange: '#e95420',

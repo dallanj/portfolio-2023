@@ -1,0 +1,51 @@
+.drop-area {
+    @apply space-y-4;
+
+    &__container {
+        @apply flex flex-col text-center gap-y-3 py-8 border-dashed border-2 border-blue-500 rounded-xl bg-blue-500/[.075] transition duration-200 ease-in-out;
+
+        &[data-active=true] {
+            @apply bg-blue-500;
+        }
+
+        &[data-profile-image=true] {
+            @apply p-0;
+        }
+    }
+
+    h2, p {
+        @apply text-brand-light-gray text-center;
+    }
+
+    h2 {
+        @apply text-lg;
+    }
+
+    p {
+        @apply font-bold;
+    }
+
+    label {
+        @apply w-36 mx-auto relative rounded-md;
+        button {
+            @apply w-36 px-5;
+    
+            input[type=file]:not(:focus-visible) {
+                @apply absolute top-0 left-0 w-full h-full z-40 opacity-0 cursor-pointer;
+            }
+            
+        }
+    }
+
+    &__file-list {
+        @apply flex flex-col gap-y-2;
+
+        li {
+            @apply flex bg-gray-900 shadow py-2 pl-3 rounded-xl font-bold text-brand-white tracking-wide transition duration-150 ease-in-out
+        }
+
+        .transition-transform {
+            transition: transform 0.3s ease-in-out;
+        }
+    }
+}
