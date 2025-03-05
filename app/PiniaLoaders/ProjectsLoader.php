@@ -25,7 +25,7 @@ class ProjectsLoader
                 Sortable::class,
             ])
             ->thenReturn()
-            ->paginate(request()->per_page ?? 4);
+            ->paginate(request()->per_page ?? 8);
 
         return (new ProjectsCollection($projects))->resolve(request());    
     }

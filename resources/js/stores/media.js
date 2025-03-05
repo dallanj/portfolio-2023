@@ -16,9 +16,6 @@ export const useMediaStore = defineStore('media', () => {
         if (key && resetMap[key]) {
             // Reset only the specific key passed
             resetMap[key]();
-        } else {
-            // Reset all if no key or invalid key is provided
-            Object.values(resetMap).forEach(resetFn => resetFn());
         }
     }
 

@@ -20,7 +20,7 @@ const clearSorting = () => {
     emits('clear-sorting');
 }
 
-const itemsPerPage = ref(2);
+const itemsPerPage = ref(8);
 const sortBy = ref('');
 
 const pages = computed(() => {

@@ -9,7 +9,7 @@ const props = defineProps({
     },
     data: {
         type: Object,
-        required: true
+        default: () => {}
     },
     actions: {
         type: Array,
@@ -38,11 +38,11 @@ const { getItemValue, hasActions, headers } = useHeaders(props);
 
 // Selectable - Select data rows
 const selectedItems = ref([]);
-const allSelected = computed(() => selectedItems.value.length === props.data?.data?.length);
+const allSelected = computed(() => selectedItems.value.length === props?.data?.data?.length);
 const toggleSelectAll = () => {
     selectedItems.value = allSelected.value
         ? []
-        : props.data?.data?.map(item => item.id);
+        : props?.data?.data?.map(item => item.id);
 };
 const toggleSelectItem = (id) => {
     selectedItems.value = selectedItems.value.includes(id)
@@ -150,7 +150,7 @@ const clearSorting = () => {
                 </th>
             </tr>
         </thead>
-        <tbody v-if="isReady && data?.data">
+        <tbody v-if="isReady && data">
             <template v-for="item in data.data" :key="item.id">
                 <tr class="simple-data-table__body">
                     <td v-if="selectable" class="row">
@@ -204,7 +204,7 @@ const clearSorting = () => {
         </tbody>
     </table>
 
-    <p v-if="data.data.length === 0" class="p-4 text-center w-full">
+    <p v-if="data?.data?.length === 0" class="p-4 text-center w-full">
         Sorry, but there are no results found.
     </p>
 

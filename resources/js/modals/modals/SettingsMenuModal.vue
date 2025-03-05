@@ -66,7 +66,6 @@
 </template>
 
 <script setup>
-// import SimpleButton from '@/Components/SimpleButton.vue';
 import { ref, computed } from 'vue';
 
 // Import user store

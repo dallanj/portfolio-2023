@@ -1,6 +1,5 @@
 <script setup>
 import { ref, onMounted, onUnmounted, computed, inject } from 'vue';
-import SimpleButton from '@/components/Simple/SimpleButton.vue';
 
 // Composables
 const { isMobile } = inject('screenSize');
