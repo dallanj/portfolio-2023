@@ -60,11 +60,18 @@ export const useMediaStore = defineStore('media', () => {
         return `${diffInYears} years ago`;
     };
 
+    const actions = {
+        destroy: (payload) => {
+            return axios.delete(`/api/v1/media/${payload.hash}`, payload);
+        },
+    }
+
     return {
         all,
         media,
         getTimeAgo,
         shortenFileSize,
+        ...actions,
         $reset,
     };
 });

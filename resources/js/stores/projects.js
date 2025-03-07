@@ -16,7 +16,7 @@ export const useProjectsStore = defineStore('projects', () => {
             // Reset only the specific key passed
             resetMap[key]();
         }
-    }
+    };
 
     const actions = {
         search: (params) => {
@@ -31,7 +31,7 @@ export const useProjectsStore = defineStore('projects', () => {
         destroy: (payload) => {
             return axios.delete(`/api/v1/projects/${payload.hash}`, payload);
         },
-    }
+    };
 
     return {
         all,
