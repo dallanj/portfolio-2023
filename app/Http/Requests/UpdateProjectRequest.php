@@ -22,7 +22,7 @@ class UpdateProjectRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'title' => 'required|string|min:3|unique:projects,title',
+            'title' => 'required|string|min:3',
             'overview' => 'nullable|string|min:3',
             'description' => 'required|string|min:3',
         ];
