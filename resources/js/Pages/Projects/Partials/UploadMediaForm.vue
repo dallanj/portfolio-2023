@@ -1,27 +1,68 @@
 <script setup>
-import { ref } from 'vue';
-
-// File Management
+import { ref, computed, onMounted, watch, nextTick, defineExpose } from 'vue';
 import { useFileList } from '@/composables/dragndrop/useFileList.vue';
+import { useFileUploader } from '@/composables/dragndrop/useFileUploader.vue';
+import { router } from '@inertiajs/vue3';
+import { storeToRefs } from 'pinia';
+import { useProjectsStore } from '@/stores/projects';
+
+const emit = defineEmits(['save-project']);
+
 const { files, addFiles, removeFile, removeAllFiles } = useFileList();
+
+// // const action = ref()
+const { active } = storeToRefs(useProjectsStore());
+
+const form = ref({ processing: false });
+// const project = computed(() => model); // Fetch project data from Inertia
+const media = ref([]); // Store project media files
+
+// Define model binding
+const model = defineModel({
+    type: Object,
+    default: [],
+});
+
+const project = computed(() => model.value);
+const action = computed(() => `/api/v1/projects/${project.value?.hash}/media`);
+const { uploadFiles } = useFileUploader(action);
+
+watch(active, async (obj) => {
+    await nextTick();
+    if (obj) {
+        console.log('watcher',obj);
+        media.value = obj.media;
+    }
+}, {
+    deep: true
+});
+
+// Fetch media files
+onMounted(() => {
+    if (model.value.length) {
+        media.value = model.value; // Assign project media from API response
+    }
+});
 
 const onInputChange = (e) => {
     addFiles(e.target.files)
     e.target.value = null // reset so that selecting the same file again will still cause it to fire this change
 }
 
-// Uploader
-import { useFileUploader } from '@/composables/dragndrop/useFileUploader.vue';
-const { uploadFiles } = useFileUploader(route('media.store'));
+const uploadMedia = async () => {
+    if (!project.value?.hash) {
+        console.log('uploadMedia');
+        emit('save-project');
+        return;
+    }
 
-const form = ref({ processing: false });
-
-const uploadMedia = async (files) => {
     form.value.processing = true;
     try {
         await uploadFiles(files);
         form.value.processing = false;
         $toast.success('Your media files have been sucessfully uploaded');
+        // Reload media from API after upload
+        // media.value = await fetchProjectMedia();
     } catch (error) {
         form.value.processing = false;
         $toast.success('Your media files failed to upload');
@@ -29,6 +70,21 @@ const uploadMedia = async (files) => {
         form.value.processing = false;
     }
 };
+
+defineExpose({ uploadMedia });
+
+// Fetch updated media after upload
+const fetchProjectMedia = async () => {
+    try {
+        const response = await axios.get(route('project.show', project.value.hash));
+        return response.data.media;
+    } catch (error) {
+        console.error('Failed to fetch media:', error);
+        return [];
+    }
+};
+
+const destroy = (item) => axios.delete(`/api/v1/media/${item.hash}`);
 </script>
 
 <template>
@@ -50,7 +106,7 @@ const uploadMedia = async (files) => {
                             <label for="file-input">
                                 <SimpleButton :size="'small'">
                                     <span class="text-center w-full">Browse</span>
-                                    <input type="file" id="file-input" multiple @change="onInputChange" />
+                                    <input type="file" id="file-input" accept="image/*" multiple @change="onInputChange" />
                                 </SimpleButton>
                             </label>
                         </div>
@@ -61,7 +117,7 @@ const uploadMedia = async (files) => {
                                 :class="{ 'opacity-25': form.processing }" 
                                 :disabled="form.processing"
                                 icon="file-arrow-up"
-                                @click.prevent="uploadMedia(files)">
+                                @click.prevent="uploadMedia">
                                 Upload
                             </SimpleButton>
                             <SimpleButton
@@ -88,17 +144,20 @@ const uploadMedia = async (files) => {
         </div>
     </form>
 
-    <template>
-        <div class="flex gap-x-4">
-            <SimpleButton state="secondary" @click="$emit('close')">Cancel</SimpleButton>
-            <SimpleButton
-                :icon="saving ? 'spinner' : ''"
-                :icon-spin="saving"
-                @click="submit">
-                Create
-            </SimpleButton>
+    <div v-if="media.length" class="mt-6 grid grid-cols-3 gap-4">
+        <div v-for="image in media" :key="image.id" class="relative group">
+            <img
+                :id="image.hash"
+                :src="`/api/v1/media/${image.hash}`"
+                :alt="image.filename"
+                class="w-full h-40 object-cover rounded-lg shadow-lg" />
+            <button
+                class="bg-red-500 rounded-full absolute top-0.5 right-0.5 px-0.5"
+                @click="destroy(image)">
+                <FontAwesomeIcon icon="times" class="fa-fw" />
+            </button>
         </div>
-    </template>
+    </div>
 </section>
 </template>
     
