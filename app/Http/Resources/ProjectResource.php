@@ -4,6 +4,7 @@ namespace App\Http\Resources;
 
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
+use App\Http\Resources\MediaResource;
 
 class ProjectResource extends JsonResource
 {
@@ -21,6 +22,7 @@ class ProjectResource extends JsonResource
             'description' => $this->description,
             'overview' => $this->overview,
             'created_at' => $this->created_at,
+            'media' => MediaResource::collection($this->whenLoaded('media')),
             'destroy_url' => route('projects.destroy', $this),
             'show_url' => route('projects.show', $this),
             'update_url' => route('projects.update', $this),
