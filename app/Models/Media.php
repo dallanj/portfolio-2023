@@ -6,6 +6,8 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\ModelHashingTrait;
+use Illuminate\Database\Eloquent\Relations\MorphTo;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Media extends Model
 {
@@ -15,15 +17,34 @@ class Media extends Model
         SoftDeletes;
 
     protected $fillable = [
-        'project_id',
+        'name',
+        'filename',
         'path',
         'type',
-        'filename',
-        'order'
+        'name',
+        'order',
+        'user_id',
+        'mediaable_id',
+        'mediaable_type',
     ];
 
-    public function project()
+    /**
+     * Get all of the owning mediaable models.
+     *
+     * @return MorphTo
+     */
+    public function mediaable(): MorphTo
     {
-        return $this->belongsTo(Project::class);
+        return $this->morphTo();
+    }
+
+    /**
+     * Get the user who created the media.
+     * 
+     * @return BelongsTo
+     */
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }

@@ -6,6 +6,11 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreMediaRequest;
 use App\Http\Requests\UpdateMediaRequest;
 use App\Models\Media;
+use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Facades\Log;
+use App\PiniaStation\Facades\PiniaLoader;
+use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
@@ -36,9 +41,12 @@ class MediaController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Media $media)
+    public function show(Media $medium)
     {
-        //
+        return response()->file(Storage::path($medium->path), [
+            'Content-Disposition' => "attachment; filename=\"{$medium->filename}\"",
+            'Content-Type' => Storage::mimeType($medium->type),
+        ]);
     }
 
     /**
@@ -60,8 +68,14 @@ class MediaController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Media $media)
+    public function destroy(Media $medium)
     {
-        //
+        // Delete media from storage
+        Storage::delete($medium);
+
+        // Delete medium model
+        $medium->delete();
+        
+        return PiniaLoader::toApiResponse();
     }
 }

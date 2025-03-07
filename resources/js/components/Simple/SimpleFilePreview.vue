@@ -111,6 +111,31 @@ function onMouseEnter() {
 function onMouseLeave() {
 	hover.value = false;
 }
+
+const previewUrl = ref(null);
+
+// Function to generate base64 preview
+function generatePreview(file) {
+	if (!file || !file.file) return;
+
+	const fileType = getFileExtension(file.type);
+	console.log(file.type);
+	if (['PNG', 'JPG', 'JPEG'].includes(fileType)) {
+		const reader = new FileReader();
+		reader.onload = () => {
+			previewUrl.value = reader.result;
+		};
+		reader.readAsDataURL(file.file);
+	} else {
+		previewUrl.value = null;
+	}
+}
+
+// Watch file changes and generate preview
+watch(() => props.file, () => {
+	generatePreview(props.file);
+}, { immediate: true });
+
 </script>
 
 <template>
@@ -121,11 +146,11 @@ function onMouseLeave() {
 			{ 'slide-out-to-left': file.removing },
 			{ 'slide-in-from-left': animateIn },
 		]">
-		<div class="grid grid-cols-[auto,1fr,40px] items-center text-brand-dark-gray px-2">
-			
-			<div class="relative inline-block">
-				<FontAwesomeIcon icon="file" size="3x" class="px-2 mr-3" :class="fileColor" />
-				<span class="absolute bottom-2 left-3 text-white text-xs font-bold">
+		<div class="grid grid-cols-[auto,1fr,40px] items-center text-brand-dark-gray px-2">	
+			<img v-if="previewUrl" :src="previewUrl" class="mt-1 w-16 h-16 object-cover rounded-lg shadow-md mr-3" />
+			<div v-else class="relative inline-block w-16 mr-3 grid justify-center">		
+				<FontAwesomeIcon icon="file" size="3x" class="px-2" :class="fileColor" />
+				<span class="absolute bottom-2 left-5 text-white text-xs font-bold">
 					{{ fileType }}
 				</span>
 			</div>
