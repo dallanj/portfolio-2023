@@ -39,6 +39,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('/projects')->controller(ProjectController::class)->group(function () {
         Route::get('/', 'search');
+        Route::get('/{project:hash}/media', 'media');
     });
 
     Route::resource('projects', ProjectController::class)->only([
@@ -46,8 +47,8 @@ Route::prefix('v1')->group(function () {
     ])->middleware([HandlePrecognitiveRequests::class]);
 
     Route::resource('media', MediaController::class)->only([
-        'store', 'update', 'destroy'
-    ])->middleware([HandlePrecognitiveRequests::class]);
+        'store', 'update', 'destroy', 'show'
+    ]);
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
