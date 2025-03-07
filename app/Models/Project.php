@@ -6,13 +6,15 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
 use App\Traits\ModelHashingTrait;
+use App\Traits\HasMedia;
 
 class Project extends Model
 {
     /** @use HasFactory<\Database\Factories\ProjectFactory> */
     use HasFactory,
         ModelHashingTrait,
-        SoftDeletes;
+        SoftDeletes,
+        HasMedia;
 
     /** @var array Searchable fields for model */
     public array $searchable = [];
@@ -45,14 +47,6 @@ class Project extends Model
         'slug',
         'order'
     ];
-
-    /**
-     * Get the media.
-     */
-    public function media()
-    {
-        return $this->hasMany(Media::class)->orderBy('order');
-    }
 
     /**
      * Get the links.
