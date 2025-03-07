@@ -10,6 +10,7 @@ use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Http\JsonResponse;
 use App\Models\Project;
 use Illuminate\Support\Str;
+use App\Services\MediaService;
 
 class ProjectController extends Controller
 {
@@ -34,6 +35,14 @@ class ProjectController extends Controller
     {
         $data = $request->validated();
 
+        if (empty($data['title'])) {
+            // Count existing projects with "untitled" in the title (case-insensitive)
+            $count = Project::where('title', 'LIKE', '%untitled%')->count();
+    
+            // Set title with the count
+            $data['title'] = "Untitled-" . ($count + 1);
+        }
+
         $project = Project::create([
             ...$data,
             'slug' => Str::slug($data['title'])
@@ -50,6 +59,14 @@ class ProjectController extends Controller
     public function update(UpdateProjectRequest $request, Project $project)
     {
         $data = $request->validated();
+
+        if (empty($data['title'])) {
+            // Count existing projects with "untitled" in the title (case-insensitive)
+            $count = Project::where('title', 'LIKE', '%untitled%')->count();
+    
+            // Set title with the count
+            $data['title'] = "Untitled-" . ($count + 1);
+        }
 
         $project = Project::updateOrCreate([
             'hash' => $project->hash,
@@ -75,5 +92,24 @@ class ProjectController extends Controller
         return inertia('Projects/Index', [
             'pinia' => PiniaLoader::toJson()
         ]);
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     */
+    public function media(Project $project, StoreProjectRequest $request)
+    {
+        $data = $request->validated();
+
+        if ($request->has('file')) {
+            (new MediaService)->create([
+                'mediaable' => $project,
+                'file' => $request->file('file'),
+            ]);
+        }
+
+        PiniaLoader::load('projects', 'active', $project);
+
+        return PiniaLoader::toApiResponse();
     }
 }
