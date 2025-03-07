@@ -39,6 +39,8 @@ class ProjectsLoader
      */
     public function active(Project $project)
     {
+        $project->loadMissing('media');
+        
         return (new ProjectResource($project))->resolve(request());
     }
 };
