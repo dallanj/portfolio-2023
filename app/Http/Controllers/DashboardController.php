@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use App\PiniaStation\Facades\PiniaLoader;
 
 class DashboardController extends Controller
 {
@@ -14,9 +15,10 @@ class DashboardController extends Controller
      */
     public function dashboardPage()
     {
-        return Inertia::render('Dashboard', [
-            'laravel' => \Illuminate\Foundation\Application::VERSION,
-            'php' => PHP_VERSION,
+        PiniaLoader::load('dashboard', 'all');
+
+        return inertia('Dashboard', [
+            'pinia' => PiniaLoader::toJson()
         ]);
     }
 }
