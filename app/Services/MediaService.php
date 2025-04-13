@@ -26,10 +26,9 @@ class MediaService
         $file = $attributes['file'];
         
         $user = auth()->user();
-        $uuid = Str::uuid();
 
         // Save the file locally
-        $path = $file->storeAs("projects/$uuid", $file->hashName());
+        $path = $file->storeAs("projects/{$mediaable->hash}", $file->hashName());
 
         if (!$path) {
             Log::error('Failed to save file');
