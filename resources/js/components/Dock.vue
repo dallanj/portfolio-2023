@@ -20,7 +20,7 @@
             class="nav-menu bg-black bg-opacity-50 border-r border-black scrollbar-hidden overflow-auto h-full p-0.5 transition-all duration-500">
             <template v-if="isReady">
                 <li
-                    v-for="app in applications"
+                    v-for="app in all"
                     :key="`nav-${app.value}`"
                     :id="`nav-item-${app.value}`"
                     class="flex flex-col items-center static p-2 mb-1 rounded-md"
@@ -72,13 +72,12 @@ const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } =
 const isReady = ref(false);
 // Use the Pinia store
 const store = useDashboardStore();
+const { all } = storeToRefs(useDashboardStore());
 
-const { applications } = storeToRefs(store);
-
-// Reactive state and getters
+// Reactistoreve state and getters
 const activitiesStore = useActivitiesStore();
 
-const { activities, all, active } = storeToRefs(activitiesStore);
+const { activities, active } = storeToRefs(activitiesStore);
 const {
     setDropdown,
     setActiveWindow,
@@ -93,7 +92,7 @@ const {
 // Lifecycle hook: Fetch data and update date label on mount
 onMounted(async () => {
     store.updateDateLabel();
-    await store.fetchApplications();
+    await store.applications();
     isReady.value = true;
 });
 
