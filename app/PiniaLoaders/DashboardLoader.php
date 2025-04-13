@@ -12,7 +12,7 @@ class DashboardLoader
      * 
      * @return Collection
      */
-    public function applications(): Collection
+    public function all(): Collection
     {
         return collect(Applications::cases())->map(fn($app) => [
             'label' => $app->label(),

@@ -4,11 +4,11 @@ import { ref } from 'vue';
 export function useFileUploader(initalUrl) {
     const url = ref(initalUrl);
 
-    const uploadFile = async (file, folderId = null) => {
+    const uploadFile = async (file, hash = null) => {
         // Set up the request data
         let formData = new FormData()
-        if (folderId) {
-            formData.append('folder_id', folderId);
+        if (hash) {
+            formData.append('hash', hash);
         }
         formData.append('file', file.file);
 
@@ -35,8 +35,9 @@ export function useFileUploader(initalUrl) {
         }
     };
 
-    const uploadFiles = (files, folderId = null) => {
-        return Promise.all(files.map((file) => uploadFile(file, folderId)))
+    const uploadFiles = (files, hash = null) => {
+        console.log(files.value);
+        return Promise.all(files.value.map((file) => uploadFile(file, hash)))
     };
 
 	return {

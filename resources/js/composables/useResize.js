@@ -11,7 +11,7 @@ export function useResize(application) {
     const { setActiveWindow } = useActivitiesStore();
 
     // Reactive cursor changes to the direction(s) of resizing
-    const cursor = ref('cursor-default');
+    const cursor = ref('');
 
     // Computed width, height for styling
     const windowWidth = computed(() => (
@@ -38,13 +38,20 @@ export function useResize(application) {
 
     // Change the cursor when hovering over the perimeter of the window
     const setCursor = (event) => {
-        if (!event.target.classList.contains('app-window')) {
-            cursor.value = 'cursor-default';
-            return;
-        }
+        const bounds = event.currentTarget.getBoundingClientRect();
+        const offsetX = event.clientX - bounds.left;
+        const offsetY = event.clientY - bounds.top;
+        const edgeThreshold = 10;
 
-        // Change cursor to the direction of resizing
-        switch (findDirection(event)) {
+        let direction = '';
+
+        if (offsetX < edgeThreshold) direction = 'left';
+        else if (offsetX > bounds.width - edgeThreshold) direction = 'right';
+
+        if (offsetY < edgeThreshold) direction += direction ? '-top' : 'top';
+        else if (offsetY > bounds.height - edgeThreshold) direction += direction ? '-bottom' : 'bottom';
+
+        switch (direction) {
             case 'left':
             case 'right':
                 cursor.value = 'cursor-ew-resize';
@@ -61,6 +68,8 @@ export function useResize(application) {
             case 'right-bottom':
                 cursor.value = 'cursor-nwse-resize';
                 break;
+            default:
+                cursor.value = 'cursor-default';
         }
     }
 

@@ -4,13 +4,31 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import axios from 'axios';
 
 export const useDashboardStore = defineStore('dashboard', () => {
-    const applications = ref([]);
+    const all = ref(null);
+
     const topBar = ref({
         activities: { label: 'Activities', value: 'activities' },
         current: { label: 'Current Window', value: 'current', action: null },
         date: { label: '', value: 'date' },
         settings: { label: 'Settings', value: 'settings', action: 'toggleSettingsMenu' },
     });
+
+    const actions = {
+        applications: () => {
+            return axios.get('/api/v1/applications');
+        },
+    };
+
+    function $reset(key = null) {
+        const resetMap = {
+            all: () => { all.value = [0]; },
+        };
+
+        if (key && resetMap[key]) {
+            // Reset only the specific key passed
+            resetMap[key]();
+        }
+    };
 
     // Actions
     const fetchApplications = async () => {
@@ -41,15 +59,17 @@ export const useDashboardStore = defineStore('dashboard', () => {
 
     return {
         // State
-        applications,
+        all,
         topBar,
 
         // Actions
+        ...actions,
         fetchApplications,
         updateDateLabel,
 
         // Getters
         getApplicationByValue,
+        $reset,
     };
 });
 

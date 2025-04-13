@@ -4,6 +4,7 @@ import { useActivitiesStore } from '@/stores/activities';
 import { useResize } from '@/composables/useResize';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
+import Projects from '@/Pages/Dashboard/Projects.vue';
 
 const props = defineProps({
     activity: {
@@ -40,7 +41,7 @@ watch(application.value, updated);
 <article
     :ref="`${application.data.value}-application`"
     :id="`${application.data.value}-application`"
-    class="app-window fixed block"
+    class="app-window fixed block flex flex-col overflow-hidden"
     :class="[
       cursor,
       { 'rounded-t-xl': application.roundedBorder },
@@ -60,5 +61,21 @@ watch(application.value, updated);
         <h2 class="select-none">{{ application.data.label }}</h2>
         <ApplicationWindowActions v-model="application" />
     </ApplicationWindowHeader>
+    
+    <section v-if="application.id === 'projects-activity'" class="flex-1 overflow-hidden">
+        <Projects />
+    </section>
+
+    <section v-if="application.id === 'terminal-activity'">
+        terminal
+    </section>
+
+    <section v-if="application.id === 'about-activity'">
+        about
+    </section>
+
+    <section v-if="application.id === 'contact-activity'">
+        contact
+    </section>
 </article>
 </template>

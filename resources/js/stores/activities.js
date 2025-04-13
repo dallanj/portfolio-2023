@@ -98,6 +98,17 @@ export const useActivitiesStore = defineStore('activities', () => {
         }
     };
 
+    function $reset(key = null) {
+        const resetMap = {
+            all: () => { all.value = [0]; },
+        };
+
+        if (key && resetMap[key]) {
+            // Reset only the specific key passed
+            resetMap[key]();
+        }
+    };
+
 
     return {
         all,
@@ -124,7 +135,9 @@ export const useActivitiesStore = defineStore('activities', () => {
         stopDrag,
         setCursor,
 
-        windowOutOfBounds
+        windowOutOfBounds,
+
+        $reset,
     };
 });
 

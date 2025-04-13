@@ -25,6 +25,6 @@ class UserLoader
     public function profile(): Object
     {
         $user = Auth::user();
-        return $user;
+        return $user ?: null;
     }
 };

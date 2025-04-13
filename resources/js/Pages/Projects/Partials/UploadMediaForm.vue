@@ -2,7 +2,6 @@
 import { ref, computed, onMounted, watch, nextTick, defineExpose } from 'vue';
 import { useFileList } from '@/composables/dragndrop/useFileList.vue';
 import { useFileUploader } from '@/composables/dragndrop/useFileUploader.vue';
-import { router } from '@inertiajs/vue3';
 import { storeToRefs } from 'pinia';
 import { useProjectsStore } from '@/stores/projects';
 
@@ -10,11 +9,9 @@ const emit = defineEmits(['save-project']);
 
 const { files, addFiles, removeFile, removeAllFiles } = useFileList();
 
-// // const action = ref()
 const { active } = storeToRefs(useProjectsStore());
 
 const form = ref({ processing: false });
-// const project = computed(() => model); // Fetch project data from Inertia
 const media = ref([]); // Store project media files
 
 // Define model binding
@@ -24,7 +21,7 @@ const model = defineModel({
 });
 
 const project = computed(() => model.value);
-const action = computed(() => `/api/v1/projects/${project.value?.hash}/media`);
+const action = computed(() => `/api/v1/projects/${active.value?.hash}/media`);
 const { uploadFiles } = useFileUploader(action);
 
 watch(active, async (obj) => {
@@ -50,22 +47,16 @@ const onInputChange = (e) => {
 }
 
 const uploadMedia = async () => {
-    if (!project.value?.hash) {
-        console.log('uploadMedia');
-        emit('save-project');
-        return;
-    }
-
     form.value.processing = true;
     try {
-        await uploadFiles(files);
+        await uploadFiles(files, active.value.hash);
         form.value.processing = false;
         $toast.success('Your media files have been sucessfully uploaded');
         // Reload media from API after upload
-        // media.value = await fetchProjectMedia();
     } catch (error) {
+        console.log(error);
         form.value.processing = false;
-        $toast.success('Your media files failed to upload');
+        $toast.error('Your media files failed to upload');
     } finally {
         form.value.processing = false;
     }

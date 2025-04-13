@@ -10,6 +10,16 @@ export default {
         './resources/js/**/*.vue',
     ],
 
+    safelist: [
+        'cursor-default',
+        'cursor-pointer',
+        'cursor-move',
+        'cursor-ew-resize',
+        'cursor-ns-resize',
+        'cursor-nesw-resize',
+        'cursor-nwse-resize',
+    ],
+
     theme: {
         content: [
             './resources/**/*.blade.php',
