@@ -27,6 +27,8 @@ class ProjectsLoader
             ->thenReturn()
             ->paginate(request()->per_page ?? 8);
 
+        $projects->loadMissing('media');
+
         return (new ProjectsCollection($projects))->resolve(request());    
     }
 
