@@ -20,7 +20,7 @@ use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 
 Route::prefix('v1')->group(function () {
     Route::get('/applications', function (Request $request) {
-        PiniaLoader::load('dashboard', 'applications');
+        PiniaLoader::load('dashboard', 'all');
 
         return PiniaLoader::toApiResponse();
     });
@@ -39,7 +39,7 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('/projects')->controller(ProjectController::class)->group(function () {
         Route::get('/', 'search');
-        Route::get('/{project:hash}/media', 'media');
+        Route::post('/{project:hash}/media', 'media');
     });
 
     Route::resource('projects', ProjectController::class)->only([
