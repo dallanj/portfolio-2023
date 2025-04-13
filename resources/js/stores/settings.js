@@ -51,6 +51,17 @@ export const useSettingsStore = defineStore('settings', () => {
         }
     };
 
+    function $reset(key = null) {
+        const resetMap = {
+            all: () => { all.value = [0]; },
+        };
+
+        if (key && resetMap[key]) {
+            // Reset only the specific key passed
+            resetMap[key]();
+        }
+    };
+
     return {
         all,
         boundaries,
@@ -62,6 +73,7 @@ export const useSettingsStore = defineStore('settings', () => {
         settingsMenu,
 
         fetchUserAgent,
+        $reset,
     };
 });
 
