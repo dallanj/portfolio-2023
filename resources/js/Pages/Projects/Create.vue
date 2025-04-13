@@ -2,13 +2,14 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import UploadMediaForm from './Partials/UploadMediaForm.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, watch, nextTick, computed } from 'vue';
+import { ref, onBeforeMount, watch, nextTick, computed } from 'vue';
 import { useForm } from 'laravel-precognition-vue-inertia';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useToast } from 'vue-toastification';
 import { useProjectsStore } from '@/stores/projects';
 import { storeToRefs } from 'pinia';
+import axios from 'axios';
 
 const projectStore = useProjectsStore();
 const { create, update } = projectStore;
@@ -20,6 +21,18 @@ const project = ref({
     overview: '',
     description: '',
     media: [],
+});
+
+onBeforeMount(async () => {
+    if (!window.location.pathname.endsWith('/edit')) {
+        try {
+            const response = await axios.post('/api/v1/projects');
+        
+            return response;
+        } catch (error) {
+            throw error;
+        }
+    }
 });
 
 watch(active, async (obj) => {
@@ -35,7 +48,6 @@ const editing = computed(() => !!active?.value?.hash);
 
 watch(editing, async (val) => {
     await nextTick();
-    console.log('watcher editing', val);
     if (val) {
         router.visit(`/projects/${active.value?.hash}/edit`);
     }
@@ -53,17 +65,8 @@ const save = async () => {
 
         const response = await action({
             ...project.value,
-            // hash: props.user.hash,
         });
 
-        console.log(response);
-
-        // if (response.status === 200 && !editing.value) {
-        //     router.visit(`/projects/${active.value?.hash}/edit`);
-        // }
-
-        toast.success(toastMessage);
-        console.log('saveProject');
         // Now that project is created, trigger media upload
         if (uploadMediaFromRef.value) {
             uploadMediaFromRef.value.uploadMedia();
@@ -96,8 +99,7 @@ const uploadMediaFromRef = ref(null);
                                 <UploadMediaForm
                                     v-model="project.media"
                                     ref="uploadMediaFromRef"
-                                    class="max-w-xl"
-                                    @save-project="save" />
+                                    class="max-w-xl" />
 
                                 <div class="flex flex-col gap-3">
                                     <div>
