@@ -202,12 +202,32 @@ class PiniaLoaderFactory
      * @param string $module
      * @param mixed $method
      *
-     * @return array
+     * @return ReflectionMethod
      */
-    protected function getLoaderMethod(string $module, $method)
+   protected function getLoaderMethod(string $module, string $method): ReflectionMethod
     {
-        return Arr::first($this->loaders[$module]['methods'], fn ($x) => $x->name === $method);
+        $loaderClass = $this->resolveModule($module);
+
+        if (!method_exists($loaderClass, $method)) {
+            throw new Exception("Method {$method} does not exist in module {$module}.");
+        }
+
+        return new ReflectionMethod($loaderClass, $method);
     }
+
+    private function resolveModule(string $module): object
+    {
+        // Example: Convert "User" to "App\\Modules\\UserLoadedsr"
+        $module = ucfirst($module);
+        $class = "App\\PiniaLoaders\\{$module}Loader";
+        
+        if (!class_exists($class)) {
+            throw new Exception("Module loader class {$class} not found.");
+        }
+
+        return new $class();
+    } 
+
 
     /**
      * Validates and returns the arguments passed to the loader function method
@@ -221,6 +241,10 @@ class PiniaLoaderFactory
     {
         // Gather the required parameters from the method
         $reflectionMethod = $this->getLoaderMethod($module, $method);
+    
+        if (!$reflectionMethod instanceof ReflectionMethod) {
+            throw new Exception("Expected ReflectionMethod from getLoaderMethod, got " . gettype($reflectionMethod));
+        }
 
         // Get the parameters for the function method
         $parameters = $reflectionMethod->getParameters();
