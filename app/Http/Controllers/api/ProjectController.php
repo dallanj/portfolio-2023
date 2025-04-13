@@ -104,7 +104,7 @@ class ProjectController extends Controller
         if ($request->has('file')) {
             (new MediaService)->create([
                 'mediaable' => $project,
-                'file' => $request->file('file'),
+                'file' => $data['file'],
             ]);
         }
 

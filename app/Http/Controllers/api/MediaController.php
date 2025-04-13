@@ -71,7 +71,7 @@ class MediaController extends Controller
     public function destroy(Media $medium)
     {
         // Delete media from storage
-        Storage::delete($medium);
+        Storage::delete($medium->path);
 
         // Delete medium model
         $medium->delete();
