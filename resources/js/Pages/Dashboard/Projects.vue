@@ -1,5 +1,5 @@
 <template>
-<div class="h-screen overflow-hidden flex flex-col">
+<div class="h-full overflow-y-scroll flex flex-col">
     <div class="flex flex-1 overflow-hidden m-3">
     <!-- Sidebar -->
         <aside class="w-64 bg-gray-800 text-white flex flex-col overflow-y-scroll">
@@ -14,7 +14,7 @@
         </aside>
 
         <!-- Main Content -->
-        <main class="flex-1 min-h-0 bg-gray-800 p-6 overflow-auto">
+        <main class="flex-1 min-h-0 bg-gray-800 p-6 overflow-y-scroll">
             <ul class="flex flex-wrap gap-4" id="projects">
                 <li v-for="item in all?.data" :key="item.id" class="w-64 flex-shrink-0">
                     <div class="rounded shadow p-2 group cursor-pointer">
