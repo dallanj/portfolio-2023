@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\ProjectController;
 use App\Http\Controllers\api\MediaController;
+use App\Http\Controllers\api\TagController;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 
@@ -49,6 +50,14 @@ Route::prefix('v1')->group(function () {
     Route::resource('media', MediaController::class)->only([
         'store', 'update', 'destroy', 'show'
     ]);
+
+    Route::resource('tags', TagController::class)->only([
+        'store', 'update', 'destroy'
+    ])->middleware([HandlePrecognitiveRequests::class]);
+
+    Route::prefix('/tags')->controller(TagController::class)->group(function () {
+        Route::get('/', 'search');
+    });
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();

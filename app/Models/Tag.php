@@ -12,6 +12,22 @@ class Tag extends Model
     use HasFactory,
         ModelHashingTrait;
 
+    /** @var array Searchable fields for model */
+    public array $searchable = [];
+
+    /**
+     * Constructor.
+     */
+    public function __construct(array $attributes = [])
+    {
+        parent::__construct($attributes);
+
+        // Initialize searchable fields with dynamic role methods
+        $this->searchable = [
+            'name' => [],
+        ];
+    }
+
     protected $fillable = [
         'name',
         'slug'

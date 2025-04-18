@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
+use App\Http\Controllers\TagController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -21,6 +22,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('dashboard');
     
     Route::resource('projects', ProjectController::class)->only([
+        'index', 'show', 'create', 'edit'
+    ]);
+
+    Route::resource('tags', TagController::class)->only([
         'index', 'show', 'create', 'edit'
     ]);
 });
