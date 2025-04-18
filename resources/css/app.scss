@@ -10,8 +10,7 @@
 @tailwind components;
 @tailwind utilities;
 
-html, body, #app {
+html, body, #mainLayout {
     height: 100%;
     margin: 0;
-    overflow: hidden;
 }
