@@ -204,7 +204,7 @@ const clearSorting = () => {
         </tbody>
     </table>
 
-    <p v-if="data?.data?.length === 0" class="p-4 text-center w-full">
+    <p v-if="!data || data?.data?.length === 0" class="p-4 text-center w-full">
         Sorry, but there are no results found.
     </p>
 
