@@ -1,5 +1,5 @@
-<script setup lang="ts">
-import { ref } from 'vue';
+<script setup>
+import { ref, inject, computed } from 'vue';
 import ApplicationLogo from '@/Components/ApplicationLogo.vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
@@ -11,6 +11,16 @@ import { storeToRefs } from 'pinia';
 const { profile } = storeToRefs(useUserStore());
 
 const showingNavigationDropdown = ref(false);
+
+const { activeModal } = inject('modals');
+import { useComponentValidator } from '@/composables/useComponentValidator';
+
+const { isValidComponent } = useComponentValidator();
+
+// Validate that the modal has been registered
+const isModalValid = computed(() => {
+    return isValidComponent(activeModal.value);
+});
 </script>
 
 <template>
@@ -181,5 +191,6 @@ const showingNavigationDropdown = ref(false);
                 <slot />
             </main>
         </div>
+        <ModalBase v-if="isModalValid" />
     </div>
 </template>

@@ -1,12 +1,13 @@
-<script setup lang="ts">
+<script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import { Head, Link, router } from '@inertiajs/vue3';
+import { Head, router } from '@inertiajs/vue3';
 import { useTagsStore } from '@/stores/tags';
 import { storeToRefs } from 'pinia';
 import { watch, nextTick, ref, inject, computed } from 'vue';
 import { capitalizeFirstLetter } from '@/utils/formatting';
 
 const { all } = storeToRefs(useTagsStore());
+const { openModal } = inject('modals');
 const data = ref(null);
 
 // Use the Pinia store
@@ -42,28 +43,42 @@ const headers = computed(() => {
     if (useCards.value) {
         return [
             { title: 'Name', key: 'name', type: 'title', truncate: true, list: [
-                { label: 'Created', key: 'created_at', value: item => new Date(item.created_at).toDateString() },
+                { label: 'Active', key: 'is_active', value: item.is_active },
+                { label: 'Created', key: 'created_at', value: item => new Date(item.created_at).toDateString() }
             ]},
         ];
     } else {
         return [
             { title: 'Name', key: 'name', width: 'w-40', sortable: true, truncate: true },
+            { title: 'Active', key: 'is_active', width: 'w-10', sortable: true, truncate: true },
             { title: 'Created', key: 'created_at', width: 'w-40', sortable: true, value: item => new Date(item.created_at).toDateString() },
         ];
     }
 });
 
 const search = () => {
-    console.log({ ...searchParams.value });
-    // router.post(item.destroy_url);
     store.search({ ...searchParams.value });
 };
 
-const create = () => router.visit('/tags/create');
+const create = () => {
+    tagModal({
+        title: 'Create Tag',
+        position: 'justify-content: safe center; align-items: center;',
+    });
+};
 
-const show = (item) => router.visit(`/tags/${item.hash}`);
+const edit = (tag) => {
+    tagModal({
+        title: 'Update Tag',
+        subtitle: `You are updating the tag ${tag.name}.`,
+        tag: tag,
+        position: 'justify-content: safe center; align-items: center;',
+    });
+};
 
-const edit = (item) => router.visit(`/tags/${item.hash}/edit`);
+const tagModal = (data) => {
+    openModal('TagsModal', data);
+}
 
 const destroy = (item) => router.delete(`/api/v1/tags/${item.hash}`);
 
@@ -91,7 +106,6 @@ const activeClass = (active) => {
 
     return classes
 };
-
 </script>
 
 <template>
@@ -102,7 +116,9 @@ const activeClass = (active) => {
             <h2 class="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-200">
                 Tags
             </h2>
-            <a class="cursor-pointer" @click.prevent="create">Create</a>
+            <SimpleButton @click="create">
+                Create Tag
+            </SimpleButton>
         </template>
 
         <div class="py-12">
@@ -119,14 +135,12 @@ const activeClass = (active) => {
                                 @search="search" />
                         </form>
                         <!-- Fix SimpleDataCard -->
-                        <!-- Add is_active to tags table -->
                         <component
                             :is="useCards ? 'SimpleDataTable' : 'SimpleDataTable'"
                             v-bind="{
                                 data: data,
                                 headers: headers,
                                 actions: [
-                                    { title: 'View', icon: 'file', action: item => show(item) },
                                     { title: 'Edit', icon: 'file-pen', action: item => edit(item) },
                                     { title: 'Delete', icon: 'file-circle-xmark', action: item => destroy(item) },
                                 ],
@@ -136,8 +150,8 @@ const activeClass = (active) => {
                             }"
                             @fetch-page="fetchPage">
                             <template #is_active="{ item }">
-                                <div :class="[ activeClass(item.created_at), { 'mr-4': useCards } ]">
-                                    {{ capitalizeFirstLetter(item.created_at ? 'ACTIVE' : 'NOT ACTIVE') }}
+                                <div :class="[ activeClass(item.is_active), { 'mr-4': useCards } ]">
+                                    {{ capitalizeFirstLetter(item.is_active ? 'ACTIVE' : 'NOT ACTIVE') }}
                                 </div>
                             </template>
                         </component>
