@@ -1,7 +1,7 @@
 <template>
 <div class="simple-modal">
     <div class="simple-modal__container" :class="`simple-modal__size-${modalSize}`">
-        <!-- <header v-if="$slots.header" class="">
+        <header v-if="$slots.header" class="">
             <hgroup class="simple-modal__hgroup">
                 <div class="flex justify-between">
                     <h2
@@ -20,7 +20,7 @@
                     <slot name="subtitle" />
                 </p>
             </hgroup>
-        </header> -->
+        </header>
         <section class="simple-modal__section">
             <slot />
         </section>
