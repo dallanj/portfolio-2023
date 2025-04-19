@@ -37,15 +37,15 @@
 
     // Modal header styling
     &__hgroup {
-        @apply px-3 py-4 flex flex-col gap-y-2 border-b-2 text-black border-black/[.45];
+        @apply px-3 py-4 flex flex-col gap-y-2 border-b-2 text-white border-dropdown-border/[.45];
 
         &-exit {
-            @apply cursor-pointer hover:text-black transition-transform hover:scale-110 transition ease-in-out duration-150;
+            @apply cursor-pointer hover:text-white transition-transform hover:scale-110 transition ease-in-out duration-150;
         }
 
         &-exit,
         &-subtitle {
-            @apply text-black;
+            @apply text-white;
         }
 
         // Header styling
