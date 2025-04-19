@@ -34,20 +34,12 @@ class TagController extends Controller
     {
         $data = $request->validated();
 
-        if (empty($data['title'])) {
-            // Count existing tags with "untitled" in the title (case-insensitive)
-            $count = Tag::where('title', 'LIKE', '%untitled%')->count();
-    
-            // Set title with the count
-            $data['title'] = "Untitled-" . ($count + 1);
-        }
-
-        $project = Tag::create([
+        $tag = Tag::create([
             ...$data,
-            'slug' => Str::slug($data['title'])
+            'slug' => Str::slug($data['name'])
         ]);
 
-        PiniaLoader::load('tags', 'active', $project);
+        PiniaLoader::load('tags', 'all');
 
         return PiniaLoader::toApiResponse();
     }
@@ -55,26 +47,18 @@ class TagController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(UpdateTagRequest $request, Tag $project)
+    public function update(UpdateTagRequest $request, Tag $tag)
     {
         $data = $request->validated();
 
-        if (empty($data['title'])) {
-            // Count existing tags with "untitled" in the title (case-insensitive)
-            $count = Tag::where('title', 'LIKE', '%untitled%')->count();
-    
-            // Set title with the count
-            $data['title'] = "Untitled-" . ($count + 1);
-        }
-
-        $project = Tag::updateOrCreate([
-            'hash' => $project->hash,
+        $tag = Tag::updateOrCreate([
+            'hash' => $tag->hash,
         ], [
             ...$data,
-            'slug' => Str::slug($data['title'])
+            'slug' => Str::slug($data['name'])
         ]);
 
-        PiniaLoader::load('tags', 'active', $project);
+        PiniaLoader::load('tags', 'all');
 
         return PiniaLoader::toApiResponse();
     }
@@ -82,9 +66,9 @@ class TagController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Tag $project)
+    public function destroy(Tag $tag)
     {
-        $project->delete();
+        $tag->delete();
 
         PiniaLoader::load('tags', 'all');
 
