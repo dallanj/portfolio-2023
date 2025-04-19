@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\api\ProjectController;
 use App\Http\Controllers\api\MediaController;
 use App\Http\Controllers\api\TagController;
+use App\Http\Controllers\api\ResumeController;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 
@@ -56,6 +57,14 @@ Route::prefix('v1')->group(function () {
     ])->middleware([HandlePrecognitiveRequests::class]);
 
     Route::prefix('/tags')->controller(TagController::class)->group(function () {
+        Route::get('/', 'search');
+    });
+
+    Route::resource('resumes', ResumeController::class)->only([
+        'store', 'update', 'destroy'
+    ])->middleware([HandlePrecognitiveRequests::class]);
+
+    Route::prefix('/resumes')->controller(ResumeController::class)->group(function () {
         Route::get('/', 'search');
     });
 
