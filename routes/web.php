@@ -3,6 +3,7 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TagController;
+use App\Http\Controllers\ResumeController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
@@ -26,6 +27,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ]);
 
     Route::resource('tags', TagController::class)->only([
+        'index', 'show', 'create', 'edit'
+    ]);
+
+    Route::resource('resumes', ResumeController::class)->only([
         'index', 'show', 'create', 'edit'
     ]);
 });

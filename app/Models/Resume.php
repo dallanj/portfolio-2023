@@ -2,17 +2,14 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Traits\ModelHashingTrait;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use App\Traits\ModelHashingTrait;
 
-class Tag extends Model
+class Resume extends Model
 {
-    /** @use HasFactory<\Database\Factories\TagFactory> */
-    use HasFactory,
-        ModelHashingTrait,
-        SoftDeletes;
+    use SoftDeletes,
+        ModelHashingTrait;
 
     /** @var array Searchable fields for model */
     public array $searchable = [];
@@ -26,7 +23,8 @@ class Tag extends Model
 
         // Initialize searchable fields with dynamic role methods
         $this->searchable = [
-            'name' => [],
+            'title'     => [],
+            'version'   => [],
         ];
     }
 
@@ -36,9 +34,11 @@ class Tag extends Model
      * @var array<int, string>
      */
     protected $fillable = [
-        'name',
-        'slug',
-        'is_active'
+        'title',
+        'version',
+        'delta',
+        'html',
+        'is_draft',
     ];
 
     /**
@@ -47,14 +47,7 @@ class Tag extends Model
      * @var array<string, string>
      */
     protected $casts = [
-        'is_active'  => 'boolean'
+        'delta'     => 'array',
+        'is_draft'  => 'boolean'
     ];
-
-    /**
-     * Get the projects assigned to.
-     */
-    public function projects()
-    {
-        return $this->belongsToMany(Project::class);
-    }
 }
