@@ -27,10 +27,10 @@ enum Applications: string
             self::TERMINAL => 'Terminal',
             self::ABOUT => 'About',
             self::PROJECTS => 'Projects',
+            self::RESUME => 'Resume',
             self::CONTACT => 'Contact',
             self::LINKEDIN => 'Linked-In',
             self::GITHUB => 'Github',
-            self::RESUME => 'Resume',
         };
     }
     
@@ -42,7 +42,7 @@ enum Applications: string
     public function isApplication(): bool
     {
         return match ($this) {
-            self::LINKEDIN, self::GITHUB, self::RESUME => false,
+            self::LINKEDIN, self::GITHUB => false,
             default => true,
         };
     }
@@ -57,7 +57,6 @@ enum Applications: string
         return match ($this) {
             self::LINKEDIN => 'https://www.linkedin.com/',
             self::GITHUB => 'https://github.com/',
-            self::RESUME => 'https://dallan.ca/',
             default => null,
         };
     } 
@@ -85,8 +84,14 @@ enum Applications: string
             self::PROJECTS => [
                 'left' => 300,
                 'top' => 200,
-                'width' => 250,
-                'height' => 250,
+                'width' => 600,
+                'height' => 400,
+            ],
+            self::RESUME => [
+                'left' => 100,
+                'top' => 60,
+                'width' => 1000,
+                'height' => 600,
             ],
             self::CONTACT => [
                 'left' => 700,
@@ -101,12 +106,6 @@ enum Applications: string
                 'height' => 250,
             ],
             self::GITHUB => [
-                'left' => 700,
-                'top' => 300,
-                'width' => 250,
-                'height' => 250,
-            ],
-            self::RESUME => [
                 'left' => 700,
                 'top' => 300,
                 'width' => 250,

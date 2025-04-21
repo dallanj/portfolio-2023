@@ -11,6 +11,8 @@ use Illuminate\Http\JsonResponse;
 use App\Models\Resume;
 use Illuminate\Support\Str;
 use App\Services\MediaService;
+use App\Helpers\PdfGenerator;
+use Illuminate\Support\Facades\Storage;
 
 class ResumeController extends Controller
 {
@@ -105,6 +107,35 @@ class ResumeController extends Controller
             'version' => Resume::where('title', $data['title'])->max('version') + 1 ?? 1,
         ]);
 
+        if (!$data['is_draft']) {
+            // Set all other resumes as draft
+            Resume::where('id', '!=', $resume->id ?? null) // in case you're updating
+                ->update(['is_draft' => true]);
+        }
+
+        // Path to save the PDF (e.g., resumes/{resume_id}.pdf)
+        $path = "resumes/{$resume->hash}.pdf";
+        $absolutePath = storage_path("app/{$path}");
+
+        // Save PDF file
+        PdfGenerator::fromHtml($data['html'], $absolutePath);
+
+        // Save to disk
+        if (!$resume->media) {
+            (new MediaService)->create([
+                'mediaable' => $resume,
+                'file' => $path, // Store just the relative path
+            ]);
+        } else {
+            // Update existing media record (e.g., if you store the path)
+            $resume->media->update([
+                'file' => $path, // Overwrite if needed or just leave if path stays same
+            ]);
+            
+            // Optional: If you want to re-save the file every time
+            Storage::put($path, file_get_contents($absolutePath));
+        }
+
         PiniaLoader::load('resumes', 'active', $resume);
 
         return PiniaLoader::toApiResponse();
@@ -135,6 +166,34 @@ class ResumeController extends Controller
             'version' => Resume::where('title', $data['title'])->max('version') + 1 ?? 1,
         ]);
 
+        if (!$data['is_draft']) {
+            // Set all other resumes as draft
+            Resume::where('id', '!=', $resume->id ?? null) // in case you're updating
+                ->update(['is_draft' => true]);
+        }
+
+        // Path to save the PDF for Resume
+        $path = "resumes/{$resume->hash}.pdf";
+        $absolutePath = storage_path("app/{$path}");
+
+        // Save PDF file
+        PdfGenerator::fromHtml($data['html'], $absolutePath);
+
+        // Store PDF for Resume media
+        if (!$resume->media) {
+            (new MediaService)->create([
+                'mediaable' => $resume,  // Associating the media with the Resume model
+                'file' => $path,
+            ]);
+        } else {
+            $resume->media->update([
+                'file' => $path, 
+            ]);
+            
+            Storage::put($path, file_get_contents($absolutePath));
+        }
+        
+
         PiniaLoader::load('resumes', 'active', $resume);
 
         return PiniaLoader::toApiResponse();
@@ -151,6 +210,19 @@ class ResumeController extends Controller
 
         return inertia('Projects/Index', [
             'pinia' => PiniaLoader::toJson()
+        ]);
+    }
+
+    /**
+     * Display the specified resource.
+     */
+    public function show(Request $request)
+    {
+        $resume = Resume::whereIsDraft(false)->first();
+        
+        return response()->file(Storage::path($resume->media->path), [
+            'Content-Disposition' => "attachment; filename=\"{$resume->media->filename}\"",
+            'Content-Type' => Storage::mimeType($resume->media->path),
         ]);
     }
 }

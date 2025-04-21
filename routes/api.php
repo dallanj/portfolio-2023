@@ -61,7 +61,7 @@ Route::prefix('v1')->group(function () {
     });
 
     Route::resource('resumes', ResumeController::class)->only([
-        'store', 'update', 'destroy'
+        'store', 'update', 'destroy', 'show'
     ])->middleware([HandlePrecognitiveRequests::class]);
 
     Route::prefix('/resumes')->controller(ResumeController::class)->group(function () {

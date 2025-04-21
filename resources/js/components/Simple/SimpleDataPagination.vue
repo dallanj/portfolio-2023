@@ -128,7 +128,7 @@ const options = ref([1, 2, 3, 4]);
         :options="options"
         label="Items Per Page"
         side-label
-        placeholder="Choose an option"
+        placeholder="Items Per Page"
         @update:modelValue="changePage(pagination.current_page)" />
 </nav>
 </template>
