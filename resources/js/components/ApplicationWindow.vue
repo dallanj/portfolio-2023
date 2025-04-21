@@ -5,6 +5,7 @@ import { useResize } from '@/composables/useResize';
 import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
 import Projects from '@/Pages/Dashboard/Projects.vue';
+import Resume from '@/Pages/Dashboard/Resume.vue';
 
 const props = defineProps({
     activity: {
@@ -68,6 +69,10 @@ watch(application.value, updated);
 
     <section v-if="application.id === 'terminal-activity'">
         terminal
+    </section>
+
+    <section v-if="application.id === 'resume-activity'">
+        <Resume />
     </section>
 
     <section v-if="application.id === 'about-activity'">
