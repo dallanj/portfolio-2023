@@ -17,7 +17,9 @@ class PiniaPrefetcher
      */
     public function handle($request, Closure $next)
     {
-        if (Auth::check()) {
+        if ($request->getPathInfo() === '/') {
+            PiniaLoader::load('dashboard', 'all', lazy: true);
+        } elseif (Auth::check() && $request->getPathInfo() !== '/') {
             PiniaLoader::load('user', 'profile', lazy: true);
             // PiniaLoader::load('options', [
             //     'roles',
