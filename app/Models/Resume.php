@@ -50,4 +50,12 @@ class Resume extends Model
         'delta'     => 'array',
         'is_draft'  => 'boolean'
     ];
+
+    /**
+     * Get the resume PDF.
+     */
+    public function media()
+    {
+        return $this->morphOne(Media::class, 'mediaable');
+    }
 }
