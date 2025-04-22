@@ -1,46 +1,84 @@
+<script setup>
+import { ref, onMounted } from 'vue';
+import { storeToRefs } from 'pinia';
+import { capitalizeFirstLetter } from '@/utils/formatting';
+
+import { useProjectsStore } from '@/stores/projects';
+import { useTagsStore } from '@/stores/tags';
+
+const isReady = ref(false);
+
+// Setup stores
+const projectsStore = useProjectsStore();
+const tagsStore = useTagsStore();
+
+// Destructure with aliases
+const { all: allProjects } = storeToRefs(projectsStore);
+const { all: allTags } = storeToRefs(tagsStore);
+
+onMounted(async () => {
+    await projectsStore.search({ paginate: false });
+    await tagsStore.search({ paginate: false });
+    isReady.value = true;
+});
+</script>
+
 <template>
 <div class="h-full overflow-y-scroll flex flex-col">
-    <div class="flex flex-1 overflow-hidden m-3">
+    <div class="flex flex-1 overflow-hidden">
     <!-- Sidebar -->
-        <aside class="w-64 bg-gray-800 text-white flex flex-col overflow-y-scroll">
-            <div class="p-4 text-lg font-semibold border-b border-gray-700">Explorer</div>
-            <nav class="flex-1 overflow-y-scroll p-4">
-                <ul class="space-y-2">
-                    <li v-for="item in sidebarItems" :key="item" class="hover:bg-gray-700 p-2 rounded cursor-pointer">
-                    {{ item }}
+        <aside class="w-48 bg-sidebar-bg text-white flex flex-col overflow-y-scroll border-r border-r-sidebar-border">
+            <!-- <div class="p-4 text-lg font-semibold border-b border-gray-700">Explorer</div> -->
+            <nav class="flex-1 overflow-y-scroll">
+                <ul v-if="isReady" class="space-y-2">
+                    <li v-for="item in allTags" :key="item" class="hover:bg-sidebar-textbghover py-2 px-4 cursor-pointer text-sm">
+                    {{ item.name }}
                     </li>
                 </ul>
             </nav>
         </aside>
 
-        <!-- Main Content -->
-        <main class="flex-1 min-h-0 bg-gray-800 p-6 overflow-y-scroll">
-            <ul class="flex flex-wrap gap-4" id="projects">
-                <li v-for="item in all?.data" :key="item.id" class="w-64 flex-shrink-0">
-                    <div class="rounded shadow p-2 group cursor-pointer">
-                    <div class="relative">
-                        <img
-                            v-if="item.media[0].url"
-                            :src="item.media[0].url"
-                            :alt="`Preview of ${item.title}`"
-                            class="w-full h-40 object-cover rounded opacity-75"
-                            style="box-shadow: 8px 8px 0 rgba(0, 0, 0, 0.15);">
-                        <img v-else
-                            src="/images/placeholder.png"
-                            alt="No preview available"
-                            class="w-full h-32 object-cover rounded"
-                            />
-                        <div class="absolute inset-0 bg-black bg-opacity-60 opacity-0 group-hover:opacity-100 transition-opacity text-white p-2 overflow-y-auto text-xs">
-                            <ul class="flex flex-wrap gap-1">
-                                <li v-for="tag in item.tags" :key="tag" class="bg-gray-700 px-2 py-1 rounded">{{ tag }}</li>
-                            </ul>
-                            <div class="mt-2 underline">more..</div>
-                        </div>
-                        <p class="text-lg text-center text-gray-300 p-2">
-                            {{ item.title }}
-                        </p>
-                    </div>
-                    <p class="text-sm text-center mt-2 truncate">{{ item.name }}</p>
+        <main class="flex-1 min-h-0 p-6 overflow-y-scroll">
+            <ul v-if="isReady" class="flex flex-wrap gap-8" id="projects">
+                <li
+                    v-for="item in allProjects" 
+                    :key="`project-${item.id}`"
+                    class="flex-none basis-1/4 min-w-128 rounded shadows overflow-hidden h-[36rem] flex"
+                    style="box-shadow: 0 8px 8px 2px rgba(0, 0, 0, 0.15);">
+                    <div class="group cursor-pointer flex flex-col gap-4 h-full w-full">
+                        <figure class="overflow-hidden">
+                            <img
+                                v-if="item.media[0].url"
+                                :src="item.media[0].url"
+                                :alt="`Preview of ${item.title}`"
+                                class="object-cover rounded-t opacity-75 aspect-video hover:scale-110 transition-transform size-full">
+                            <img v-else
+                                src="/images/placeholder.png"
+                                alt="No preview available"
+                                class="w-full h-32 object-cover rounded" />
+                        </figure>
+                        <article class="p-2 space-y-3 flex-grow">
+                            <hgroup class="space-y-3 font-bold">
+                                <h2 class="text-base text-gray-500 uppercase">personal project</h2>
+                                <p class="text-xl text-gray-300">{{ capitalizeFirstLetter(item.title) }}</p>
+                            </hgroup>
+
+                            <div>
+                                <ol class="flex flex-wrap gap-4">
+                                    <li
+                                        v-for="tag in allTags"
+                                        :key="`tag-${tag.id}`">
+                                        <span class="py-1 px-2 rounded bg-sidebar-bg">{{ tag.name }}</span>
+                                    </li>
+                                </ol>
+                            </div>
+
+                            <p class="text-base mt-2">{{ capitalizeFirstLetter(item.overview) }}</p>
+                        </article>
+
+                        <footer class="self-end p-3">
+                            <SimpleButton state="secondary" @click="$emit('close')">Click to see more!</SimpleButton>
+                        </footer>
                     </div>
                 </li>
             </ul>
@@ -48,30 +86,7 @@
     </div>
 </div>
 </template>
-  
-<script setup>
-import { ref, onMounted, onBeforeMount } from 'vue';
-import { useProjectsStore } from '@/stores/projects';
-import { storeToRefs } from 'pinia';
-const isReady = ref(false);
-// Use the Pinia store
-const store = useProjectsStore();
-const { all } = storeToRefs(useProjectsStore());
-onMounted(async () => {
-    await store.search();
-    isReady.value = true;
-});
-const sidebarItems = [
-  'Home',
-  'Documents',
-  'Downloads',
-  'Music',
-  'Pictures',
-  'Videos'
-];
 
-</script>
-  
 <style scoped>
 ::-webkit-scrollbar {
   width: 6px;
@@ -81,4 +96,3 @@ const sidebarItems = [
   border-radius: 10px;
 }
 </style>
-  
