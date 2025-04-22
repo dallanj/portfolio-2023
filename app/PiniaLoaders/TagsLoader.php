@@ -17,15 +17,27 @@ class TagsLoader
      */
     public function all()
     {
-        $tags = Pipeline::send(Tag::query())
+        $tags = Pipeline::send(Tag::query()->whereIsActive(true))
             ->through([
                 Searchable::class,
                 Sortable::class,
             ])
-            ->thenReturn()
-            ->paginate(request()->per_page ?? 8);
+            ->thenReturn();
 
-        return $tags;  
+        if (request()->boolean('paginate', true)) {
+            $tags = $tags->paginate(request()->per_page ?? 8);
+        } else {
+            $tags = $tags->get();
+        }
+        
+        if ($tags instanceof \Illuminate\Pagination\Paginator || $tags instanceof \Illuminate\Pagination\LengthAwarePaginator) {
+            // return (new ProjectsCollection($projects))->resolve(request());
+            return $tags;
+        }
+    
+        // If not paginated, transform manually
+        // return ProjectResource::collection($projects)->resolve(request());  
+        return $tags;
     }
 
     /**

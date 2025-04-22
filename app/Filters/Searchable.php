@@ -12,7 +12,7 @@ use Illuminate\Support\Facades\DB;
 
 class Searchable
 {
-    protected ModelsUser $user;
+    protected ?ModelsUser $user;
 
     public function __construct(protected Request $request)
     {
@@ -46,7 +46,7 @@ class Searchable
                 
                 // Search dynamic columns from the model
                 $columns->each(function ($fields, $key) use ($q, $table) {
-                    if (isset($fields['roles']) && !$this->user->hasAnyRole($fields['roles'])) {
+                    if (isset($fields['roles']) && !$this->hasAccess($fields['roles'])) {
                         return;
                     }
                     $q->orWhere("$table.$key", 'regexp', $this->request->term);
@@ -58,7 +58,7 @@ class Searchable
                 if ($raw !== null) {
                     // Apply SQL to columns from the model
                     $raw->each(function ($fields, $key) use ($q) {
-                        if (isset($fields['roles']) && !$this->user->hasAnyRole($fields['roles'])) {
+                        if (isset($fields['roles']) && !$this->hasAccess($fields['roles'])) {
                             return;
                         }
                         $sql = is_array($fields['query']) ? collect($fields['query'])->flatten()->toArray() : $fields['query'];
@@ -76,5 +76,16 @@ class Searchable
         }
 
         return $next($query);
+    }
+
+    /**
+     * Checks if user is unauthenticated and a guest
+     *
+     * @param array $roles
+     * @return bool
+     */
+    protected function hasAccess(array $roles): bool
+    {
+        return $this->user && $this->user->hasAnyRole($roles);
     }
 }

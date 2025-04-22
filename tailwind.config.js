@@ -30,6 +30,13 @@ export default {
         ],
         extend: {
             colors: {
+                sidebar: {
+                    bg: '#272727',
+                    text: '#bfbfbf',
+                    textbghover: '#2f2f2f',
+                    textcolorhover: '#ffffff',
+                    border: '#151515'
+                },
                 dropdown: {
                     bg: '#1d1d1d',
                     text: '#f7f7f7',
@@ -68,6 +75,7 @@ export default {
                 'viewport-1/2': '50vw',
                 'viewport-2/3': '66vw',
                 'viewport-3/4': '75vw',
+                '128': '30rem',
             },
             maxWidth: {
                 'viewport-1/4': '25vw',
