@@ -34,11 +34,9 @@ export const useResumesStore = defineStore('resumes', () => {
             return axios.delete(`/api/v1/resumes/${payload.hash}`, payload);
         },
         show: async () => {
-            // return axios.get(`/api/v1/resumes/show`);
             const response = await axios.get('/api/v1/resumes/show', {
                 responseType: 'blob',
             });
-            
             const blob = response.data;
             const url = URL.createObjectURL(blob);
             resume.value = url;            
