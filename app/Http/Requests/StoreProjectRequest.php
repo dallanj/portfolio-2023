@@ -26,6 +26,8 @@ class StoreProjectRequest extends FormRequest
             'overview' => 'nullable|string|max:128',
             'description' => 'nullable|string',
             'file'  => 'nullable|file',
+            'tags' => ['array'],
+            'tags.*' => ['exists:tags,id'],
         ];
     }
 }
