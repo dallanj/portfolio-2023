@@ -1,26 +1,42 @@
-<script setup lang="ts">
+<script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import UploadMediaForm from './Partials/UploadMediaForm.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
-import { ref, onBeforeMount, watch, nextTick, computed } from 'vue';
+import { ref, onMounted, onBeforeMount, watch, nextTick, computed } from 'vue';
 import { useForm } from 'laravel-precognition-vue-inertia';
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { useToast } from 'vue-toastification';
 import { useProjectsStore } from '@/stores/projects';
+import { useTagsStore } from '@/stores/tags';
 import { storeToRefs } from 'pinia';
 import axios from 'axios';
 
-const projectStore = useProjectsStore();
-const { create, update } = projectStore;
+// Setup stores
+const projectsStore = useProjectsStore();
+const tagsStore = useTagsStore();
+
+const { create, update } = projectsStore;
+
+// Destructure with aliases
+const { active } = storeToRefs(projectsStore);
+const { all: allTags } = storeToRefs(tagsStore);
+
+const isReady = ref(false);
+
+onMounted(async () => {
+    await tagsStore.search({ paginate: false });
+    isReady.value = true;
+});
 
 const toast = useToast();
-const { active } = storeToRefs(useProjectsStore());
+
 const project = ref({
     title: '',
     overview: '',
     description: '',
     media: [],
+    tags: [],
 });
 
 onBeforeMount(async () => {
@@ -39,6 +55,9 @@ watch(active, async (obj) => {
     await nextTick();
     if (obj) {
         project.value = obj;
+
+        // If tags are full objects, extract their ids
+        selectedTags.value = obj.tags?.map(tag => tag.id) ?? [];
     }
 }, {
     deep: true
@@ -58,6 +77,14 @@ const title = ref(null);
 const overview = ref(null);
 const description = ref(null);
 
+const uploadMediaFromRef = ref(null);
+
+const selectedTags = ref([]);
+const setTags = (tags) => {
+    selectedTags.value = tags;
+  // do something with tags...
+};
+
 const save = async () => {
     try {
         const action = editing.value ? update : create;
@@ -65,6 +92,7 @@ const save = async () => {
 
         const response = await action({
             ...project.value,
+            tags: selectedTags.value
         });
 
         // Now that project is created, trigger media upload
@@ -75,8 +103,6 @@ const save = async () => {
         toast.error('An unexpected error occurred');
     }
 };
-
-const uploadMediaFromRef = ref(null);
 </script>
 
 <template>
@@ -94,7 +120,7 @@ const uploadMediaFromRef = ref(null);
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="overflow-hidden bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                     <div class="p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-2">
-                        <form @submit.prevent="save" class="mt-6 space-y-6">
+                        <form v-if="isReady" @submit.prevent="save" class="mt-6 space-y-6">
                             <div class="grid grid-cols-2 gap-4">
                                 <UploadMediaForm
                                     v-model="project.media"
@@ -102,6 +128,15 @@ const uploadMediaFromRef = ref(null);
                                     class="max-w-xl" />
 
                                 <div class="flex flex-col gap-3">
+                                    <SimpleDropdown
+                                        v-model="selectedTags"
+                                        :options="allTags"
+                                        label-key="name"
+                                        value-key="id"
+                                        label="Assign a tag to the project"
+                                        multiple
+                                        placeholder="Assign a tag"
+                                        @update:modelValue="setTags(selectedTags)" />
                                     <div>
                                         <SimpleInputLabel for="title" value="Title" />
 
@@ -125,7 +160,7 @@ const uploadMediaFromRef = ref(null);
                                             class="mt-1 block w-full"
                                             autocomplete="overview" />
                                     </div>
-
+                                    
                                     <div>
                                         <SimpleInputLabel for="description" value="Description" />
 

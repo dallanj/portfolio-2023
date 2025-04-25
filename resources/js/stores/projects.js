@@ -31,6 +31,9 @@ export const useProjectsStore = defineStore('projects', () => {
         destroy: (payload) => {
             return axios.delete(`/api/v1/projects/${payload.hash}`, payload);
         },
+        setActiveProject(project) {
+            active.value = project;
+        },
     };
 
     return {

@@ -48,6 +48,10 @@ class ProjectController extends Controller
             'slug' => Str::slug($data['title'])
         ]);
 
+        if (!empty($data['tags'])) {
+            $project->tags()->sync($data['tags']);
+        }
+
         PiniaLoader::load('projects', 'active', $project);
 
         return PiniaLoader::toApiResponse();
@@ -74,6 +78,10 @@ class ProjectController extends Controller
             ...$data,
             'slug' => Str::slug($data['title'])
         ]);
+
+        if (!empty($data['tags'])) {
+            $project->tags()->sync($data['tags']);
+        }
 
         PiniaLoader::load('projects', 'active', $project);
 

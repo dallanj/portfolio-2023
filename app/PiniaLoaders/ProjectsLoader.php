@@ -32,7 +32,7 @@ class ProjectsLoader
             $projects = $projects->get();
         }
 
-        $projects->loadMissing('media');
+        $projects->loadMissing(['media', 'tags']);
         
         if ($projects instanceof \Illuminate\Pagination\Paginator || $projects instanceof \Illuminate\Pagination\LengthAwarePaginator) {
             return (new ProjectsCollection($projects))->resolve(request());
@@ -51,7 +51,7 @@ class ProjectsLoader
      */
     public function active(Project $project)
     {
-        $project->loadMissing('media');
+        $project->loadMissing(['media', 'tags']);
         
         return (new ProjectResource($project))->resolve(request());
     }

@@ -3,12 +3,12 @@ import { defineStore, acceptHMRUpdate } from 'pinia';
 import axios from 'axios';
 
 export const useTagsStore = defineStore('tags', () => {
-    const all = ref(null);
+    const all = ref([]);
     const active = ref(null);
 
     function $reset(key = null) {
         const resetMap = {
-            all: () => { all.value = null; },
+            all: () => { all.value = []; },
             active: () => { active.value = null; },
         };
 

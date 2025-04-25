@@ -25,6 +25,8 @@ class UpdateProjectRequest extends FormRequest
             'title' => 'required|string|min:3',
             'overview' => 'nullable|string|min:3',
             'description' => 'required|string|min:3',
+            'tags' => ['array'],
+            'tags.*' => ['exists:tags,id'],
         ];
     }
 }

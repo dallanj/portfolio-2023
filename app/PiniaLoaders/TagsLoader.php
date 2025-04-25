@@ -17,7 +17,7 @@ class TagsLoader
      */
     public function all()
     {
-        $tags = Pipeline::send(Tag::query()->whereIsActive(true))
+        $tags = Pipeline::send(Tag::query())
             ->through([
                 Searchable::class,
                 Sortable::class,
@@ -27,7 +27,7 @@ class TagsLoader
         if (request()->boolean('paginate', true)) {
             $tags = $tags->paginate(request()->per_page ?? 8);
         } else {
-            $tags = $tags->get();
+            $tags = $tags->whereIsActive(true)->get();
         }
         
         if ($tags instanceof \Illuminate\Pagination\Paginator || $tags instanceof \Illuminate\Pagination\LengthAwarePaginator) {
