@@ -5,6 +5,8 @@ import axios from 'axios';
 export const useProjectsStore = defineStore('projects', () => {
     const all = ref(null);
     const active = ref(null);
+    const history = ref([]);
+    const future = ref([]);
 
     function $reset(key = null) {
         const resetMap = {
@@ -31,7 +33,11 @@ export const useProjectsStore = defineStore('projects', () => {
         destroy: (payload) => {
             return axios.delete(`/api/v1/projects/${payload.hash}`, payload);
         },
-        setActiveProject(project) {
+        setActive(project) {
+            if (active.value?.id === project?.id) return;
+
+            if (active.value !== null) history.value.push(active.value);
+            future.value = [];
             active.value = project;
         },
     };
@@ -39,6 +45,8 @@ export const useProjectsStore = defineStore('projects', () => {
     return {
         all,
         active,
+        history,
+        future,
         $reset,
         ...actions
     };
