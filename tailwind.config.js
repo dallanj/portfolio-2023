@@ -35,7 +35,8 @@ export default {
                     text: '#bfbfbf',
                     textbghover: '#2f2f2f',
                     textcolorhover: '#ffffff',
-                    border: '#151515'
+                    border: '#151515',
+                    'selected-tag': '#3a3a3a',
                 },
                 dropdown: {
                     bg: '#1d1d1d',
@@ -53,6 +54,9 @@ export default {
                     white: '#dddddd',
                     button: '#2c2c2c',
                     'button-active': '#424241',
+                    'nav-bg': '#181818',
+                    'button-active': "#373737",
+                    'button-inactive': '#2a2a2a',
                 },
                 app: {
                     window: {
@@ -87,6 +91,9 @@ export default {
             fontFamily: {
                 sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             },
+            spacing: {
+                '1px': '1px',
+            }
         },
     },
 
