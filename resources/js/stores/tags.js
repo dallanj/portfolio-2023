@@ -5,6 +5,8 @@ import axios from 'axios';
 export const useTagsStore = defineStore('tags', () => {
     const all = ref([]);
     const active = ref(null);
+    const history = ref([]);
+    const future = ref([]);
 
     function $reset(key = null) {
         const resetMap = {
@@ -31,11 +33,27 @@ export const useTagsStore = defineStore('tags', () => {
         destroy: (payload) => {
             return axios.delete(`/api/v1/tags/${payload.hash}`, payload);
         },
+        setActive(tag, preserveFuture = false) {
+            if (active.value?.id === tag?.id) return;
+        
+            if (active.value !== null) {
+                history.value.push(active.value);
+            }
+        
+            if (!preserveFuture) {
+                future.value = [];
+            }
+        
+            active.value = tag;
+        }
+        
     };
 
     return {
         all,
         active,
+        history,
+        future,
         $reset,
         ...actions
     };
