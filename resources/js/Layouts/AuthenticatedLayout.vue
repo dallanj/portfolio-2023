@@ -60,6 +60,11 @@ const isModalValid = computed(() => {
                                     :active="route().current('resumes.index')">
                                     Resumes
                                 </NavLink>
+                                <NavLink
+                                    :href="route('contacts.index')"
+                                    :active="route().current('contacts.index')">
+                                    Messages
+                                </NavLink>
                             </div>
                         </div>
 
