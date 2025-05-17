@@ -6,6 +6,7 @@ use App\Http\Controllers\api\ProjectController;
 use App\Http\Controllers\api\MediaController;
 use App\Http\Controllers\api\TagController;
 use App\Http\Controllers\api\ResumeController;
+use App\Http\Controllers\api\ContactController;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 
@@ -70,5 +71,14 @@ Route::prefix('v1')->group(function () {
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
         return $request->user();
+    });
+
+
+    Route::get('/contacts/pgp', [ContactController::class, 'getPublicKey']);
+    Route::apiResource('contacts', ContactController::class);
+    Route::prefix('/contacts')->controller(ContactController::class)->group(function () {
+        Route::get('/', 'search');
+        Route::post('/read', 'markRead');
+        Route::post('/delete', 'bulkDelete');
     });
 });

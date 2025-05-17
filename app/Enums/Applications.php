@@ -94,10 +94,10 @@ enum Applications: string
                 'height' => 600,
             ],
             self::CONTACT => [
-                'left' => 700,
-                'top' => 300,
-                'width' => 250,
-                'height' => 250,
+                'left' => 300,
+                'top' => 100,
+                'width' => 300,
+                'height' => 350,
             ],
             self::LINKEDIN => [
                 'left' => 700,

@@ -7,6 +7,7 @@ import ApplicationWindowHeader from './ApplicationWindowHeader.vue';
 import ApplicationWindowActions from './ApplicationWindowActions.vue';
 import Projects from '@/Pages/Dashboard/Projects.vue';
 import Resume from '@/Pages/Dashboard/Resume.vue';
+import Contact from '@/Pages/Dashboard/Contact.vue';
 import { useProjectsStore } from '@/stores/projects';
 import { useTagsStore } from '@/stores/tags';
 
@@ -97,14 +98,16 @@ const projectsRef = ref(null);
         </div>
         <hgroup class="flex space-x-3">
             <h2 class="select-none">{{ application.data.label }}</h2>
-            <p v-if="activeTag" class="space-x-3">
-                <span class="space-x-3">/</span>
-                <span>{{ activeTag?.name }}</span>
-            </p>
-            <p v-if="activeProject" class="space-x-3">
-                <span class="space-x-3">/</span>
-                <span>{{ activeProject?.title }}</span>
-            </p>
+            <template v-if="application.id === 'projects-activity'">
+                <p v-if="activeTag" class="space-x-3">
+                    <span class="space-x-3">/</span>
+                    <span>{{ activeTag?.name }}</span>
+                </p>
+                <p v-if="activeProject" class="space-x-3">
+                    <span class="space-x-3">/</span>
+                    <span>{{ activeProject?.title }}</span>
+                </p>
+            </template>
         </hgroup>
         <ApplicationWindowActions v-model="application" />
     </ApplicationWindowHeader>
@@ -125,8 +128,8 @@ const projectsRef = ref(null);
         about
     </section>
 
-    <section v-if="application.id === 'contact-activity'">
-        contact
+    <section v-if="application.id === 'contact-activity'" class="flex-1 overflow-hidden">
+        <Contact />
     </section>
 </article>
 </template>

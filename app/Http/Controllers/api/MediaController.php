@@ -10,7 +10,6 @@ use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Log;
 use App\PiniaStation\Facades\PiniaLoader;
-use Illuminate\Http\Request;
 
 class MediaController extends Controller
 {
