@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\ContactController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ProjectController;
 use App\Http\Controllers\TagController;
@@ -31,6 +32,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     ]);
 
     Route::resource('resumes', ResumeController::class)->only([
+        'index', 'show', 'create', 'edit'
+    ]);
+
+    Route::resource('contacts', ContactController::class)->only([
         'index', 'show', 'create', 'edit'
     ]);
 });
