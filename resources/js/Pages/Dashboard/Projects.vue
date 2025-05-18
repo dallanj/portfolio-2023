@@ -81,13 +81,11 @@ const handleTagClick = (tag) => {
         active.value = null;
     }
 
-    if (selectedTag.value) {
-        tagHistory.value.push(tagActive.value);
-    }
+    tagsStore.setActive(tag, true);
+    selectedTag.value = tag.name;
 
     tagFuture.value = [];
-    tagsStore.setActive(tag);
-    selectedTag.value = tag.name;
+    tagsStore.setActive(tag, true);
 };
 
 const resetActiveTag = () => {
@@ -105,10 +103,6 @@ const resetActiveTag = () => {
         active.value = null;
     }
 };
-
-watch(() => tagActive.value, (newTag) => {
-    selectedTag.value = newTag?.name || null;
-});
 </script>
 
 <template>
