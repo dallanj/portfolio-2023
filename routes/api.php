@@ -67,6 +67,9 @@ Route::prefix('v1')->group(function () {
 
     Route::prefix('/resumes')->controller(ResumeController::class)->group(function () {
         Route::get('/', 'search');
+        Route::post('/publish', 'publish');
+        Route::post('/draft', 'draft');
+        Route::post('/bulk-delete', 'bulkDelete');
     });
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
@@ -78,7 +81,9 @@ Route::prefix('v1')->group(function () {
     Route::apiResource('contacts', ContactController::class);
     Route::prefix('/contacts')->controller(ContactController::class)->group(function () {
         Route::get('/', 'search');
-        Route::post('/read', 'markRead');
-        Route::post('/delete', 'bulkDelete');
+        Route::post('/mark-read', 'markRead');
+        Route::post('/mark-unread', 'markUnread');
+        Route::post('/mark-important', 'markImportant');
+        Route::post('/bulk-delete', 'bulkDelete');
     });
 });
