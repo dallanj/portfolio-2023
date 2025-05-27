@@ -1,5 +1,5 @@
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed, watch } from 'vue';
 import Checkbox from '@/Components/Checkbox.vue';
 
 const props = defineProps({
@@ -45,9 +45,11 @@ const toggleSelectAll = () => {
         : props?.data?.data?.map(item => item.id);
 };
 const toggleSelectItem = (id) => {
-    selectedItems.value = selectedItems.value.includes(id)
-        ? selectedItems.value.filter(itemId => itemId !== id)
-        : selectedItems.value.push(id);
+    if (selectedItems.value.includes(id)) {
+        selectedItems.value = selectedItems.value.filter(itemId => itemId !== id);
+    } else {
+        selectedItems.value = [...selectedItems.value, id];
+    }
 };
 
 const expandedRows = ref([]);
@@ -59,10 +61,9 @@ const toggleRowExpansion = (id) => {
 };
 
 // Pagination - Get pages
-const emit = defineEmits(['fetch-page']);
+const emit = defineEmits(['fetch-page', 'update:selected']);
 
 const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = [] }) => {
-    console.log('SimpleDataTable', page, itemsPerPage, sortBy)
     emit('fetch-page', {
         page,
         itemsPerPage,
@@ -90,7 +91,8 @@ const getSortIcon = (key) => {
 };
 
 // Handle click (Single or Shift + Click)
-const handleSort = (key, event) => {
+const handleSort = (key, sortable, event) => {
+    if (!sortable) return;
     const existingSort = sortedColumns.value.find((s) => s.key === key);
     const newOrder = getNextSortOrder(existingSort?.order);
 
@@ -122,6 +124,10 @@ const clearSorting = () => {
     sortedColumns.value = [];
     emitSorting();
 };
+
+watch(selectedItems, (val) => {
+    emit('update:selected', val);
+});
 </script>
 
 <template>
@@ -129,21 +135,29 @@ const clearSorting = () => {
     <table class="simple-data-table__container">
         <thead class="simple-data-table__headers">
             <tr>
-                <th v-if="selectable" class="header w-10">
+                <th v-if="selectable" class="header w-1">
                     <Checkbox
                         :checked="allSelected"
                         @change="toggleSelectAll" />
                 </th>
-                <th v-if="expandable" class="header w-10">
+                <th v-if="expandable" class="header w-1">
                 </th>
                 <th
                     v-for="header in headers"
                     :key="header.key"
                     scope="col"
-                    class="header cursor-pointer"
-                    :class="header.width"
-                    @click="handleSort(header.key, $event)">
-                    {{ header.title }}
+                    class="header"
+                    :class="[
+                        header.width,
+                        { 'cursor-pointer': header.sortable }
+                    ]"
+                    @click="handleSort(header.key, header.sortable, $event)">
+                    <span v-if="header.title">
+                        {{ header.title }}
+                    </span>
+                    <span v-if="!header.title && header?.icon">
+                        <FontAwesomeIcon :icon="header.icon" size="sm" class="fa-fw" />
+                    </span>
                     <span v-if="isSorted(header.key)">
                         <FontAwesomeIcon class="fa-fw" :icon="getSortIcon(header.key)" />
                     </span>
@@ -182,7 +196,15 @@ const clearSorting = () => {
                             <span
                                 v-tooltip="`${header.truncate ? getItemValue(header, item) : ''}`"
                                 :class="{ 'truncate': header.truncate }">
-                                {{ getItemValue(header, item) }}
+                                <template v-if="header?.icon">
+                                    <span v-if="getItemValue(header, item)">
+                                        <FontAwesomeIcon :icon="header.icon" size="sm" class="fa-fw" />
+                                    </span>
+                                </template>
+                                <span v-else>{{ getItemValue(header, item) }}</span>
+                                <span v-if="isSorted(header.key)">
+                                    <!-- <FontAwesomeIcon class="fa-fw" :icon="getSortIcon(header.key)" /> -->
+                                </span>
                             </span>
                         </slot>
                         <SimpleDataActions
