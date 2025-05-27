@@ -27,8 +27,24 @@ export const useContactsStore = defineStore('contacts', () => {
         create: (payload) => {
             return axios.post('/api/v1/contacts', payload);
         },
+        show: (params) => {
+            return axios.post(`/api/v1/contacts/${params.hash}`, params);
+        },
         getPublicKey: () => {
             return axios.get('/api/v1/contacts/pgp');
+        },
+
+        markRead: (payload) => {
+            return axios.post('/api/v1/contacts/mark-read', payload);
+        },
+        markUnread: (payload) => {
+            return axios.post('/api/v1/contacts/mark-unread', payload);
+        },
+        markImportant: (payload) => {
+            return axios.post('/api/v1/contacts/mark-important', payload);
+        },
+        bulkDelete: (payload) => {
+            return axios.post('/api/v1/contacts/bulk-delete', payload);
         },
     };
 
