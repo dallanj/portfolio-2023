@@ -13,7 +13,7 @@ export function useHeaders(props) {
     const hasActions = computed(() => props.actions.length > 0);
 
     const headers = computed(() => {
-        const headers = props.headers.map(header => {
+        const headers = props?.headers.map(header => {
             return { ...header };
         });
 
