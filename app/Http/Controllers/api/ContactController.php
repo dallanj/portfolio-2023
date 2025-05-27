@@ -8,6 +8,9 @@ use App\Http\Requests\StoreContactRequest;
 use App\PiniaStation\Facades\PiniaLoader;
 use App\Http\Requests\BulkMarkReadRequest;
 use App\Http\Requests\BulkDeleteContactsRequest;
+use App\Services\PgpEncryptorService;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class ContactController extends Controller
 {
@@ -26,13 +29,21 @@ class ContactController extends Controller
      */
     public function store(StoreContactRequest $request)
     {
-        $contact = Contact::create($request->validated());
+        $validated = $request->validated();
+
+        // Encrypt the message
+        $pgp = new PgpEncryptorService(null);
+        $validated['message'] = $pgp->encrypt($validated['message']);
+        // dd($validated);
+        
+
+        // dd($encryptedMessage);
+        $validated['message'] = Crypt::encryptString($validated['message']);
+        $contact = Contact::create($validated);
 
         PiniaLoader::load('contacts', 'all');
 
-        return inertia('Contacts/Index', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -40,7 +51,9 @@ class ContactController extends Controller
      */
     public function show(Contact $contact)
     {
-        //
+        PiniaLoader::load('contacts', 'active');
+
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -60,9 +73,7 @@ class ContactController extends Controller
 
         PiniaLoader::load('contacts', 'all');
 
-        return inertia('Contacts/Index', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -75,9 +86,33 @@ class ContactController extends Controller
 
         PiniaLoader::load('contacts', 'all');
 
-        return inertia('Contacts/Index', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
+    }
+
+    /**
+     * Mark message as unread for the specified resources from storage.
+     */
+    public function markUnread(BulkMarkReadRequest $request)
+    {
+        $ids = $request->input('ids', []);
+        Contact::whereIn('id', $ids)->update(['is_read' => false]);
+
+        PiniaLoader::load('contacts', 'all');
+
+        return PiniaLoader::toApiResponse();
+    }
+
+    /**
+     * Mark message as important for the specified resources from storage.
+     */
+    public function markImportant(BulkMarkReadRequest $request)
+    {
+        $ids = $request->input('ids', []);
+        Contact::whereIn('id', $ids)->update(['is_important' => true]);
+
+        PiniaLoader::load('contacts', 'all');
+
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -90,9 +125,7 @@ class ContactController extends Controller
 
         PiniaLoader::load('contacts', 'all');
 
-        return inertia('Contacts/Index', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -100,6 +133,17 @@ class ContactController extends Controller
      */
     public function getPublicKey()
     {
+        PiniaLoader::load('contacts', 'publicKey');
+
+        return PiniaLoader::toApiResponse();
+    }
+
+    /**
+     * Decrypt PGP contact message.
+     */
+    public function decrypt()
+    {
+        
         PiniaLoader::load('contacts', 'publicKey');
 
         return PiniaLoader::toApiResponse();
