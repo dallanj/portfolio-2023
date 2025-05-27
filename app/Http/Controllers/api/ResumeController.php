@@ -5,6 +5,7 @@ namespace App\Http\Controllers\api;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\StoreResumeRequest;
 use App\Http\Requests\UpdateResumeRequest;
+use App\Http\Requests\BulkDeleteResumesRequest;
 use Illuminate\Http\Request;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Http\JsonResponse;
@@ -12,6 +13,8 @@ use App\Models\Resume;
 use Illuminate\Support\Str;
 use App\Services\MediaService;
 use App\Helpers\PdfGenerator;
+use App\Http\Requests\DraftResumeRequest;
+use App\Http\Requests\PublishResumeRequest;
 use Illuminate\Support\Facades\Storage;
 
 class ResumeController extends Controller
@@ -208,9 +211,7 @@ class ResumeController extends Controller
 
         PiniaLoader::load('resumes', 'all');
 
-        return inertia('Projects/Index', [
-            'pinia' => PiniaLoader::toJson()
-        ]);
+        return PiniaLoader::toApiResponse();
     }
 
     /**
@@ -224,5 +225,49 @@ class ResumeController extends Controller
             'Content-Disposition' => "attachment; filename=\"{$resume->media->filename}\"",
             'Content-Type' => Storage::mimeType($resume->media->path),
         ]);
+    }
+
+    /**
+     * Publish resume and set any other published resume to draft for the specified resources from storage.
+     */
+    public function publish(PublishResumeRequest $request)
+    {
+        $ids = $request->input('ids', []);
+
+        // Set all currently published resumes to draft
+        Resume::where('is_draft', false)->update(['is_draft' => true]);
+
+        // Publish the selected resume
+        Resume::whereIn('id', $ids)->update(['is_draft' => false]);
+
+        PiniaLoader::load('resumes', 'all');
+
+        return PiniaLoader::toApiResponse();
+    }
+
+    /**
+     * Set resume as a draft for the specified resources from storage.
+     */
+    public function draft(DraftResumeRequest $request)
+    {
+        $ids = $request->input('ids', []);
+        Resume::whereIn('id', $ids)->update(['is_draft' => true]);
+
+        PiniaLoader::load('resumes', 'all');
+
+        return PiniaLoader::toApiResponse();
+    }
+
+    /**
+     * Remove the mass resources from storage.
+     */
+    public function bulkDelete(BulkDeleteResumesRequest $request)
+    {
+        $ids = $request->input('ids', []);
+        Resume::whereIn('id', $ids)->delete();
+
+        PiniaLoader::load('resumes', 'all');
+
+        return PiniaLoader::toApiResponse();
     }
 }
