@@ -86,7 +86,7 @@ const searchParams = ref({
     term: '',
     type: [],
     page: 1,
-    per_page: 4,
+    per_page: 8,
     sortBy: [],
 });
 
