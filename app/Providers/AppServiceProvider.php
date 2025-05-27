@@ -5,6 +5,8 @@ namespace App\Providers;
 use App\PiniaLoaders\ProjectsLoader;
 use Illuminate\Support\Facades\Vite;
 use Illuminate\Support\ServiceProvider;
+use App\Models\Contact;
+use App\Observers\ContactObserver;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,5 +26,6 @@ class AppServiceProvider extends ServiceProvider
     public function boot(): void
     {
         Vite::prefetch(concurrency: 3);
+        Contact::observe(ContactObserver::class);
     }
 }
