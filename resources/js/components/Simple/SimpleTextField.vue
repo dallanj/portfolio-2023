@@ -1,5 +1,5 @@
 <script setup>
-import { computed, defineProps } from 'vue';
+import { computed } from 'vue';
 
 const modelValue = defineModel({
     type: [String, Number],
@@ -34,13 +34,15 @@ const props = defineProps({
 });
 
 const alignmentClasses = computed(() =>
-    props.sideLabel ? 'flex-row items-center gap-2' : 'flex-col'
+    props.sideLabel
+        ? 'flex-col sm:flex-row sm:items-center sm:gap-2'
+        : 'flex-col'
 );
 </script>
 
 <template>
   <div class="flex gap-y-1" :class="alignmentClasses">
-    <label v-if="label" class="text-sm font-medium text-gray-700 dark:text-gray-300">
+    <label v-if="label" class="whitespace-nowrap text-sm font-medium text-gray-700 dark:text-gray-300">
         {{ label }}
     </label>
     <input

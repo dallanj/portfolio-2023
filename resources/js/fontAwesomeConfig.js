@@ -62,4 +62,8 @@ export {
     faSortDown,
     faFilter,
     faFilterCircleXmark,
+    faStar,
+    faShare,
+    faShareSquare,
+    faArchive,
 } from '@fortawesome/free-solid-svg-icons';

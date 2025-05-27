@@ -1,6 +1,6 @@
 <template>
 <div :class="classes">
-    <label v-if="label" class="col-span-1 text-left sm:text-right md:text-left">{{ label }}</label>
+    <label v-if="label" class="col-span-1 text-left sm:text-right md:text-left whitespace-nowrap text-sm font-medium text-gray-700 dark:text-gray-300">{{ label }}</label>
     <div class="col-span-3 flex items-center justify-between">
         <label class="switch">
             <input
@@ -45,9 +45,7 @@ const props = defineProps({
     
 <style lang="scss">
 .switch {
-    @apply relative inline-block h-9 w-16;
-    width: 60px;
-    height: 34px;
+    @apply relative inline-block h-7 w-16;
 }
     
 .switch input {
@@ -55,28 +53,20 @@ const props = defineProps({
 }
     
 .slider {
-    @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 duration-500;
-    background-color: #ccc;
-    // transition: 0.4s;
+    @apply absolute cursor-pointer top-0 left-0 right-0 bottom-0 duration-500 border border-app-header-bb bg-app-header-bg;
 }
     
 .slider:before {
-    @apply absolute bg-blue-200 w-7 h-7 duration-500 inset-y-1;
+    @apply absolute bg-white w-6.5 h-6.5 duration-500 inset-y-px inset-x-px;
     content: "";
-    // height: 26px;
-    // width: 26px;
-    // left: 4px;
-    // bottom: 4px;
-    // background-color: white;
-    // transition: 0.4s;
 }
     
 input:checked + .slider {
-    @apply bg-red-200
+    @apply bg-orange
 }
     
 input:checked + .slider:before {
-    transform: translateX(26px);
+    transform: translateX(35px);
 }
     
 .slider.round {

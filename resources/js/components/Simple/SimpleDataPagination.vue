@@ -1,6 +1,5 @@
 <script setup>
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
-import { Link, router } from '@inertiajs/vue3';
 import { computed, ref } from 'vue';
 
 const props = defineProps({
@@ -78,7 +77,7 @@ const options = ref([1, 2, 3, 4]);
         </p>
     </div>
     
-    <ul class="inline-flex -space-x-px rtl:space-x-reverse text-sm h-8">
+    <ul class="inline-flex items-center -space-x-px space-x-1">
         <li class="page-item" :class="{ disabled: !pagination.first_page_url }">
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white dark:bg-gray-700 dark:border-gray-800 hover:dark:bg-gray-600 text-gray-900 dark:text-gray-100 dark:hover:text-gray-200 border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
@@ -100,13 +99,20 @@ const options = ref([1, 2, 3, 4]);
             :key="page"
             class="page-item"
             :class="{ 'active': page === pagination.current_page }">
+            <span
+                v-if="page === pagination.current_page"
+                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight font-bold text-white bg-brand-primary border border-brand-primary cursor-default rounded">
+                {{ page }}
+            </span>
             <a
-                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white dark:bg-gray-700 dark:border-gray-800 hover:dark:bg-gray-600 text-gray-900 dark:text-gray-100 dark:hover:text-gray-200 border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
+                v-else
+                class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white dark:bg-gray-700 dark:border-gray-800 hover:dark:bg-gray-600 text-gray-900 dark:text-gray-100 dark:hover:text-gray-200 border border-gray-300 hover:bg-gray-100 hover:text-gray-700 rounded"
                 :href="`${pagination.path}?page=${page}`"
                 @click.prevent="changePage(page)">
                 {{ page }}
             </a>
         </li>
+
         <li class="page-item" :class="{ disabled: !pagination.next_page_url }">
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white dark:bg-gray-700 dark:border-gray-800 hover:dark:bg-gray-600 text-gray-900 dark:text-gray-100 dark:hover:text-gray-200 border border-gray-300 hover:bg-gray-100 hover:text-gray-700"

@@ -28,7 +28,11 @@ class ContactController extends Controller
      */
     public function show(Contact $contact)
     {
-        return inertia('Contacts/Show');
+        PiniaLoader::load('contacts', 'active', $contact);
+
+        return inertia('Contacts/Show', [
+            'pinia' => PiniaLoader::toJson()
+        ]);
     }
 
     /**

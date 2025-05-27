@@ -6,6 +6,8 @@ import { storeToRefs } from 'pinia';
 import { watch, nextTick, ref, inject, computed } from 'vue';
 import { capitalizeFirstLetter } from '@/utils/formatting';
 
+const { openModal } = inject('modals');
+const { markRead, markUnread, markImportant, bulkDelete } = useContactsStore();
 const { all } = storeToRefs(useContactsStore());
 
 const data = ref(null);
@@ -50,7 +52,8 @@ const headers = computed(() => {
         ];
     } else {
         return [
-            { title: 'Name', key: 'name', width: 'w-40', sortable: true, truncate: true },
+            { title: ' ', icon: 'star', key: 'is_important', width: 'w-1', sortable: false, truncate: true },
+            { title: 'Name', key: 'name', width: 'w-36', sortable: true, truncate: true },
             { title: 'Email', key: 'email', width: 'w-12', sortable: true, truncate: true },
             { title: 'Read', key: 'is_read', width: 'w-12', sortable: true, truncate: true },
             { title: 'Created', key: 'created_at', width: 'w-20', sortable: true, value: item => item ? new Date(item?.created_at).toDateString() : '-' },
@@ -74,7 +77,7 @@ const searchParams = ref({
     term: '',
     type: [],
     page: 1,
-    per_page: 4,
+    per_page: 8,
     sortBy: [],
 });
 
@@ -94,6 +97,12 @@ const activeClass = (active) => {
 
     return classes
 };
+
+const selectedItems = ref([]);
+const selectedItem = (items) => {
+    selectedItems.value = items;
+    console.log('selectedItems',items)
+}
 </script>
 
 <template>
@@ -110,15 +119,74 @@ const activeClass = (active) => {
             <div class="mx-auto max-w-7xl sm:px-6 lg:px-8">
                 <div class="bg-white shadow-sm sm:rounded-lg dark:bg-gray-800">
                     <div class="p-6 text-gray-900 dark:text-gray-100 flex flex-col gap-2">
-                        <form class="grid grid-cols-12 gap-x-4 mb-1" @submit.prevent>
+                        <form class="grid grid-cols-6 gap-x-4 mb-1" @submit.prevent>
                             <SimpleSearch
-                                class="col-span-6"
+                                class="col-span-3"
                                 v-model="searchParams.term"
                                 placeholder="Search..."
                                 label="Search"
                                 :disabled="!(isReady && all?.data)"
                                 @input="search"
                                 @search="search" />
+                                <SimpleDropdown
+                                    v-model="selected"
+                                    class="col-span-3 self-end justify-self-end"
+                                    :options="[
+                                        { 
+                                            label: 'Mark as Read', value: 'markRead', onSelect: async () => {
+                                                try {
+                                                    await markRead({ids: selectedItems})
+                                                    $toast.success('You have successfully marked records as read.');
+                                                    search();
+                                                } catch (error) {
+                                                    $toast.error('An unexpected error happened, the records could not be read.');
+                                                }
+                                            }
+                                        },
+                                        { 
+                                            label: 'Mark as Unread', value: 'markUnread', onSelect: async () => {
+                                                try {
+                                                    await markUnread({ids: selectedItems})
+                                                    $toast.success('You have successfully marked records as unread.');
+                                                    search();
+                                                } catch (error) {
+                                                    $toast.error('An unexpected error happened, the records could not be unread.');
+                                                }
+                                            }
+                                        },
+                                        { 
+                                            label: 'Mark as Important', value: 'markImportant', onSelect: async () => {
+                                                try {
+                                                    await markImportant({ids: selectedItems})
+                                                    $toast.success('You have successfully marked records as important.');
+                                                    search();
+                                                } catch (error) {
+                                                    $toast.error('An unexpected error happened, the records could not be marked as important.');
+                                                }
+                                            }
+                                        },
+                                        { 
+                                            label: 'Delete', value: 'bulkDelete', onSelect: async () => {
+                                                const result = await openModal('ConfirmationModal', {
+                                                    title: 'Confirmation',
+                                                    subtitle: 'Are you positive on proceeding to delete these records?',
+                                                    position: 'justify-content: safe center; align-items: center;',
+                                                });
+
+                                                if (result === true) {
+                                                    try {
+                                                        await bulkDelete({ids: selectedItems})
+                                                        $toast.success('You have successfully deleted records.');
+                                                        search();
+                                                    } catch (error) {
+                                                        $toast.error('An unexpected error happened, the records could not be deleted.');
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    ]"
+                                    placeholder="With Selected"
+                                    :disabled="!selectedItems.length" />
                         </form>
                         <!-- Fix SimpleDataCard -->
                         <component
@@ -127,14 +195,15 @@ const activeClass = (active) => {
                                 data: data,
                                 headers: headers,
                                 actions: [
-                                    { title: 'Edit', icon: 'file-pen', action: item => edit(item) },
+                                    { title: 'View', icon: 'file', action: item => show(item) },
                                     { title: 'Delete', icon: 'file-circle-xmark', action: item => destroy(item) },
                                 ],
                                 selectable: true,
                                 pagination: all,
                                 isReady: isReady,
                             }"
-                            @fetch-page="fetchPage">
+                            @fetch-page="fetchPage"
+                            @update:selected="selectedItem">
                             <template #is_read="{ item }">
                                 <div v-if="item" :class="[ activeClass(item?.is_read), { 'mr-4': useCards } ]">
                                     {{ capitalizeFirstLetter(item?.is_read ? 'READ' : 'UNREAD') }}

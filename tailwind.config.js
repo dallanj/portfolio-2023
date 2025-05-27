@@ -73,6 +73,12 @@ export default {
                     },
                 },
             },
+            width: {
+                '6.5': '1.5rem',
+            },
+            height: {
+                '6.5': '1.5rem',
+            },
             minWidth: {
                 'viewport-1/4': '25vw',
                 'viewport-1/3': '33vw',

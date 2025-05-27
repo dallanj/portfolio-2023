@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\SoftDeletes;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 use App\Traits\ModelHashingTrait;
 
 class Contact extends Model
@@ -39,5 +40,24 @@ class Contact extends Model
         'message',
         'pgp_key',
         'is_read',
+        'is_important',
     ];
+
+    /**
+     * The attributes that should be cast.
+     *
+     * @var array<string, string>
+     */
+    protected $casts = [
+        'is_active'     => 'boolean',
+        'is_important'  => 'boolean',
+    ];
+
+    /**
+     * Get the contact message.
+     */
+    public function contactLogs(): HasOne
+    {
+        return $this->hasOne(ContactLog::class);
+    }
 }

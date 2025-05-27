@@ -1,6 +1,7 @@
 import { ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import axios from 'axios';
+import { router } from '@inertiajs/vue3';
 
 export const useResumesStore = defineStore('resumes', () => {
     const all = ref(null);
@@ -21,25 +22,65 @@ export const useResumesStore = defineStore('resumes', () => {
     };
 
     const actions = {
-        search: (params) => {
-            return axios.get('/api/v1/resumes', { params });
+        async search(params = {}) {
+            const { data } = await axios.get('/api/v1/resumes', { params });
+            all.value = data;
+            return data;
         },
-        create: (payload) => {
-            return axios.post('/api/v1/resumes', payload);
+
+        async create(payload) {
+            const { data } = await axios.post('/api/v1/resumes', payload);
+            // Option 1: push new resume to list
+            if (all.value) all.value.unshift(data);
+            return data;
         },
-        update: (payload) => {
-            return axios.patch(`/api/v1/resumes/${payload.hash}`, payload);
+
+        async update(payload) {
+            const { data } = await axios.patch(`/api/v1/resumes/${payload.hash}`, payload);
+            if (all.value) {
+                const index = all.value.findIndex(r => r.hash === payload.hash);
+                if (index !== -1) all.value[index] = data;
+            }
+            return data;
         },
-        destroy: (payload) => {
-            return axios.delete(`/api/v1/resumes/${payload.hash}`, payload);
+
+        async destroy(payload) {
+            console.log(payload)
+            await axios.delete(`/api/v1/resumes/${payload.hash}`);
+            if (all.value) {
+                all.value = all.value.filter(r => r.hash !== payload.hash);
+            }
         },
-        show: async () => {
+
+        async bulkDelete(payload) {
+            const { data } = await axios.post('/api/v1/resumes/bulk-delete', payload);
+            if (all.value) {
+                const idsToDelete = new Set(payload.hashes);
+                all.value = all.value.filter(r => !idsToDelete.has(r.hash));
+            }
+            return data;
+        },
+
+        async publish(payload) {
+            const { data } = await axios.post('/api/v1/resumes/publish', payload);
+            // Optionally update the resume if needed
+            return data;
+        },
+
+        async draft(payload) {
+            const { data } = await axios.post('/api/v1/resumes/draft', payload);
+            // Optionally update the resume if needed
+            return data;
+        },
+
+        async show() {
             const response = await axios.get('/api/v1/resumes/show', {
                 responseType: 'blob',
             });
             const blob = response.data;
             const url = URL.createObjectURL(blob);
-            resume.value = url;            
+            resume.value = url;
+            return url;
         },
     };
 

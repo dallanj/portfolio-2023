@@ -5,16 +5,14 @@
 
     <form @submit.prevent="submit">
         <div class="shadow p-6 rounded-lg space-y-4">
-            <div class="grid grid-cols-1 sm:grid-cols-4 items-center gap-1 sm:gap-4">
-                <label for="name" class="col-span-1 text-left sm:text-right md:text-left">Tag Name *</label>
-                <div class="col-span-3">
-                <input
+            <div class="grid items-center gap-1 sm:gap-4">
+                <SimpleTextField
                     v-model="form.name"
-                    id="name"
-                    type="text"
+                    name="name"
+                    label="Tag Name *"
                     placeholder="Name of tag"
-                    class="w-full text-black p-2 border border-gray-300 rounded-md" />
-                </div>
+                    side-label
+                    class="col-span-4" />
             </div>
 
             <SimpleRoundSwitch
