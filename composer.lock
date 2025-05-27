@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "fe5fa87255dad317acb3e5e5331d360d",
+    "content-hash": "83ac93f723731f84001407a82c3a22d1",
     "packages": [
         {
             "name": "barryvdh/laravel-dompdf",
@@ -4011,7 +4011,7 @@
         },
         {
             "name": "singpolyma/openpgp-php",
-            "version": "dev-master",
+            "version": "0.7.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/singpolyma/openpgp-php.git",
@@ -4034,7 +4034,6 @@
                 "ext-mcrypt": "required if you use encryption cast5",
                 "ext-openssl": "required if you use encryption cast5"
             },
-            "default-branch": true,
             "type": "library",
             "autoload": {
                 "classmap": [
@@ -9219,9 +9218,7 @@
     ],
     "aliases": [],
     "minimum-stability": "stable",
-    "stability-flags": {
-        "singpolyma/openpgp-php": 20
-    },
+    "stability-flags": {},
     "prefer-stable": true,
     "prefer-lowest": false,
     "platform": {
