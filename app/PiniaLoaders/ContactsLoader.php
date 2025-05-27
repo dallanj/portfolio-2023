@@ -8,6 +8,8 @@ use Illuminate\Support\Facades\Pipeline;
 use Illuminate\Support\Facades\Storage;
 use App\Filters\Searchable;
 use App\Filters\Sortable;
+use Illuminate\Support\Facades\Crypt;
+use Illuminate\Contracts\Encryption\DecryptException;
 
 class ContactsLoader
 {
@@ -18,7 +20,7 @@ class ContactsLoader
      */
     public function all()
     {
-        $contacts = Pipeline::send(Contact::query())
+        $contacts = Pipeline::send(Contact::query()->orderByDesc('is_important'))
             ->through([
                 Searchable::class,
                 Sortable::class,
@@ -50,7 +52,12 @@ class ContactsLoader
      */
     public function active(Contact $contact)
     {
-        return $contact;
+        try {
+            $contact->message = Crypt::decryptString($contact->message);
+            return $contact;
+        } catch (DecryptException $e) {
+            return null;
+        }
     }
 
     /**
