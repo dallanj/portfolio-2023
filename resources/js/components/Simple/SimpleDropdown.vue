@@ -34,6 +34,10 @@ const props = defineProps({
     multiple: {
         type: Boolean,
         default: false
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
     }
 });
 
@@ -41,6 +45,7 @@ const emit = defineEmits(['update:modelValue']);
 const isOpen = ref(false);
 
 const toggleDropdown = () => {
+    if (props.disabled) return;
     isOpen.value = !isOpen.value;
 };
 
@@ -66,6 +71,8 @@ const selectedLabel = computed(() => {
 
 const selectOption = (option) => {
     const optionValue = getOptionValue(option);
+
+    // 1. If it's a multiple select, handle array updates
     if (props.multiple) {
         const current = Array.isArray(props.modelValue) ? [...props.modelValue] : [];
         const index = current.indexOf(optionValue);
@@ -76,8 +83,14 @@ const selectOption = (option) => {
         }
         emit('update:modelValue', current);
     } else {
+        // 2. For single select, emit the new value
         emit('update:modelValue', optionValue);
         isOpen.value = false;
+    }
+
+    // 3. Execute optional callback if defined
+    if (typeof option?.onSelect === 'function') {
+        option.onSelect(optionValue);
     }
 };
 
@@ -94,6 +107,7 @@ const alignmentClasses = computed(() => props.sideLabel ? 'flex-row items-center
             type="button"
             @click="toggleDropdown"
             :class="{
+                'cursor-pointer': props.disabled,
                 'rounded-t-lg': isOpen,
                 'rounded-lg': !isOpen,
             }"
@@ -102,7 +116,7 @@ const alignmentClasses = computed(() => props.sideLabel ? 'flex-row items-center
             <FontAwesomeIcon class="fa-fw" size="sm" :icon="isOpen ? 'chevron-up' : 'chevron-down'" />
         </button>
         <ul
-            v-if="isOpen"
+            v-if="isOpen && !props.disabled"
             class="w-full absolute z-50 -mt-1 bg-white border-gray-300 
             dark:border-gray-700 dark:text-gray-300 text-gray-900 dark:text-gray-100 
             border-blr rounded-b-lg rounded-md border border-gray-300 
