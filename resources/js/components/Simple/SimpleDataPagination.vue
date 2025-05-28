@@ -58,7 +58,13 @@ const changePage = (page) => {
     }
 };
 
-const options = ref([1, 2, 3, 4]);
+const options = ref([1, 2, 3, 4, 8]);
+
+const extractPage = (url) => {
+    const match = url.match(/page=(\d+)/);
+    const page = match ? match[1] : null;
+    return page;
+}
 </script>
 
 <template>
@@ -90,7 +96,7 @@ const options = ref([1, 2, 3, 4]);
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white dark:bg-gray-700 dark:border-gray-800 hover:dark:bg-gray-600 text-gray-900 dark:text-gray-100 dark:hover:text-gray-200 border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                 :href="pagination.prev_page_url"
-                @click.prevent="changePage(pagination.prev_page)">
+                @click.prevent="changePage(extractPage(pagination.prev_page_url))">
                 <FontAwesomeIcon icon="angle-left" />
             </a>
         </li>
@@ -117,7 +123,7 @@ const options = ref([1, 2, 3, 4]);
             <a
                 class="flex items-center justify-center px-3 h-8 ms-0 leading-tight text-gray-500 bg-white dark:bg-gray-700 dark:border-gray-800 hover:dark:bg-gray-600 text-gray-900 dark:text-gray-100 dark:hover:text-gray-200 border border-gray-300 hover:bg-gray-100 hover:text-gray-700"
                 :href="pagination.next_page_url"
-                @click.prevent="changePage(pagination.next_page)">
+                @click.prevent="changePage(extractPage(pagination.next_page_url))">
                 <FontAwesomeIcon icon="angle-right" />
             </a>
         </li>

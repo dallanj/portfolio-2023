@@ -1,7 +1,6 @@
 import { ref } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 import axios from 'axios';
-import { router } from '@inertiajs/vue3';
 
 export const useResumesStore = defineStore('resumes', () => {
     const all = ref(null);
@@ -45,7 +44,6 @@ export const useResumesStore = defineStore('resumes', () => {
         },
 
         async destroy(payload) {
-            console.log(payload)
             await axios.delete(`/api/v1/resumes/${payload.hash}`);
             if (all.value) {
                 all.value = all.value.filter(r => r.hash !== payload.hash);

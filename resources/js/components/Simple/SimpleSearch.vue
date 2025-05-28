@@ -7,6 +7,10 @@ const modelValue = defineModel({
 });
 
 const props = defineProps({
+    name: {
+        type: String,
+        required: true,
+    },
     placeholder: {
         type: String,
         default: 'Search...',
@@ -14,11 +18,15 @@ const props = defineProps({
     label: {
         type: String,
         default: '',
-    },
+    },  
     sideLabel: {
         type: Boolean,
         default: false,
-    }
+    },
+    disabled: {
+        type: Boolean,
+        default: false,
+    },
 });
 
 const emit = defineEmits(['update:modelValue']);
@@ -37,18 +45,20 @@ const alignmentClasses = computed(() => props.sideLabel ? 'flex-row items-center
 
 <template>
 <div
-    class="relative flex"
+    class="relative flex gap-1"
     :class="alignmentClasses">
     <label v-if="label">{{ label }}</label>
     <div class="relative flex items-center gap-2.5 text-left rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none">
         <input
             v-model="modelValue"
+            :id="name"
+            :name="name"
             :class="{
                 'rounded-t-lg': isOpen,
                 'divrounded-lg': !isOpen,
             }"
             :placeholder="placeholder"
-            class="w-full bg-transparent focus:outline-none border-none rounded-l-lg" />
+            class="w-full justify-between flex items-center gap-2.5 w-16 px-4 py-2 border border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 dark:focus:border-indigo-600 dark:focus:ring-indigo-600 rounded-l-lg" />
             <button
                 v-if="modelValue"
                 class="w-8 h-8 flex items-center cursor-pointer"

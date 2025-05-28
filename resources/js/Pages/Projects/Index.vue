@@ -114,7 +114,6 @@ const activeClass = (active) => {
                                 class="col-span-6"
                                 v-model="searchParams.term"
                                 placeholder="Search..."
-                                label="Search"
                                 @input="search"
                                 @search="search" />
                         </form>
