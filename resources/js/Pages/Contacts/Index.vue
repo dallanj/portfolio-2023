@@ -124,7 +124,6 @@ const selectedItem = (items) => {
                                 class="col-span-3"
                                 v-model="searchParams.term"
                                 placeholder="Search..."
-                                label="Search"
                                 :disabled="!(isReady && all?.data)"
                                 @input="search"
                                 @search="search" />
