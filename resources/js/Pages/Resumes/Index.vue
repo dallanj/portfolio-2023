@@ -2,6 +2,7 @@
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, router } from '@inertiajs/vue3';
 import { useResumesStore } from '@/stores/resumes';
+import { usePaginatedDelete } from '@/composables/usePaginatedDelete';
 import { storeToRefs } from 'pinia';
 import { watch, nextTick, ref, inject, computed } from 'vue';
 import { capitalizeFirstLetter } from '@/utils/formatting';
@@ -70,8 +71,6 @@ const headers = computed(() => {
 
 // API routes
 const search = () => execute();
-// const search = () => store.search({ ...searchParams.value });
-const destroy = (item) => store.destroy(item);
 
 // Web intertia routes
 const create = () => router.visit('/resumes/create');
@@ -102,6 +101,19 @@ const selectedItems = ref([]);
 const selectedItem = (items) => {
     selectedItems.value = items;
 };
+
+const { destroy, bulkDelete, isLoading: deleteIsLoading } = usePaginatedDelete({
+    endpoint: '/api/v1/resumes',
+    storeRef: store.all,
+    searchParams,
+    execute, // execute search filters
+    perPage: 8,
+});
+
+watch(() => searchParams.value.page, () => {
+    execute();
+});
+
 </script>
 
 <template>
@@ -168,7 +180,7 @@ const selectedItem = (items) => {
 
                                             if (result === true) {
                                                 try {
-                                                    await store.bulkDelete({ids: selectedItems});
+                                                    await bulkDelete({ids: selectedItems});
                                                     await execute();
                                                     $toast.success('You have successfully deleted records.');
                                                 } catch (error) {
@@ -238,10 +250,11 @@ const selectedItem = (items) => {
 
                                             if (result === true) {
                                                 try {
-                                                    await store.destroy(item);
+                                                    await destroy(item.hash, searchParams.page, searchParams);
                                                     await execute();
                                                     $toast.success('You have successfully deleted records.');
                                                 } catch (error) {
+                                                    console.log(error);
                                                     $toast.error('An unexpected error happened, the records could not be deleted.');
                                                 }
                                             }
