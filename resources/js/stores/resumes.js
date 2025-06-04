@@ -53,8 +53,8 @@ export const useResumesStore = defineStore('resumes', () => {
         async bulkDelete(payload) {
             const { data } = await axios.post('/api/v1/resumes/bulk-delete', payload);
             if (all.value) {
-                const idsToDelete = new Set(payload.hashes);
-                all.value = all.value.filter(r => !idsToDelete.has(r.hash));
+                const idsToDelete = new Set(payload.ids);
+                all.value = all.value.filter(r => !idsToDelete.has(r.id));
             }
             return data;
         },
