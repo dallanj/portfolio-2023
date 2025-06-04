@@ -17,15 +17,27 @@ class ResumesLoader
      */
     public function all()
     {
-        $resumes = Pipeline::send(Resume::query())
+        $query = Resume::query();
+
+        $resumes = Pipeline::send($query)
             ->through([
                 Searchable::class,
                 Sortable::class,
             ])
-            ->thenReturn()
-            ->paginate(request()->per_page ?? 8);
+            ->thenReturn();
 
-        return $resumes;  
+        $page = request()->get('page', 1);
+        $perPage = request()->get('per_page', 8);
+
+        // Use Paginator with fallback to previous page if current page is empty
+        $paginated = $resumes->paginate($perPage, ['*'], 'page', $page);
+
+        if ($paginated->isEmpty() && $page > 1) {
+            // Go to previous page if current is now empty due to deletion
+            $paginated = $resumes->paginate($perPage, ['*'], 'page', $page - 1);
+        }
+
+        return $paginated;
     }
 
     /**
