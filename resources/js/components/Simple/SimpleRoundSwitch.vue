@@ -11,7 +11,7 @@
                 @change="$emit('update:modelValue', $event.target.checked)" />
             <span class="slider round" />
         </label>
-        <small v-if="!modelValue && sideMessage" class="font-bold text-brand-dark-gray">
+        <small v-if="!modelValue && sideMessage" class="font-bold text-brand-white">
             {{ sideMessage }}
         </small>
     </div>

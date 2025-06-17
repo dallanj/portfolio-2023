@@ -183,7 +183,7 @@ const toggleMenu = (menu, key) => {
         @apply space-y-4;
         
         &__title {
-            @apply uppercase font-semibold text-brand-dark-gray;
+            @apply uppercase font-semibold text-brand-white;
         }
 
         &__item {
@@ -199,7 +199,7 @@ const toggleMenu = (menu, key) => {
                 }
     
                 &:focus {
-                    @apply focus:outline-none text-brand-dark-gray;
+                    @apply focus:outline-none text-brand-white;
                 }
             }
 

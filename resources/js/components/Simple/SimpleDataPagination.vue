@@ -75,7 +75,7 @@ const extractPage = (url) => {
         <button @click="clearSorting">
             <FontAwesomeIcon icon="filter-circle-xmark" />
         </button>
-        <p class="font-semibold text-sm text-brand-dark-gray space-x-1">
+        <p class="font-semibold text-sm text-brand-white space-x-1">
             <span class="text-brand-light-gray">Showing</span>
             <span>{{ pagination.from }}-{{ pagination.to }}</span>
             <span class="text-brand-light-gray">of</span>

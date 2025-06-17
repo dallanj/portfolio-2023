@@ -67,7 +67,7 @@ const actionClassesY = computed(() => {
     <ul class="simple-data-card">
         <li
             v-for="item in data" :key="item.id"
-            class="simple-data-card__container relative grid grid-cols-[auto,1fr,40px] items-center text-brand-dark-gray px-2">
+            class="simple-data-card__container relative grid grid-cols-[auto,1fr,40px] items-center text-brand-white px-2">
             <div
                 v-for="header in headers"
                 :key="header.key"

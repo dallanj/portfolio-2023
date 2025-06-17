@@ -4,7 +4,7 @@
         <header
             v-if="$slots.header"
             class="self-start flex items-center px-4 sm:px-6 py-2 sm:py-3 border-b shadow-sm whitespace-nowrap">
-            <h2 class="text-lg font-bold text-brand-dark-gray uppercase">
+            <h2 class="text-lg font-bold text-brand-white uppercase">
                 <slot name="header" />
             </h2>
             
