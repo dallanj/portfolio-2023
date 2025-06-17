@@ -1,9 +1,9 @@
 <?php
 
-namespace App\Http\Controllers\api;
+namespace App\Http\Controllers\Api;
 
-use App\Models\Contact;
 use App\Http\Controllers\Controller;
+use App\Models\Contact;
 use App\Http\Requests\StoreContactRequest;
 use App\PiniaStation\Facades\PiniaLoader;
 use App\Http\Requests\BulkMarkReadRequest;
