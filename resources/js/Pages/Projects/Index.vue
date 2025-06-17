@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import { useProjectsStore } from '@/stores/projects';
