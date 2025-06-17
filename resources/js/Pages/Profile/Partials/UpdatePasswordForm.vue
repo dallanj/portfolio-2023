@@ -9,30 +9,22 @@ import { storeToRefs } from 'pinia';
 const { profile } = storeToRefs(useUserStore());
 const user = ref(null);
 
-watch(profile, async (profile) => {
+watch(profile, async (user) => {
     await nextTick();
-    user.value = profile;
-}, { deep: true });
-
-const form = (null);
-
-watch(user, () => {
-  if (user.value) {
-    form.value = useForm('post', `/profile/${user.value.hash}/password`, {
-      current_password: '',
-      password: '',
-      password_confirmation: '',
-    });
-
-    form.value.setValidationTimeout(3000);
-  }
+    user.value = user.hash;
+}, {
+    deep: true
 });
-
+const form = useForm('post', `/profile/${user?.value?.hash}/password`, {
+    current_password: '',
+    password: '',
+    password_confirmation: '',
+});
 
 form.setValidationTimeout(3000);
 
-const passwordInput = ref(null);
 const currentPasswordInput = ref(null);
+const passwordInput = ref(null);
 
 const updatePassword = () => {
     form.put(route('password.update'), {
@@ -41,11 +33,11 @@ const updatePassword = () => {
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
-                passwordInput.value?.focus();
+                passwordInput.value.focus();
             }
             if (form.errors.current_password) {
                 form.reset('current_password');
-                currentPasswordInput.value?.focus();
+                currentPasswordInput.value.focus();
             }
         },
     });
