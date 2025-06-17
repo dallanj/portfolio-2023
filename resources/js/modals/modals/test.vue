@@ -191,7 +191,7 @@ const toggleMenu = (menu, key) => {
                 @apply flex w-full py-2 pl-3 mb-1 rounded font-bold text-brand-light-gray tracking-wide transition duration-150 ease-in-out;
                 
                 &.active{
-                    @apply text-brand-orange/[.80];
+                    @apply text-brand-orange text-opacity-80;
                 }
 
                 &:hover {
