@@ -1,4 +1,4 @@
-<script setup lang="ts">
+<script setup>
 import InputError from '@/Components/InputError.vue';
 import TextInput from '@/Components/TextInput.vue';
 import { ref, watch, nextTick } from 'vue';
@@ -9,22 +9,30 @@ import { storeToRefs } from 'pinia';
 const { profile } = storeToRefs(useUserStore());
 const user = ref(null);
 
-watch(profile, async (user) => {
+watch(profile, async (profile) => {
     await nextTick();
-    user.value = user.hash;
-}, {
-    deep: true
+    user.value = profile;
+}, { deep: true });
+
+const form = (null);
+
+watch(user, () => {
+  if (user.value) {
+    form.value = useForm('post', `/profile/${user.value.hash}/password`, {
+      current_password: '',
+      password: '',
+      password_confirmation: '',
+    });
+
+    form.value.setValidationTimeout(3000);
+  }
 });
-const form = useForm('post', `/profile/${user?.value?.hash}/password`, {
-    current_password: '',
-    password: '',
-    password_confirmation: '',
-});
+
 
 form.setValidationTimeout(3000);
 
-const currentPasswordInput = ref(null);
 const passwordInput = ref(null);
+const currentPasswordInput = ref(null);
 
 const updatePassword = () => {
     form.put(route('password.update'), {
@@ -33,11 +41,11 @@ const updatePassword = () => {
         onError: () => {
             if (form.errors.password) {
                 form.reset('password', 'password_confirmation');
-                passwordInput.value.focus();
+                passwordInput.value?.focus();
             }
             if (form.errors.current_password) {
                 form.reset('current_password');
-                currentPasswordInput.value.focus();
+                currentPasswordInput.value?.focus();
             }
         },
     });
