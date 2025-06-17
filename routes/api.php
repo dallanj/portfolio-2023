@@ -2,11 +2,11 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\api\ProjectController;
-use App\Http\Controllers\api\MediaController;
-use App\Http\Controllers\api\TagController;
-use App\Http\Controllers\api\ResumeController;
-use App\Http\Controllers\api\ContactController;
+use App\Http\Controllers\Api\ProjectController;
+use App\Http\Controllers\Api\MediaController;
+use App\Http\Controllers\Api\TagController;
+use App\Http\Controllers\Api\ResumeController;
+use App\Http\Controllers\Api\ContactController;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
 
