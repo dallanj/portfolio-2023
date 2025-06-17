@@ -146,7 +146,7 @@ watch(() => props.file, () => {
 			{ 'slide-out-to-left': file.removing },
 			{ 'slide-in-from-left': animateIn },
 		]">
-		<div class="grid grid-cols-[auto,1fr,40px] items-center text-brand-dark-gray px-2">	
+		<div class="grid grid-cols-[auto,1fr,40px] items-center text-brand-white px-2">	
 			<img v-if="previewUrl" :src="previewUrl" class="mt-1 w-16 h-16 object-cover rounded-lg shadow-md mr-3" />
 			<div v-else class="relative inline-block w-16 mr-3 grid justify-center">		
 				<FontAwesomeIcon icon="file" size="3x" class="px-2" :class="fileColor" />
