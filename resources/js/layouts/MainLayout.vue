@@ -1,19 +1,3 @@
-<template>
-    <div
-        id="mainLayout"
-        class="overflow-hidden wallpaper"
-        :class="{
-            'grid-template-layout-1': dockPosition === 'left',
-            'grid-template-layout-2': dockPosition === 'bottom',
-        }">
-        <TopBar ref="top-bar" />
-
-        <Dock />
-        <main><slot /></main>
-        <ModalBase v-if="isModalValid" />
-    </div>
-</template>
-
 <script setup>
 import { computed, inject } from 'vue';
 import TopBar from '@/components/TopBar.vue';
@@ -35,6 +19,22 @@ const isModalValid = computed(() => {
     return isValidComponent(activeModal.value);
 });
 </script>
+
+<template>
+    <div
+        id="mainLayout"
+        class="overflow-hidden wallpaper"
+        :class="{
+            'grid-template-layout-1': dockPosition === 'left',
+            'grid-template-layout-2': dockPosition === 'bottom',
+        }">
+        <TopBar ref="top-bar" />
+
+        <Dock />
+        <main><slot /></main>
+        <ModalBase v-if="isModalValid" />
+    </div>
+</template>
 
 <style scoped lang="scss">
 #mainLayout {
@@ -60,7 +60,7 @@ const isModalValid = computed(() => {
 }
 
 #mainLayout > header {
-  @apply grid grid-cols-3 w-full bg-topbar-grey py-1 drop-shadow-md relative z-50;
+  @apply grid justify-between grid-cols-2 lg:grid-cols-3 w-full bg-topbar-grey py-1 drop-shadow-md relative z-50;
   grid-area: head;
 }
 
