@@ -23,6 +23,8 @@ body {
         bg-app-window-bg
         border
         border-app-window-b;
+    transform-origin: center center;
+    will-change: transform, opacity;
 }
 
 .app-header {
