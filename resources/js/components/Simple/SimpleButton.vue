@@ -26,12 +26,12 @@ const props = defineProps({
     size: {
         type: String,
         default: 'medium',
-        validator: value => ['small', 'medium', 'large', 'action'].includes(value)
+        validator: value => ['small', 'medium', 'large', 'action', 'topbar'].includes(value)
     },
     state: {
         type: String,
         default: 'primary',
-        validator: value => ['primary', 'secondary', 'moving', 'plain', 'action'].includes(value)
+        validator: value => ['primary', 'secondary', 'moving', 'plain', 'action', 'topbar'].includes(value)
     },
     icon: {
         type: String,
@@ -86,6 +86,9 @@ const buttonClasses = computed(_ => {
         case 'large':
             classes += ' px-4 sm:px-6 py-3 text-lg';
             break;
+        case 'topbar':
+            classes += ' px-4 text-base';
+            break;
     }
 
     // Add state classes
@@ -104,6 +107,9 @@ const buttonClasses = computed(_ => {
             break;
         case 'action':
             classes += ' text-gray-900 dark:text-gray-100';
+            break;
+        case 'topbar':
+            classes += ' rounded-full transition duration-200 ease-in-out text-white bg-topbar-span hover:bg-topbar-button-active';
             break;
     }
 

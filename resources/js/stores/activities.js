@@ -1,4 +1,4 @@
-import { ref, computed } from 'vue';
+import { ref, computed, nextTick } from 'vue';
 import { useActivityControls } from '@/composables/useActivityControls';
 import { useWindowControls } from '@/composables/useWindowControls';
 import { useDrag } from '@/composables/useDrag';
@@ -11,7 +11,7 @@ export const useActivitiesStore = defineStore('activities', () => {
     const { removeActivity, addActivity, removeAllActivities, addActivities, activityExists } =
         useActivityControls(activities);
 
-    const { maximizeWindow, minimizeWindow, unMaximizeWindow } =
+    const { maximizeWindow, minimizeWindow, unMaximizeWindow, restoreWindow } =
         useWindowControls(activities);
 
     const { startDrag, onDrag, stopDrag, setCursor } =
@@ -57,21 +57,20 @@ export const useActivitiesStore = defineStore('activities', () => {
 
     // Getters (computed properties)
     const getActiveWindow = computed(() => {
-        return activities.value.length > 0
-            ? activities.value[activities.value.length - 1]
-            : null;
+        for (let i = activities.value.length - 1; i >= 0; i--) {
+            const activity = activities.value[i];
+            if (!activity.minimized) return activity;
+        }
+        return null;
     });
 
     const findActivity = (app) => {
-        console.log('find',app)
         return all?.value.find(activity => activity === app);
     };
 
     const removeActiveWindow = (app) => {
         const index = activities.value.indexOf(app);
-        console.log('removing found: ',index,app)
         if (index > -1) {
-            console.log('removeActiveWindow',index,app)
             activities.value.splice(index, 1);
             activities.value.unshift(app);
         }
@@ -79,16 +78,6 @@ export const useActivitiesStore = defineStore('activities', () => {
         active.value = activities.value.length > 0
             ? activities.value[activities.value.length - 1]
             : null;
-    };
-
-    const saveToLocalStorage = () => {
-        localStorage.setItem('activities', JSON.stringify(all.value));
-        localStorage.setItem('active', JSON.stringify(active.value)); // Store active window as well
-    };
-
-    const loadFromLocalStorage = () => {
-        all.value = JSON.parse(localStorage.getItem('activities')) || [];
-        active.value = JSON.parse(localStorage.getItem('active')) || null;
     };
 
     const updateActivityPositions = (app, updatedProperties) => {
@@ -129,6 +118,7 @@ export const useActivitiesStore = defineStore('activities', () => {
         maximizeWindow,
         minimizeWindow,
         unMaximizeWindow,
+        restoreWindow,
 
         startDrag,
         onDrag,

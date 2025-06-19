@@ -84,3 +84,34 @@
 .rotate-down {
     animation: rotateDown 0.2s ease-in;
 }
+
+
+@keyframes zoomOut {
+    from {
+        opacity: 1;
+        transform: scale(1);
+    }
+    to {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+}
+
+@keyframes zoomIn {
+    from {
+        opacity: 0;
+        transform: scale(0.8);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
+}
+
+.zoom-out {
+    animation: zoomOut 0.2s ease-in-out forwards;
+}
+
+.zoom-in {
+    animation: zoomIn 0.2s ease-in-out forwards;
+}

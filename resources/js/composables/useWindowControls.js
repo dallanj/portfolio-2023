@@ -1,4 +1,5 @@
 import { useSettingsStore } from "@/stores/settings";
+import { nextTick } from 'vue';
 
 export function useWindowControls(activities) {
 
@@ -6,17 +7,45 @@ export function useWindowControls(activities) {
         useSettingsStore();
 
 	const minimizeWindow = (activity) => {
-		console.log('minimize', activity.value);
-		// Mark the activity as being removed
+		if (!activity?.value) return;
+
+		const activityId = activity.value.id;
+		const appId = activityId.replace('-activity', '');
+		const dockEl = document.getElementById(`nav-item-${appId}`);
+
+		if (!appId || !dockEl) {
+			console.debug('Missing elements for animation');
+			activity.value.minimized = true;
+			return;
+		}
+		if (!dockEl) return;
+
+		// Get dock center
+		const dockRect = dockEl.getBoundingClientRect();
+		const dockCenterX = dockRect.left + dockRect.width / 2 + window.scrollX;
+		const dockCenterY = dockRect.top + dockRect.height / 2 + window.scrollY;
+
+		// Use known top/left + size to calculate window center
+		const windowX = activity.value.left;
+		const windowY = activity.value.top;
+		const windowWidth = parseFloat(getComputedStyle(document.getElementById(`${appId}-application`)).width);
+		const windowHeight = parseFloat(getComputedStyle(document.getElementById(`${appId}-application`)).height);
+
+		const winCenterX = windowX + windowWidth / 2;
+		const winCenterY = windowY + windowHeight / 2;
+
+		// Offset needed to animate from window to dock
+		const deltaX = dockCenterX - winCenterX;
+		const deltaY = dockCenterY - winCenterY;
+
+		activity.value.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.1)`;
 		activity.value.minimizing = true;
-  
-		// Wait for the animation to complete before actually removing the file from the list
+
 		setTimeout(() => {
-			const index = activities.value.indexOf(activity.value);
-			if (index > -1) activities.value.splice(index, 1);
-		}, 500);
-		// toggleApplicationVisibility(application.value, false);
-		// activitiesStore.removeActiveWindow(application.value);
+			activity.value.minimized = true;
+			activity.value.minimizing = false;
+			activity.value.transform = '';
+		}, 400);
 	}
 
 	const maximizeWindow = (activity, halfScreen = false) => {
@@ -85,9 +114,70 @@ export function useWindowControls(activities) {
 		}, 500);	
 	}
 
+	const restoreWindow = async (activity) => {
+		if (!activity?.id) return;
+	
+		const activityId = activity.id;
+		const appId = activityId.replace('-activity', '');
+		const dockEl = document.getElementById(`nav-item-${appId}`);
+	
+		if (!dockEl) {
+			console.warn('Missing dock or window element');
+			return;
+		}
+
+		// 4. Calculate transition animation from dock → window
+		const dockRect = dockEl.getBoundingClientRect();
+		const dockCenterX = dockRect.left + dockRect.width / 2 + window.scrollX;
+		const dockCenterY = dockRect.top + dockRect.height / 2 + window.scrollY;
+
+		const windowX = activity.left;
+		const windowY = activity.top;
+		const windowWidth = activity.width || 500; // default fallback
+		const windowHeight = activity.height || 500;
+
+		const winCenterX = windowX + windowWidth / 2;
+		const winCenterY = windowY + windowHeight / 2;
+
+		const deltaX = dockCenterX - winCenterX;
+		const deltaY = dockCenterY - winCenterY;
+
+		// Step 1: Set initial transform before showing
+		activity.transform = `translate(${deltaX}px, ${deltaY}px) scale(0.1)`;
+
+		// Step 2: Show the window
+		activity.minimized = false;
+
+		// Step 3: Wait for DOM to render with transform
+		await nextTick();
+
+		const windowEl = document.getElementById(`${appId}-application`);
+		if (!windowEl) {
+			console.warn('Window element still not found');
+			return;
+		}
+
+		// Step 4: Force layout flush
+		windowEl.offsetHeight;
+
+		// Step 5: Animate to normal position
+		requestAnimationFrame(() => {
+			activity.transform = '';
+		});
+
+		// Step 6: Bring to front
+		setTimeout(() => {
+			const index = activities.value.findIndex(a => a.id === activity.id);
+			if (index > -1) {
+				activities.value.push(activities.value.splice(index, 1)[0]);
+			}
+		}, 400);
+	};
+
     return {
 		minimizeWindow,
 		maximizeWindow,
 		unMaximizeWindow,
+		restoreWindow,
     };
 }

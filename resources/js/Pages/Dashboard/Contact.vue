@@ -9,7 +9,7 @@ const activities = useActivitiesStore();
 const contact = useContactsStore();
 
 // Destructure with aliases
-const { active: window } = storeToRefs(activities);
+const { getActiveWindow } = storeToRefs(activities);
 
 const { openModal } = inject('modals');
 
@@ -70,7 +70,7 @@ const publicKeyModal = () => {
             <form @submit.prevent="submit" class="space-y-4">
                 <div 
                     class="grid"
-                    :class="window.width > 600 ? 'grid-cols-2 gap-x-4' : 'gap-y-4'">
+                    :class="getActiveWindow.width > 600 ? 'grid-cols-2 gap-x-4' : 'gap-y-4'">
                     <SimpleTextField
                         v-model="form.name"
                         name="name"

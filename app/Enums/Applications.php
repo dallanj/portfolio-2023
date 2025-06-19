@@ -12,9 +12,9 @@ enum Applications: string
     case ABOUT = 'about';
     case PROJECTS = 'projects';
     case CONTACT = 'contact';
+    case RESUME = 'resume';
     case LINKEDIN = 'linkedin';
     case GITHUB = 'github';
-    case RESUME = 'resume';
     
     /**
      * Application title
@@ -70,21 +70,21 @@ enum Applications: string
     {
         return match ($this) {
             self::TERMINAL => [
-                'left' => 100,
-                'top' => 100,
+                'left' => 90,
+                'top' => 35,
                 'width' => 400,
-                'height' => 300,
+                'height' => 350,
             ],
             self::ABOUT => [
-                'left' => 500,
-                'top' => 300,
-                'width' => 250,
-                'height' => 250,
+                'left' => 420,
+                'top' => 35,
+                'width' => 420,
+                'height' => 350,
             ],
             self::PROJECTS => [
-                'left' => 300,
-                'top' => 200,
-                'width' => 600,
+                'left' => 90,
+                'top' => 375,
+                'width' => 500,
                 'height' => 400,
             ],
             self::RESUME => [
