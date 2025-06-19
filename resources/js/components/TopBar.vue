@@ -1,85 +1,91 @@
-<template>
-    <header>
-        <div class="flex col-span-2 md:col-span-1 md:space-x-2">
-            <button
-                v-for="option in [menu.activities, menu.current]"
-                :key="`header-${option.value}`"
-                class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
-                :class="{
-                    [activeClass]: dropdown === option,
-                    [inactiveClass]: dropdown !== option,
-                    'hidden': option === menu.current && (!active || !isApplicationVisible(active)),
-                }"
-                @click="selectOption(option)"
-                @click.stop>
-                {{ option === menu.current ? active?.label : option.label }}
-            </button>
-        </div>
-
-        <button
-            v-for="option in [menu.date, menu.settings]"
-            :key="`header-${option.value}`"
-            class="px-4 rounded-full transition duration-200 ease-in-out hover:text-white"
-            :class="{
-                [activeClass]: dropdown === option,
-                [inactiveClass]: dropdown !== option,
-                'justify-self-end md:justify-self-center': option.value !== 'settings',
-                'hidden md:block justify-self-end': option.value === 'settings',
-            }"
-            @click="selectOption(option)"
-            @click.stop>
-            {{ typeof option.label === 'function' ? option.label() : option.label }}
-        </button>
-    </header>
-</template>
-
 <script setup>
-import { computed, inject } from 'vue';
-import { topBar } from '@/state/options';
-import activities from '@/state/activities';
-import actionsMixin from '@/mixins/actionsMixin';
-import { useSettingsStore } from '@/stores/settings';
+import { computed, ref, inject } from 'vue';
 import { storeToRefs } from 'pinia';
+import { useActivitiesStore } from '@/stores/activities';
+import { useSettingsStore } from '@/stores/settings';
+import { useLiveDateTime } from '@/composables/useLiveDateTime';
+
 const { openModal } = inject('modals');
+const { isMobile, isTablet } = inject('screenSize');
+
+// Setup stores
+const activitiesStore = useActivitiesStore();
+const settingsStore = useSettingsStore();
+
+// Destructure with aliases
+const { getActiveWindow } = storeToRefs(activitiesStore);
+
+// Activity store functions
+const {
+    activityExists,
+} = useActivitiesStore();
+
 const {
     setDockPosition,
     toggleSettingsMenu,
     settingsMenu,
+    dockPosition
 } = useSettingsStore();
-import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
-const { hasClickedOutside, toggleApplicationVisibility, isApplicationVisible } = useApplicationVisibility();
 
-const menu = topBar;
-const all = activities.state.all;
-const active = activities.getActiveWindow;
-const setDropdown = activities.setDropdown;
-const dropdown = activities.getDropdown;
-
-const activeClass = computed(() => {
-    return 'text-white bg-topbar-button hover:bg-topbar-button-active';
+const { dateTime } = useLiveDateTime({
+    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: 'numeric',
+    hour12: false,
 });
 
-const inactiveClass = computed(() => {
-    return 'text-topbar-white hover:bg-topbar-button';
-});
-
-const selectOption = (option) => {
-    // console.log(option.action);
-    // setDockPosition();
-    if (hasClickedOutside(option)) {
-        // toggleSettingsMenu(false);
-        return;
-    }
-    // Select menu option
-    // console.log(true, option.action);
-    useSettingsStore()[option.action]();
-    // action();
-    openModal('SettingsMenuModal', {
-        position: 'justify-content: flex-end',
-    });
-    // // Trigger action if applicable
-    // if (dropdown?.action) {
-    //     dropdown?.action();
-    // }
+const showOpenedActivities = () => {
+    console.log('zoom out animation and shows all opened windows, clickable to make it the active project');
 };
+
+const toggleSettings = () => {
+    openModal('SettingsMenuModal', {
+        position: 'justify-content: flex-end; align-items: flex-start; padding-top: 10px;/',
+    });
+}
 </script>
+
+<template>
+<header>
+    <div class="flex items-center space-x-1 justify-start">
+        <!-- Activities button (Zoom out animation and shows all opened windows, clickable to make it the active project)-->
+        <SimpleButton
+            state="topbar"
+            :uppercase="false"
+            size="topbar"
+            @click="showOpenedActivities"
+            @click.prevent>
+            Activities
+        </SimpleButton>
+
+        <!-- Active project name -->
+        <span class="px-4 cursor-pointer rounded-full transition duration-200 ease-in-out text-white bg-topbar-span hover:bg-topbar-button-active">
+            {{ getActiveWindow?.data.label }}
+        </span>
+    </div>
+
+    <!-- Date and time (not shown on mobile) -->
+    <div
+        v-if="!(isMobile || isTablet)"
+        class="flex items-center justify-center">
+        <span class="px-4 cursor-pointer rounded-full transition duration-200 ease-in-out text-white bg-topbar-span hover:bg-topbar-button-active">
+            {{ dateTime }}
+        </span>
+    </div>
+
+    <!-- Settings menu (cog icon when mobile or screen size is small) -->
+    <div class="flex items-center justify-end">
+        <SimpleButton
+            state="topbar"
+            :uppercase="false"
+            size="topbar"
+            :icon="isMobile ? 'gear' : false"
+            @click="toggleSettings"
+            @click.prevent>
+            {{ isMobile ? '' : 'Settings' }}
+        </SimpleButton>
+    </div>
+</header>
+</template>
