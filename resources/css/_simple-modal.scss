@@ -3,11 +3,11 @@
 
     // Dark overlay for modal popup used in ModalBase.vue
     &__overlay {
-        @apply fixed top-0 left-0 w-full h-full flex z-50 bg-black/[.55] cursor-pointer;
+        @apply fixed top-0 left-0 w-full h-full flex items-center justify-center z-50 bg-black/[.55] cursor-pointer;
     }
 
     &__container {
-        @apply relative bg-dropdown-bg rounded-xl cursor-default;
+        @apply relative bg-dropdown-bg rounded-xl cursor-default max-h-screen overflow-y-auto;
     }
 
     // Modal sizing options
