@@ -1,5 +1,5 @@
 <script setup>
-import { ref, watch } from 'vue';
+import { ref, watch, onMounted, nextTick, computed } from 'vue';
 import { storeToRefs } from 'pinia';
 import { useActivitiesStore } from '@/stores/activities';
 import { useResize } from '@/composables/useResize';
@@ -26,7 +26,13 @@ const props = defineProps({
     },
 });
 
-const application = ref(props.activity);
+// Using computed will keep the props.activity in sync for updates like animations
+const application = computed(() => props.activity);
+
+// Used for animation purposes
+const opacity = computed(() => {
+    return application.value.minimizing || application.value.starting ? 0 : 1;
+});
 
 // Resize composable for the application window
 const {
@@ -41,32 +47,50 @@ const {
 const {
     getActiveWindow,
     activityExists,
-} = useActivitiesStore();
+    activities
+} = storeToRefs(useActivitiesStore());
 
 const updated = (event) => {
     // Apply animations
+    console.debug('event',event)
 }
 
-watch(application.value, updated);
+// watch(application.value, updated);
+watch(application, async (obj) => {
+    await nextTick();
+    console.log('Watching for changes to the application')
+});
 
 const projectsRef = ref(null);
+
+onMounted(() => {
+	if (application.value.transform) {
+		requestAnimationFrame(() => {
+			application.value.transform = '';
+		});
+	}
+});
 </script>
 
 <template>
 <article
+    v-if="!application.minimized"
     :ref="`${application.data.value}-application`"
     :id="`${application.data.value}-application`"
     class="app-window fixed block flex flex-col overflow-hidden"
     :class="[
-      cursor,
-      { 'rounded-t-xl': application.roundedBorder },
-      { 'z-40': application === getActiveWindow && Object.values(application.outOfBounds).some(val => val === true) }
+        cursor,
+        { 'rounded-t-xl': application.roundedBorder },
+        { 'z-40': application === getActiveWindow && Object.values(application.outOfBounds).some(val => val === true) },
     ]"
     :style="{
         width: windowWidth,
         height: windowHeight,
         top: application.top + 'px',
-        left: application.left + 'px'
+        left: application.left + 'px',
+        transform: application.transform,
+        opacity: opacity,
+        transition: 'transform 0.4s ease, opacity 0.4s ease'
     }"
     @mousedown="startActions"
     @mouseup="stopResize"
