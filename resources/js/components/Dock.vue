@@ -1,10 +1,13 @@
 <script setup>
-import { ref, onMounted } from 'vue';
+import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useDashboardStore } from '@/stores/dashboard';
 import { useActivitiesStore } from '@/stores/activities';
 import { storeToRefs } from 'pinia';
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
+
+const dockMenu = ref(null);
+let isScrollBound = false;
 
 const {
     boundaries,
@@ -37,6 +40,41 @@ onMounted(async () => {
     store.updateDateLabel();
     await store.applications();
     isReady.value = true;
+
+    await nextTick();
+
+    // Add event listener for horizonal scroll
+    if (dockPosition.value === 'bottom' && dockMenu.value && !isScrollBound) {
+        dockMenu.value.addEventListener('wheel', handleHorizontalScroll, { passive: false });
+        isScrollBound = true;
+    }
+});
+
+onBeforeUnmount(() => {
+    // Remove event listener for horizonal scroll
+    if (dockMenu.value) {
+        dockMenu.value.removeEventListener('wheel', handleHorizontalScroll);
+    }
+});
+
+const handleHorizontalScroll = (e) => {
+    // Prevent vertical scroll and scroll dock horizontally instead
+    if (e.deltaY !== 0) {
+        e.preventDefault();
+        dockMenu.value.scrollLeft += e.deltaY;
+    }
+}
+
+watch(dockPosition, async (newPos, oldPos) => {
+    await nextTick();
+
+    if (newPos === 'bottom' && dockMenu.value && !isScrollBound) {
+        dockMenu.value.addEventListener('wheel', handleHorizontalScroll, { passive: false });
+        isScrollBound = true;
+    } else if (oldPos === 'bottom' && dockMenu.value && isScrollBound) {
+        dockMenu.value.removeEventListener('wheel', handleHorizontalScroll);
+        isScrollBound = false;
+    }
 });
 
 // Methods
@@ -87,7 +125,9 @@ function toggleTooltip(item, show = true) {
 </script>
 
 <template>
-    <div class="top-20 left-40 absolute block flex flex-col gap-4">
+    <!-- Testing Purposes only -->
+    <hgroup class="top-20 left-32 absolute block flex flex-col gap-2 border px-3 py-2">
+        <h2 class="font-bold text-md underline">Testing Purposes Only</h2>
         <p>
             <b>Dock:</b><br>
             {{ `dock position: ${dockPosition}` }}<br>
@@ -101,18 +141,35 @@ function toggleTooltip(item, show = true) {
             {{ `active window: ${getActiveWindow?.data.label}` }}<br>
             {{ `# of opened windows: ${activities.length}` }}<br>
         </p>
-    </div>
-    <nav>
+    </hgroup>
+
+    <!-- Dock container -->
+    <nav :style="dockPosition === 'bottom'
+        ? { height: '80px', width: '100%', overflow: 'hidden' }
+        : { height: 'calc(100vh - 30px)', width: '80px' }">
+        <!-- Dock menu container application items -->
         <menu
-            :class="{ 'dock-ready': isReady, 'dock-hidden': !isReady, 'flex': dockPosition === 'bottom' }"
-            class="nav-menu bg-black bg-opacity-50 border-r border-black scrollbar-hidden overflow-auto h-full p-0.5 transition-all duration-500">
+            :key="dockPosition"
+            ref="dockMenu"
+            :class="[
+                'nav-menu',
+                isReady ? 'dock-ready' : 'dock-hidden',
+                dockPosition === 'bottom'
+                ? 'flex flex-row items-center h-full w-full overflow-x-auto overflow-y-hidden touch-auto snap-x scroll-smooth whitespace-nowrap'
+                : 'flex flex-col overflow-y-auto h-full border-r w-full']">
+
             <template v-if="isReady">
                 <li
                     v-for="app in all"
                     :key="`nav-${app.value}`"
                     :id="`nav-item-${app.value}`"
-                    class="flex flex-col items-center static p-2 mb-1 rounded-md"
-                    :class="getActiveWindow?.data.value === app.value && activityExists(`${app.value}-activity`) ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25' : 'cursor-pointer hover:bg-white hover:bg-opacity-10'"
+                    :class="[
+                        'p-2 rounded-md',
+                        dockPosition === 'bottom' ? 'flex flex-col items-center mr-2' : 'flex flex-col items-center mb-1',
+                        getActiveWindow?.data.value === app.value && activityExists(`${app.value}-activity`)
+                            ? 'bg-white bg-opacity-20 cursor-default hover:bg-opacity-25'
+                            : 'cursor-pointer hover:bg-white hover:bg-opacity-10'
+                    ]"
                     @mouseover="toggleTooltip(app)"
                     @mouseout="toggleTooltip(app, false)"
                     @click="openApp(app, true)"
@@ -144,9 +201,23 @@ function toggleTooltip(item, show = true) {
 
 <style scoped lang="scss">
 .nav-menu {
-    @apply relative z-50;
+    @apply bg-black bg-opacity-50 border-black p-0.5 transition-all duration-500 relative;
     scrollbar-width: none;
-    
+
+    li {
+        @apply snap-start;
+        flex: 0 0 auto; // Prevents flex items from growing or shrinking
+    }
+
+    button {
+        @apply w-14; // Icon width
+    }
+
+    img {
+        width: 100%;
+        height: auto;
+    }
+
     .active-tab-left {
         transform: translateY(-50%);
         left: -7.5px;

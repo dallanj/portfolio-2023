@@ -66,8 +66,8 @@ const isModalValid = computed(() => {
 
 #mainLayout > nav {
   @apply relative z-50;
-  height: 100dvh;
   grid-area: nav;
+  height: 100%; // override the 100dvh that’s pushing things off screen
 }
 
 #mainLayout > main {
