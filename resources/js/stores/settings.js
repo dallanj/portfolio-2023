@@ -1,20 +1,20 @@
-import { ref, inject, computed, reactive, watch } from 'vue';
+import { ref, inject, reactive, watch } from 'vue';
 import { defineStore, acceptHMRUpdate } from 'pinia';
-import axios from 'axios';
+import { useScreenSize } from '@/composables/useScreenSize.vue'; // Update path as needed
 
 export const useSettingsStore = defineStore('settings', () => {
     const { openModal } = inject('modals');
+    const { isMobile, isTablet } = useScreenSize();
 
     const all = ref([]);
     const boundaries = reactive({
-        left: null, //80,
-        top: null,//32,
-        bottom: null, //0,
+        left: null,
+        top: null,
+        bottom: null,
     });
-    const settingsMenu = ref(false);
-    watch(settingsMenu.value, () => openModal('SettingsMenuModal'));
 
     const dockPosition = ref('left');
+    const settingsMenu = ref(false);
 
     const setBoundaries = () => {
         switch (dockPosition.value) {
@@ -32,16 +32,24 @@ export const useSettingsStore = defineStore('settings', () => {
     };
 
     const setDockPosition = (val) => {
-        console.log(val);
         dockPosition.value = val;
-
         setBoundaries();
     };
 
-    // Open/close settings menu
-    const toggleSettingsMenu = () => settingsMenu.value = !settingsMenu.value;
+    // Toggle modal when settingsMenu opens
+    watch(settingsMenu, () => openModal('SettingsMenuModal'));
 
-    watch(dockPosition.value, setBoundaries());
+    // Watch dockPosition for boundary update
+    watch(dockPosition, setBoundaries);
+
+    // Automatically set dock position for mobile/tablet
+    watch(isMobile, (mobile) => {
+        setDockPosition(mobile ? 'bottom' : 'left');
+    }, { immediate: true });
+
+    const toggleSettingsMenu = () => {
+        settingsMenu.value = !settingsMenu.value;
+    };
 
     const fetchUserAgent = async () => {
         try {
@@ -57,7 +65,6 @@ export const useSettingsStore = defineStore('settings', () => {
         };
 
         if (key && resetMap[key]) {
-            // Reset only the specific key passed
             resetMap[key]();
         }
     };
@@ -65,18 +72,14 @@ export const useSettingsStore = defineStore('settings', () => {
     return {
         all,
         boundaries,
-        // boundaryCoords,
         setDockPosition,
         dockPosition,
-
         toggleSettingsMenu,
         settingsMenu,
-
         fetchUserAgent,
         $reset,
     };
 });
-
 
 if (import.meta.hot) {
     import.meta.hot.accept(acceptHMRUpdate(useSettingsStore, import.meta.hot));
