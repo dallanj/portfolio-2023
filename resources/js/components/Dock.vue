@@ -159,7 +159,8 @@ const toggleTooltip = (item, show = true) => {
     </hgroup>
 
     <!-- Dock container -->
-    <nav :style="dockPosition === 'bottom'
+    <nav class="z-50"
+        :style="dockPosition === 'bottom'
         ? { height: '80px', width: '100%', overflow: 'hidden' }
         : { height: 'calc(100vh - 30px)', width: '80px' }">
         <!-- Dock menu container application items -->
