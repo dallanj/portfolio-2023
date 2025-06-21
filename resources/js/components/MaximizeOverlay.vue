@@ -1,5 +1,5 @@
 <script setup>
-import { computed } from 'vue';
+import { computed, ref, onMounted, onBeforeUnmount } from 'vue';
 import { useActivitiesStore } from '@/stores/activities';
 import { useSettingsStore } from '@/stores/settings';
 import { storeToRefs } from 'pinia';
@@ -17,21 +17,42 @@ const showOverlay = computed(() => (active?.value && Object.values(active.value.
 
 const fullOverlay = computed(() => active?.value.outOfBounds.y === true);
 
+const topBarHeight = ref(0);
+
+const calculateTopBarHeight = () => {
+    const el = document.getElementById('top-bar');
+    
+    if (el) {
+        topBarHeight.value = el.getBoundingClientRect().height;
+    }
+};
+
+onMounted(() => {
+    calculateTopBarHeight();
+    window.addEventListener('resize', calculateTopBarHeight);
+});
+
+onBeforeUnmount(() => {
+    window.removeEventListener('resize', calculateTopBarHeight);
+});
+
 const overlayStyle = computed(() => {
     switch (dockPosition) {
         case 'left':
             return `width: calc(${fullOverlay.value ? '100' : '50'}%); height: 100vh`;
-            // return fullOverlay.value ? 'height: 100vh;  width: 100%' : 'height: 100vh;  width: 50%';
         case 'bottom':
-            return `width: calc(${fullOverlay.value ? '100' : '50'}% - ${fullOverlay.value ? '0' : boundaries.left}px); height: calc(100%)`;
-            // return fullOverlay.value ? 'height: 100%;  width: 100%' : 'height: 100%;  width: 50%';
+            const width = fullOverlay.value
+                ? '100%'
+                : `calc(50% - ${boundaries.left}px)`;
+            const height = `calc(100vh - ${topBarHeight.value}px - ${boundaries.bottom}px)`;
+            return `width: ${width}; height: ${height}`;
     }
-})
+});
 </script>
 
 <template>
 <div
     v-if="showOverlay"
-    class="opacity-50 bg-opacity-50 relative z-30 bg-purple-500 border border-purple-600"
-    :style="overlayStyle" />
+    class="opacity-50 bg-opacity-50 absolute z-30 bg-purple-500 border border-purple-600"
+    :style="[overlayStyle, dockPosition === 'bottom' ? { top: `${topBarHeight}px` } : {}]" />
 </template>

@@ -28,7 +28,7 @@ const isModalValid = computed(() => {
             'grid-template-layout-1': dockPosition === 'left',
             'grid-template-layout-2': dockPosition === 'bottom',
         }">
-        <TopBar ref="top-bar" />
+        <TopBar id="top-bar" ref="top-bar" />
 
         <Dock />
         <main><slot /></main>
