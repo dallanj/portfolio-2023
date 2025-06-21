@@ -66,18 +66,23 @@ export function useWindowControls(activities) {
 			y: false,
 		}
 
-		// If we're resizing due to a dock change, skip unmaximize logic
-		if (!dockChange && activity.value.maximized && !activity.value.halfScreen) {
-			unMaximizeWindow(activity);
-			return;
-		}
-
-		// Store previous position and size if it's a fresh maximize (not from dock change)
-		if (!dockChange && !halfScreen && !activity.value.halfScreen) {
+		// Always store previous values if they are not already set
+		if (
+			activity.value.previousTop === undefined ||
+			activity.value.previousLeft === undefined ||
+			activity.value.previousWidth === undefined ||
+			activity.value.previousHeight === undefined
+		) {
 			activity.value.previousTop = activity.value.top;
 			activity.value.previousLeft = activity.value.left;
 			activity.value.previousWidth = activity.value.width;
 			activity.value.previousHeight = activity.value.height;
+		}
+
+		// If we're resizing due to a dock change, skip unmaximize logic
+		if (!dockChange && activity.value.maximized && !activity.value.halfScreen) {
+			unMaximizeWindow(activity);
+			return;
 		}
 
 		activity.value.maximizing = true;
