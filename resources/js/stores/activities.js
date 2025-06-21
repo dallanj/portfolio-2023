@@ -1,6 +1,7 @@
-import { ref, computed, nextTick } from 'vue';
+import { ref, computed, watch } from 'vue';
 import { useActivityControls } from '@/composables/useActivityControls';
 import { useWindowControls } from '@/composables/useWindowControls';
+import { useSettingsStore } from '@/stores/settings';
 import { useDrag } from '@/composables/useDrag';
 import { defineStore, acceptHMRUpdate } from 'pinia';
 
@@ -19,6 +20,25 @@ export const useActivitiesStore = defineStore('activities', () => {
 
     // State
     const all = ref([]);
+
+    /**
+     * Resize all maximized windows
+     */
+	const resizeAllMaximizedWindows = () => {
+		activities.value.forEach((activity) => {
+			if (activity.maximized) {
+				maximizeWindow(ref(activity), activity.halfScreen, true);
+			}
+		});
+	};
+
+    /**
+     * Watch dockPosition for changes and trigger recalculation
+     */
+	const settingsStore = useSettingsStore();
+	watch(() => settingsStore.dockPosition, () => {
+		resizeAllMaximizedWindows();
+	});
 
     /**
      * Set the active window

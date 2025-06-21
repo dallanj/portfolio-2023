@@ -6,6 +6,11 @@ export function useWindowControls(activities) {
 	const { boundaries, dockPosition } =
         useSettingsStore();
 
+	/**
+     * Minimize the window
+     *
+     * @param {Ref<Object>} activity - The activity ref object to be minimized.
+     */
 	const minimizeWindow = (activity) => {
 		if (!activity?.value) return;
 
@@ -48,48 +53,61 @@ export function useWindowControls(activities) {
 		}, 400);
 	}
 
-	const maximizeWindow = (activity, halfScreen = false) => {
-		console.log('maximize', activity.value);
+	/**
+	 * Maximizes the window.
+	 *
+	 * @param {Ref<Object>} activity - The activity ref object to be maximized.
+	 * @param {boolean} [halfScreen=false] - Whether to maximize to half the screen width.
+	 * @param {boolean} [dockChange=false] - If true, indicates the maximize is due to a dock position change.
+	 */
+	const maximizeWindow = (activity, halfScreen = false, dockChange = false) => {
 		activity.value.outOfBounds = {
 			x: false,
 			y: false,
 		}
 
-		// Mark the activity as being removed
-		if (activity.value.maximized && !activity.value.halfScreen) {
+		// If we're resizing due to a dock change, skip unmaximize logic
+		if (!dockChange && activity.value.maximized && !activity.value.halfScreen) {
 			unMaximizeWindow(activity);
-		} else {
-			if (!halfScreen && !activity.value.halfScreen) {
-				activity.value.previousTop = activity.value.top;
-				activity.value.previousLeft = activity.value.left;
-				activity.value.previousWidth = activity.value.width;
-				activity.value.previousHeight = activity.value.height;
-			}
+			return;
+		}
+
+		// Store previous position and size if it's a fresh maximize (not from dock change)
+		if (!dockChange && !halfScreen && !activity.value.halfScreen) {
+			activity.value.previousTop = activity.value.top;
+			activity.value.previousLeft = activity.value.left;
+			activity.value.previousWidth = activity.value.width;
+			activity.value.previousHeight = activity.value.height;
+		}
+
+		activity.value.maximizing = true;
+
+		setTimeout(() => {
+			activity.value.roundedBorder = false;
+			activity.value.top = boundaries.top;
+			activity.value.left = boundaries.left;
 			
-			activity.value.maximizing = true;
-  
-			// Wait for the animation to complete before actually removing the file from the list
-			setTimeout(() => {
-				activity.value.roundedBorder = false;
+			// Respect boundaries of the dock and if the window is half screen
+			if (dockPosition === 'left') {
+				activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`;
+				activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
+			} else {
+				activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
+				activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`;
+			}
 
-				activity.value.top = boundaries.top;
-				activity.value.left = boundaries.left;
-				
-				if (dockPosition.value === 'left') {
-					activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`;
-					activity.value.height = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.top}px)`; //'100%';
-				} else {
-					activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
-					activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`; //'100%';
-				}
-				
-				activity.value.maximized = true;
-				activity.value.halfScreen = halfScreen;
-				activity.value.maximizing = false;
-			}, 500);
-		}	
-	}
+			activity.value.maximized = true;
+			activity.value.halfScreen = halfScreen;
+			activity.value.maximizing = false;
+		}, dockChange ? 0 : 500); // ⚡ Skip animation delay	
+	};
 
+	/**
+	 * Un-maximizes the window.
+	 *
+	 * @param {Ref<Object>} activity - The activity ref object to be un-maximized.
+	 * @param {Object|null} [coords=null] - Optional coordinates to restore the window to (top, left, width, height).
+	 */
 	const unMaximizeWindow = (activity, coords = null) => {
 		// Mark the activity as being removed
 		activity.value.maximizing = true;
@@ -114,6 +132,11 @@ export function useWindowControls(activities) {
 		}, 500);	
 	}
 
+	/**
+     * Restore minimized windows with animation
+     *
+     * @param {Ref<Object>} activity - The activity ref object to be restored from being minimized with animation.
+     */
 	const restoreWindow = async (activity) => {
 		if (!activity?.id) return;
 	
