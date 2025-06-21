@@ -79,6 +79,9 @@ watch(dockPosition, async (newPos, oldPos) => {
 
 // Methods
 const openApp = (app) => {
+    // Hides the tooltip
+    toggleTooltip(app, false);
+
     if (hasClickedOutside(app)) {
         return;
     }
@@ -106,7 +109,7 @@ const openApp = (app) => {
     toggleApplicationVisibility(app);
 };
 
-function toggleTooltip(item, show = true) {
+const toggleTooltip = (item, show = true) => {
     const navItem = document.querySelector(`#nav-item-${item.value}`);
     const tooltip = document.querySelector(`#tooltip-${item.value}`);
 
@@ -115,11 +118,23 @@ function toggleTooltip(item, show = true) {
     const navItemPos = navItem.getBoundingClientRect();
 
     if (show) {
-        tooltip.style.top = `calc(${navItemPos.top}px - ${tooltip.clientHeight / 3}px)`;
-        tooltip.style.left = `${navItemPos.left + navItem.clientWidth}px`;
-        tooltip.classList.add('opacity-100', 'delay-300');
+        if (dockPosition.value === 'bottom') {
+            const scrollLeft = dockMenu.value.scrollLeft;
+            const iconCenter = navItem.offsetLeft + navItem.offsetWidth / 2;
+            const tooltipLeft = iconCenter - scrollLeft - tooltip.clientWidth / 2;
+            const tooltipTop = navItem.offsetTop - tooltip.clientHeight - 8; // 12px padding above icon
+
+            tooltip.style.left = `${tooltipLeft}px`;
+            tooltip.style.top = `${tooltipTop}px`;
+        } else {
+            tooltip.style.top = `calc(${navItemPos.top}px + ${tooltip.clientHeight / 1.5}px)`;
+            tooltip.style.left = `${(navItemPos.left + 4) + navItem.clientWidth}px`;
+        }
+        tooltip.classList.add('opacity-100', 'visible', 'delay-300', 'z-50');
+        tooltip.classList.remove('opacity-0', 'invisible');
     } else {
-        tooltip.classList.remove('opacity-100', 'delay-300');
+        tooltip.classList.remove('opacity-100', 'visible', 'delay-300', 'z-50');
+        tooltip.classList.add('opacity-0', 'invisible');
     }
 }
 </script>
@@ -201,7 +216,7 @@ function toggleTooltip(item, show = true) {
 
 <style scoped lang="scss">
 .nav-menu {
-    @apply bg-black bg-opacity-50 border-black p-0.5 transition-all duration-500 relative;
+    @apply bg-black bg-opacity-50 border-black p-0.5 transition-all duration-500;
     scrollbar-width: none;
 
     li {
