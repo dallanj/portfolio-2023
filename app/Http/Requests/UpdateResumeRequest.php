@@ -23,7 +23,7 @@ class UpdateResumeRequest extends FormRequest
     {
         return [
             'title'     => 'required|string|max:255',
-            'delta'     => 'required|array',
+            'delta'     => 'required',
             'html'      => 'required|string',
             'is_draft'  => 'required|bool'
         ];

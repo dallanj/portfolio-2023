@@ -9,7 +9,8 @@ use App\Http\Controllers\Api\ResumeController;
 use App\Http\Controllers\Api\ContactController;
 use App\PiniaStation\Facades\PiniaLoader;
 use Illuminate\Foundation\Http\Middleware\HandlePrecognitiveRequests;
-
+use App\Http\Middleware\TrimStrings;
+use Illuminate\Foundation\Http\Middleware\ConvertEmptyStringsToNull;
 /*
 |--------------------------------------------------------------------------
 | API Routes
@@ -61,15 +62,25 @@ Route::prefix('v1')->group(function () {
         Route::get('/', 'search');
     });
 
-    Route::resource('resumes', ResumeController::class)->only([
-        'store', 'update', 'destroy', 'show'
-    ])->middleware([HandlePrecognitiveRequests::class]);
+    Route::resource('resumes', ResumeController::class)
+        ->only(['store', 'update', 'destroy', 'show'])
+        ->middleware([HandlePrecognitiveRequests::class])
+        ->withoutMiddleware([
+            TrimStrings::class,
+            ConvertEmptyStringsToNull::class
+        ]);
 
-    Route::prefix('/resumes')->controller(ResumeController::class)->group(function () {
-        Route::get('/', 'search');
-        Route::post('/publish', 'publish');
-        Route::post('/draft', 'draft');
-        Route::post('/bulk-delete', 'bulkDelete');
+    Route::prefix('/resumes')
+        ->controller(ResumeController::class)
+        ->group(function () {
+            Route::get('/', 'search');
+            Route::post('/publish', 'publish');
+            Route::post('/draft', 'draft');
+            Route::post('/bulk-delete', 'bulkDelete')
+        ->withoutMiddleware([
+            TrimStrings::class,
+            ConvertEmptyStringsToNull::class
+        ]);
     });
 
     Route::middleware('auth:sanctum')->get('/user', function (Request $request) {

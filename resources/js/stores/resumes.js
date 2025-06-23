@@ -28,14 +28,22 @@ export const useResumesStore = defineStore('resumes', () => {
         },
 
         async create(payload) {
-            const { data } = await axios.post('/api/v1/resumes', payload);
+            const { data } = await axios.post('/api/v1/resumes', payload, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             // Option 1: push new resume to list
             if (all.value) all.value.unshift(data);
             return data;
         },
 
         async update(payload) {
-            const { data } = await axios.patch(`/api/v1/resumes/${payload.hash}`, payload);
+            const { data } = await axios.patch(`/api/v1/resumes/${payload.hash}`, payload, {
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
             if (all.value) {
                 const index = all.value.findIndex(r => r.hash === payload.hash);
                 if (index !== -1) all.value[index] = data;
