@@ -34,68 +34,11 @@ class ResumeController extends Controller
     }
 
     /**
-     * Format Delta Ops beforing storing or updating
-     * (TODO: Move to a service class)
-     *
-     * @param array $delta
-     * 
-     * @return array
-     */
-    private function formatDelta(array $delta): array
-    {
-        $ops = $delta['ops'];
-        $formatted = [];
-    
-        $total = count($ops);
-    
-        foreach ($ops as $i => $op) {
-            $insert = $op['insert'] ?? null;
-            $attributes = $op['attributes'] ?? null;
-            $isLast = $i === $total - 1;
-    
-            // If insert is null and has attributes (like header), treat it as a formatted newline
-            if ($insert === null && $attributes) {
-                $formatted[] = [
-                    'insert' => "\n",
-                    'attributes' => $attributes,
-                ];
-                continue;
-            }
-    
-            // If it's a plain text insert
-            if (is_string($insert)) {
-                // If it ends with \n and it's not the last item and has no attributes,
-                // strip it (we'll add it to the last one only)
-                if (!$isLast && !$attributes && str_ends_with($insert, "\n")) {
-                    $insert = rtrim($insert, "\n");
-                }
-    
-                // If it's the last item and it doesn't end with \n, append it
-                if ($isLast && !str_ends_with($insert, "\n")) {
-                    $insert .= "\n";
-                }
-    
-                $formattedOp = ['insert' => $insert];
-                if ($attributes) {
-                    $formattedOp['attributes'] = $attributes;
-                }
-    
-                $formatted[] = $formattedOp;
-            }
-        }
-    
-        return ['ops' => $formatted];
-    }
-
-    /**
      * Store a newly created resource in storage.
      */
     public function store(StoreResumeRequest $request)
     {
         $data = $request->validated();
-
-        // Clean delta if it has unnecessary newlines
-        $data['delta'] = $this->formatDelta($data['delta']);
 
         if (empty($data['title'])) {
             // Count existing resumes with "untitled" in the title (case-insensitive)
@@ -150,9 +93,6 @@ class ResumeController extends Controller
     public function update(UpdateResumeRequest $request, Resume $resume)
     {
         $data = $request->validated();
-
-        // Clean delta if it has unnecessary newlines
-        $data['delta'] = $this->formatDelta($data['delta']);
 
         if (empty($data['title'])) {
             // Count existing projects with "untitled" in the title (case-insensitive)
