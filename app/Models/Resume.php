@@ -37,7 +37,6 @@ class Resume extends Model
         'title',
         'version',
         'delta',
-        'html',
         'is_draft',
     ];
 
