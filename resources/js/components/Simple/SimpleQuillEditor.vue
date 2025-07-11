@@ -54,9 +54,9 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-<div>
+<div class="grid w-full">
     <!-- Toolbar modules -->
-    <div id="toolbar-container" class="w-full px-3 py-2 border border-gray-300 dark:border-app-header-bb rounded-md focus:ring focus:ring-orange focus:outline-none bg-white dark:bg-app-header-bg text-gray-900 dark:text-gray-100">
+    <div id="toolbar-container" class="flex flex-wrap px-3 py-2 border border-gray-300 dark:border-app-header-bb rounded-md focus:ring focus:ring-orange focus:outline-none bg-white dark:bg-app-header-bg text-gray-900 dark:text-gray-100">
         <span class="ql-formats">
             <select class="ql-font"></select>
             <select class="ql-size"></select>
