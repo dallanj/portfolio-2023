@@ -1,0 +1,312 @@
+// quill-editor.scss
+// Organized and nested SCSS for Quill Snow theme
+
+.ql-snow {
+  box-sizing: border-box;
+  *, *::before, *::after {
+    box-sizing: inherit;
+  }
+
+  &.ql-toolbar {
+    border: 1px solid #ccc;
+    font-family: 'Helvetica Neue','Helvetica','Arial',sans-serif;
+    padding: 8px;
+
+    .ql-formats {
+      display: inline-block;
+      vertical-align: middle;
+      margin-right: 15px;
+    }
+
+    button,
+    .ql-picker-label,
+    .ql-picker-item {
+      cursor: pointer;
+    }
+
+    button {
+      background: none;
+      border: none;
+      display: inline-block;
+      float: left;
+      height: 24px;
+      padding: 3px 5px;
+      width: 28px;
+
+      &:hover,
+      &:focus,
+      &.ql-active {
+        outline: none;
+        color: #06c;
+
+        .ql-fill,
+        .ql-stroke.ql-fill {
+          fill: #06c;
+        }
+
+        .ql-stroke,
+        .ql-stroke-miter {
+          stroke: #06c;
+        }
+      }
+    }
+
+    input.ql-image[type=file] {
+      display: none;
+    }
+
+    .ql-picker {
+      display: inline-block;
+      float: left;
+      position: relative;
+      font-size: 14px;
+      font-weight: 500;
+      height: 24px;
+      .ql-picker-label {
+        border: 1px solid transparent;
+        display: inline-block;
+        height: 100%;
+        padding: 2px 4px;
+        position: relative;
+        width: 100%;
+
+        &::before { content: attr(data-label); }
+      }
+
+      &.ql-expanded {
+        .ql-picker-label { color: #ccc; border-color: #ccc; z-index: 2; }
+        .ql-picker-options {
+          display: block;
+          margin-top: -1px;
+          top: 100%;
+          z-index: 1;
+          border: 1px solid #ccc;
+          box-shadow: rgba(0,0,0,0.2) 0 2px 8px;
+        }
+      }
+
+      .ql-picker-options {
+        display: none;
+        position: absolute;
+        white-space: nowrap;
+        background: #fff;
+        padding: 4px 8px;
+      }
+
+      .ql-picker-item {
+        cursor: pointer;
+        padding: 5px 0;
+      }
+    }
+  }
+
+  &.ql-container {
+    box-sizing: border-box;
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 13px;
+    height: 100%;
+    margin: 0;
+    position: relative;
+    border: 1px solid #ccc;
+
+    &.ql-disabled {
+      .ql-tooltip { visibility: hidden; }
+    }
+
+    &:not(.ql-disabled) {
+      li[data-list="checked"],
+      li[data-list="unchecked"] {
+        > .ql-ui { cursor: pointer; }
+      }
+    }
+
+    .ql-tooltip {
+      background: #fff;
+      border: 1px solid #ccc;
+      box-shadow: 0 0 5px #ddd;
+      color: #444;
+      padding: 5px 12px;
+      white-space: nowrap;
+      position: absolute;
+      transform: translateY(10px);
+
+      &.ql-flip { transform: translateY(-10px); }
+      & a { text-decoration: none; }
+      &::before { content: "Visit URL:"; margin-right: 8px; line-height: 26px; }
+
+      &[data-mode=link]::before { content: "Enter link:"; }
+      &[data-mode=video]::before { content: "Enter video:"; }
+      &[data-mode=formula]::before { content: "Enter formula:"; }
+    }
+
+    .ql-clipboard {
+      position: absolute;
+      top: 50%;
+      left: -100000px;
+      height: 1px;
+      overflow-y: hidden;
+
+      p { margin: 0; padding: 0; }
+    }
+
+    .ql-editor {
+      box-sizing: border-box;
+      padding: 12px 15px;
+      height: 100%;
+      line-height: 1.42;
+      outline: none;
+      overflow-y: auto;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      counter-reset: list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+      tab-size: 4;
+      text-align: left;
+
+      > * { cursor: text; }
+
+      p, ol, pre, blockquote,
+      h1, h2, h3, h4, h5, h6 {
+        margin: 0;
+        padding: 0;
+
+        @supports (counter-set:none) {
+          counter-set: list-0 list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+        }
+      }
+
+      table {
+        table-layout: fixed;
+        width: 100%;
+        border-collapse: collapse;
+
+        td {
+          border: 1px solid #000;
+          padding: 2px 5px;
+          outline: none;
+        }
+      }
+
+      ol {
+        padding-left: 1.5em;
+      }
+
+      li {
+        list-style-type: none;
+        padding-left: 1.5em;
+        position: relative;
+
+        > .ql-ui:before {
+          display: inline-block;
+          width: 1.2em;
+          margin: 0 .3em 0 -1.5em;
+          text-align: right;
+          white-space: nowrap;
+        }
+
+        &[data-list] {
+          counter-reset: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+
+          @supports (counter-set:none) {
+            counter-set: list-1 list-2 list-3 list-4 list-5 list-6 list-7 list-8 list-9;
+          }
+        }
+
+        &[data-list="bullet"] > .ql-ui:before { content: '\2022'; }
+        &[data-list="checked"] > .ql-ui:before { content: '\2611'; color: #777; }
+        &[data-list="unchecked"] > .ql-ui:before { content: '\2610'; color: #777; }
+
+        &[data-list="ordered"] {
+          counter-increment: list-0;
+
+          > .ql-ui:before {
+            content: counter(list-0, decimal) '. ';
+          }
+
+          &.ql-indent-1 {
+            counter-increment: list-1;
+            padding-left: 4.5em;
+
+            > .ql-ui:before {
+              content: counter(list-1, lower-alpha) '. ';
+            }
+          }
+
+          // Continue nesting for indent levels 2-9 similarly...
+        }
+      }
+
+      &.ql-blank::before {
+        content: attr(data-placeholder);
+        color: rgba(0,0,0,0.6);
+        font-style: italic;
+        left: 15px;
+        pointer-events: none;
+        position: absolute;
+        right: 15px;
+      }
+
+      .ql-video {
+        display: block;
+        max-width: 100%;
+
+        &.ql-align-center { margin: 0 auto; }
+        &.ql-align-right { margin-left: auto; }
+      }
+
+      .ql-code-block-container {
+        font-family: monospace;
+        background: #23241f;
+        color: #f8f8f2;
+        padding: 5px 10px;
+        margin: 5px 0;
+        overflow: visible;
+      }
+    }
+
+    .ql-toolbar + .ql-container { border-top: 0; }
+
+    // Background utilities
+    @each $color, $value in (
+      'black': #000, 'red': #e60000, 'orange': #f90,
+      'yellow': #ff0, 'green': #008a00, 'blue': #06c,
+      'purple': #93f
+    ) {
+      .ql-bg-#{$color} { background-color: $value; }
+      .ql-color-#{$color} { color: $value; }
+    }
+
+    .ql-font-serif { font-family: Georgia, 'Times New Roman', serif; }
+    .ql-font-monospace { font-family: Monaco, 'Courier New', monospace; }
+
+    .ql-size-small { font-size: .75em; }
+    .ql-size-large { font-size: 1.5em; }
+    .ql-size-huge  { font-size: 2.5em; }
+
+    .ql-align-center { text-align: center; }
+    .ql-align-right  { text-align: right; }
+    .ql-align-justify{ text-align: justify; }
+
+    .ql-direction-rtl {
+      direction: rtl;
+      text-align: inherit;
+
+      li { padding-right: 1.5em;
+        > .ql-ui { margin-left: .3em; margin-right: -1.5em; text-align: left; }
+      }
+    }
+
+    @media (pointer: coarse) {
+      .ql-toolbar button:hover:not(.ql-active) {
+        color: #444;
+
+        .ql-fill, .ql-stroke.ql-fill {
+          fill: #444;
+        }
+
+        .ql-stroke, .ql-stroke-miter {
+          stroke: #444;
+        }
+      }
+    }
+  }
+}
