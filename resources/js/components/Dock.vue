@@ -1,11 +1,13 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
+import { ref, inject, onMounted, onBeforeUnmount, nextTick, watch } from 'vue';
 import { useSettingsStore } from '@/stores/settings';
 import { useDashboardStore } from '@/stores/dashboard';
 import { useActivitiesStore } from '@/stores/activities';
 import { storeToRefs } from 'pinia';
 import { useApplicationVisibility } from '@/composables/useApplicationVisibility.vue';
+import { isDraggingCursor } from '@/composables/useDragState.ts';
 
+const { openModal } = inject('modals');
 const dockMenu = ref(null);
 let isScrollBound = false;
 
@@ -79,6 +81,12 @@ watch(dockPosition, async (newPos, oldPos) => {
 
 // Methods
 const openApp = (app) => {
+    // If mouse is in drag mode, prevent opening
+    if (isDraggingCursor.value) {
+        console.info('Suppressing dock click due to active drag');
+        return;
+    }
+    
     // Hides the tooltip
     toggleTooltip(app, false);
 
@@ -86,14 +94,20 @@ const openApp = (app) => {
         return;
     }
 
-    // Call actionable tabs or applications
-    if (active?.action) {
-        active?.action();
+    // Call app action (object|null)
+    switch (app.action?.type) {
+        case 'url':
+            window.open(app.action.value, '_blank');
+            return;
+        case 'modal':
+            openModal(app.action.value, app.action.props || {});
+            return;
+        default:
+            break;
     }
 
     const activityId = `${app.value}-activity`;
 	const activity = activities.value.find(a => a.id === activityId);
-    console.log(activity);
 
     if (activity) {
 		if (activity.minimized) {
@@ -137,6 +151,14 @@ const toggleTooltip = (item, show = true) => {
         tooltip.classList.add('opacity-0', 'invisible');
     }
 }
+
+watch(dockPosition, (newPos) => {
+    if (newPos === 'bottom') {
+        document.body.style.overflow = 'hidden';
+    } else {
+        document.body.style.overflow = '';
+    }
+});
 </script>
 
 <template>
@@ -160,8 +182,8 @@ const toggleTooltip = (item, show = true) => {
 
     <!-- Dock container -->
     <nav class="z-50"
-        :style="dockPosition === 'bottom'
-        ? { height: '80px', width: '100%', overflow: 'hidden' }
+    :style="dockPosition === 'bottom'
+        ? { position: 'fixed', bottom: '0', left: '0', right: '0', height: '80px', width: '100%', overflow: 'hidden' }
         : { height: 'calc(100vh - 30px)', width: '80px' }">
         <!-- Dock menu container application items -->
         <menu
@@ -169,10 +191,12 @@ const toggleTooltip = (item, show = true) => {
             ref="dockMenu"
             :class="[
                 'nav-menu',
+                dockPosition === 'bottom' ? 'bottom' : 'left',
                 isReady ? 'dock-ready' : 'dock-hidden',
                 dockPosition === 'bottom'
-                ? 'flex flex-row items-center h-full w-full overflow-x-auto overflow-y-hidden touch-auto snap-x scroll-smooth whitespace-nowrap'
-                : 'flex flex-col overflow-y-auto h-full border-r w-full']">
+                    ? 'flex flex-row items-center h-full w-full touch-auto scroll-smooth whitespace-nowrap'
+                    : 'flex flex-col h-full border-r w-full touch-auto scroll-smooth'
+            ]">
 
             <template v-if="isReady">
                 <li
@@ -194,7 +218,7 @@ const toggleTooltip = (item, show = true) => {
                         class="w-14 relative"
                         :class="getActiveWindow === app ? 'cursor-default' : 'cursor-pointer'">
                         <img
-                            :src="`/images/icons/apps/${app.value}.png`"
+                            :src="`/images/icons/apps/${app.image}.png`"
                             :alt="`${app.label} Application`">
                         <span
                             v-if="activityExists(`${app.value}-activity`)"
@@ -218,20 +242,44 @@ const toggleTooltip = (item, show = true) => {
 <style scoped lang="scss">
 .nav-menu {
     @apply bg-black bg-opacity-50 border-black p-0.5 transition-all duration-500;
-    scrollbar-width: none;
+    scrollbar-width: thin;
+    -webkit-overflow-scrolling: touch;
 
     li {
         @apply snap-start;
-        flex: 0 0 auto; // Prevents flex items from growing or shrinking
+        flex: 0 0 auto;
     }
 
     button {
-        @apply w-14; // Icon width
+        @apply w-14;
     }
 
     img {
         width: 100%;
         height: auto;
+    }
+
+    &::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+        background-color: rgba(255, 255, 255, 0.3);
+        border-radius: 3px;
+    }
+
+    // -------- Dock position-specific scroll behaviors --------
+    &.bottom {
+        overflow-x: auto;
+        overflow-y: hidden;
+        white-space: nowrap;
+        scroll-snap-type: x mandatory;
+    }
+
+    &.left {
+        overflow-y: auto;
+        overflow-x: hidden;
+        scroll-snap-type: y mandatory;
     }
 
     .active-tab-left {
