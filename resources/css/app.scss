@@ -4,24 +4,28 @@
 @forward 'simple-loading-spinner';
 @forward 'simple-drag-n-drop';
 @forward 'animations';
+@forward 'simple-quill-editor';
 // Vue Toastification CSS
 @forward 'vue-toastification/dist/index.css';
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
-html, body, #mainLayout {
-    height: 100%;
-    margin: 0;
-}
-
-html, body, #app {
+html, body {
     margin: 0;
     padding: 0;
+    height: 100%;
+    width: 100%;
+    background: #2f3136;
     overflow-x: hidden;
-    max-width: 100vw;
-  }
+    box-sizing: border-box;
+}
+  
+*, *::before, *::after {
+    box-sizing: inherit;
+}
 
 .ql-editor {
     min-height: 200px;
 }
+
