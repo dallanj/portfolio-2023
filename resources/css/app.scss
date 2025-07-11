@@ -12,6 +12,7 @@
 @tailwind utilities;
 
 html, body {
+    @apply text-white font-sans;
     margin: 0;
     padding: 0;
     height: 100%;
