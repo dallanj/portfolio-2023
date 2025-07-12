@@ -1,6 +1,12 @@
-import { nextTick } from 'vue';
+import { nextTick, inject, ref } from 'vue';
+import { useWindowControls } from '../composables/useWindowControls';
+import { useSettingsStore } from '../stores/settings';
 
 export function useActivityControls(activities) {
+	const { isMobile } = inject('screenSize');
+	const { maximizeWindow } = useWindowControls();
+	const { boundaries, dockPosition } = useSettingsStore();
+
     const removeActivity = (activity) => {
 		// Mark the activity as being removed
 		activity.value.closing = true;
@@ -72,6 +78,7 @@ export function useActivityControls(activities) {
 
 			// Delay clearing `starting` on the activity to allow transition setup to take effect
 			setTimeout(async () => {
+				
 				// Find the index within activities of the new activity
 				const index = activities.value.findIndex(a => a.id === newActivity.id);
 				if (index !== -1) {
@@ -202,7 +209,7 @@ export function useActivityControls(activities) {
             this.direction = null;
             this.cursor = 'cursor-default';
             // this.boundary = { x: 80, y: 32 };
-			this.outOfBounds = { x: false, y: false };
+			this.outOfBounds = { left: false, right: false, top: false, x: false, y: false };
 			this.transform = '';
 			this.starting = true;
 		}
