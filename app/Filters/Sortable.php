@@ -18,16 +18,11 @@ class Sortable
     public function handle(Builder $query, Closure $next)
     {
         return $next($query)->when(
-            $this->request->has('sortBy'),
-            function ($query) {
-                if ($this->request->input('sortBy') !== null) {
-                    foreach ($this->request->input('sortBy', []) as $sort) {
-                        if (isset($sort['key']) && isset($sort['order'])) {
-                            $query->orderBy($sort['key'], $sort['order']);
-                        }
-                    }
-                }
-            }
+            $this->request->filled('sortBy'),
+            fn($query) => $query->orderBy(
+                $this->request->input('sortBy')['key'] ?? '',
+                $this->request->input('sortBy')['order'] ?? 'asc'
+            )
         );
     }
 }

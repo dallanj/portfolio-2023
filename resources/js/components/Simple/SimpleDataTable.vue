@@ -64,10 +64,11 @@ const toggleRowExpansion = (id) => {
 const emit = defineEmits(['fetch-page', 'update:selected']);
 
 const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = [] }) => {
+    const [sort] = sortedColumns.value;
     emit('fetch-page', {
         page,
         itemsPerPage,
-        sortBy,
+        sortBy: sort ?? null,
     });
 };
 
@@ -99,12 +100,12 @@ const handleSort = (key, sortable, event) => {
     if (event.shiftKey) {
         // Shift + Click: Add multiple columns to sorting
         if (newOrder) {
-        sortedColumns.value = [
-            ...sortedColumns.value.filter((s) => s.key !== key),
-            { key, order: newOrder },
-        ];
+            sortedColumns.value = [
+                ...sortedColumns.value.filter((s) => s.key !== key),
+                { key, order: newOrder },
+            ];
         } else {
-        sortedColumns.value = sortedColumns.value.filter((s) => s.key !== key);
+            sortedColumns.value = sortedColumns.value.filter((s) => s.key !== key);
         }
     } else {
         // Normal Click: Reset sorting to only this column
@@ -116,7 +117,12 @@ const handleSort = (key, sortable, event) => {
 
 // Emit sorting changes
 const emitSorting = () => {
-    emit('fetch-page', { sortBy: sortedColumns.value });
+    const [sort] = sortedColumns.value;
+    fetchPage({
+        page: props.pagination?.current_page || 1,
+        itemsPerPage: props.pagination?.per_page,
+        sortBy: sort ?? null, // Send single object or null
+    });
 };
 
 // Clear sorting
