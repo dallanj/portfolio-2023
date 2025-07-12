@@ -1,11 +1,20 @@
 import { useSettingsStore } from "@/stores/settings";
-import { nextTick } from 'vue';
+import { useActivitiesStore } from "@/stores/activities";
+import { nextTick, computed, inject } from 'vue';
+import { getBoundingRectFromModel, getAppIdFromModel } from '@/utils/helpers';
+import { storeToRefs } from "pinia";
 
 export function useWindowControls(activities) {
-
-	const { boundaries, dockPosition } =
+	const { isMobile } = inject('screenSize');
+	const { boundaries, dockPosition, snapThresholds } =
         useSettingsStore();
 
+	const {
+		getActiveWindow,
+	} = storeToRefs(useActivitiesStore());
+	
+	const activeOutOfBounds = computed(() => getActiveWindow?.value?.outOfBounds || {});
+		
 	/**
      * Minimize the window
      *
@@ -14,16 +23,14 @@ export function useWindowControls(activities) {
 	const minimizeWindow = (activity) => {
 		if (!activity?.value) return;
 
-		const activityId = activity.value.id;
-		const appId = activityId.replace('-activity', '');
+		const appId = getAppIdFromModel(activity.value);
 		const dockEl = document.getElementById(`nav-item-${appId}`);
 
-		if (!appId || !dockEl) {
+		if (!dockEl) {
 			console.debug('Missing elements for animation');
 			activity.value.minimized = true;
 			return;
 		}
-		if (!dockEl) return;
 
 		// Get dock center
 		const dockRect = dockEl.getBoundingClientRect();
@@ -51,7 +58,41 @@ export function useWindowControls(activities) {
 			activity.value.minimizing = false;
 			activity.value.transform = '';
 		}, 400);
-	}
+	};
+
+	/**
+	 * Stores the previous coordinates before maximizing a window.
+	 *
+	 * @param {Ref<Object>} activity - The activity ref object to be maximized.
+	 * @returns {Ref<Object>} An object with the window's current position and size: 
+	 */
+	const storePreviousWindowPosition = (activity) => {
+		const appRect = getBoundingRectFromModel(activity.value);
+
+		// Make sure previous positions are not out of bounds
+		if (appRect.top < snapThresholds.top) {
+			activity.value.previousTop = snapThresholds.top;
+		} else {
+			activity.value.previousTop = appRect.top;
+		}
+
+		if (appRect.left < snapThresholds.left) {
+			activity.value.previousLeft = snapThresholds.left;
+		} else {
+			activity.value.previousLeft = appRect.left;
+		}
+
+		if (appRect.right < snapThresholds.right) {
+			activity.value.previousRight = snapThresholds.right;
+		} else {
+			activity.value.previousRight = appRect.reft;
+		}
+
+		activity.value.previousHeight = appRect.height;
+		activity.value.previousWidth = appRect.width;
+		
+		return activity.value;
+	};
 
 	/**
 	 * Maximizes the window.
@@ -62,49 +103,52 @@ export function useWindowControls(activities) {
 	 */
 	const maximizeWindow = (activity, halfScreen = false, dockChange = false) => {
 		activity.value.outOfBounds = {
+			left: false,
+			right: false,
+			top: false,
 			x: false,
-			y: false,
+			y: false
+		};
+	
+		if (!halfScreen) {
+			storePreviousWindowPosition(activity);
 		}
 
-		// Always store previous values if they are not already set
-		if (
-			activity.value.previousTop === undefined ||
-			activity.value.previousLeft === undefined ||
-			activity.value.previousWidth === undefined ||
-			activity.value.previousHeight === undefined
-		) {
-			activity.value.previousTop = activity.value.top;
-			activity.value.previousLeft = activity.value.left;
-			activity.value.previousWidth = activity.value.width;
-			activity.value.previousHeight = activity.value.height;
-		}
-
-		// If we're resizing due to a dock change, skip unmaximize logic
+		// Skip full unmaximize logic if already maximized and not half-screen
 		if (!dockChange && activity.value.maximized && !activity.value.halfScreen) {
 			unMaximizeWindow(activity);
 			return;
 		}
-
+	
 		activity.value.maximizing = true;
-
+	
 		setTimeout(() => {
+			const isHalfScreen = halfScreen;
+			const isRightSide = isHalfScreen && activity.value.outOfBounds.right;
+			const isLeftSide = isHalfScreen && activity.value.outOfBounds.left;
+	
 			activity.value.roundedBorder = false;
 			activity.value.top = boundaries.top;
-			activity.value.left = boundaries.left;
-			
-			// Respect boundaries of the dock and if the window is half screen
-			if (dockPosition === 'left') {
-				activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`;
-				activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
+	
+			// Set left position for left or right half
+			if (isRightSide) {
+				console.log('isRightSide',isRightSide);
+				activity.value.left = `calc(50% + ${boundaries.left / 2}px)`;
 			} else {
-				activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
-				activity.value.width = `calc(${halfScreen ? '50' : '100'}% - ${boundaries.left}px)`;
+				console.log('isLeftSide',isLeftSide);
+				activity.value.left = boundaries.left;
 			}
-
+	
+			activity.value.width = isHalfScreen
+				? `calc(50% - ${boundaries.left}px)`
+				: `calc(100% - ${boundaries.left}px)`;
+	
+			activity.value.height = `calc(100% - ${boundaries.top + boundaries.bottom}px)`;
+	
 			activity.value.maximized = true;
-			activity.value.halfScreen = halfScreen;
+			activity.value.halfScreen = isHalfScreen;
 			activity.value.maximizing = false;
-		}, dockChange ? 0 : 500); // ⚡ Skip animation delay	
+		}, dockChange ? 0 : 500);
 	};
 
 	/**
@@ -114,6 +158,17 @@ export function useWindowControls(activities) {
 	 * @param {Object|null} [coords=null] - Optional coordinates to restore the window to (top, left, width, height).
 	 */
 	const unMaximizeWindow = (activity, coords = null) => {
+		// const activity = unref(activityRef);
+
+		// // Get the app's bounding rectangle data
+		// const appRect = getBoundingRectFromModel(activity.value);
+
+		// activity.value.previousTop = appRect.top;
+		// activity.value.previousLeft = appRect.left;
+		// activity.value.previousHeight = appRect.height;
+		// activity.value.previousWidth = appRect.width;
+
+		// console.info('unMaximizeWindow', appRect, activity);
 		// Mark the activity as being removed
 		activity.value.maximizing = true;
 		activity.value.roundedBorder = true;
@@ -124,7 +179,14 @@ export function useWindowControls(activities) {
 			if (coords) {
 				activity.value.top = coords.y;
 				activity.value.left = coords.x;
+				console.log('coords', {
+					coords
+				})
 			} else {
+				console.log('unMaximizeWindow', {
+					top: activity.value.previousTop,
+					left: activity.value.previousLeft
+				})
 				activity.value.top = activity.value.previousTop;
 				activity.value.left = activity.value.previousLeft;
 			}
