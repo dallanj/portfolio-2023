@@ -20,7 +20,6 @@ const clearSorting = () => {
 }
 
 const itemsPerPage = ref(8);
-const sortBy = ref('');
 
 const pages = computed(() => {
     const pages = [];
@@ -49,13 +48,10 @@ const pages = computed(() => {
 });
 
 const changePage = (page) => {
-    if (page >= 1 && page <= props.pagination.last_page) {
-        emits('page-changed', {
-            page: page,
-            itemsPerPage: itemsPerPage.value,
-            sortBy: sortBy.value,
-        });
-    }
+    emits('page-changed', {
+        page: Number(page),
+        itemsPerPage: itemsPerPage.value,
+    });
 };
 
 const options = ref([1, 2, 3, 4, 8]);
