@@ -13,6 +13,13 @@ export const useSettingsStore = defineStore('settings', () => {
         bottom: null,
     });
 
+    const snapThresholds = ref({
+        left: 80,
+        right: 80,
+        top: 32,
+        bottom: 80
+    })
+
     const dockPosition = ref('left');
     const settingsMenu = ref(false);
 
@@ -72,6 +79,7 @@ export const useSettingsStore = defineStore('settings', () => {
     return {
         all,
         boundaries,
+        snapThresholds,
         setDockPosition,
         dockPosition,
         toggleSettingsMenu,
