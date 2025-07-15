@@ -11,18 +11,22 @@ class Sortable
     public function __construct(public Request $request){}
 
     /**
-     * Query by sorted columns
+     * Query by multiple sorted columns
      * 
      * @return Builder
      */
     public function handle(Builder $query, Closure $next)
     {
-        return $next($query)->when(
-            $this->request->filled('sortBy'),
-            fn($query) => $query->orderBy(
-                $this->request->input('sortBy')['key'] ?? '',
-                $this->request->input('sortBy')['order'] ?? 'asc'
-            )
-        );
+        $sortBy = $this->request->input('sortBy');
+
+        if (is_array($sortBy)) {
+            foreach ($sortBy as $sort) {
+                if (!isset($sort['key']) || !isset($sort['order'])) continue;
+                $query->orderBy($sort['key'], $sort['order']);
+            }
+        }
+
+        // must happen AFTER applying orderBy
+        return $next($query);
     }
 }
