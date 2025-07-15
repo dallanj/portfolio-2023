@@ -63,12 +63,11 @@ const toggleRowExpansion = (id) => {
 // Pagination - Get pages
 const emit = defineEmits(['fetch-page', 'update:selected']);
 
-const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = [] }) => {
-    const [sort] = sortedColumns.value;
+const fetchPage = ({ page = 1, itemsPerPage = 10, sortBy = null }) => {
     emit('fetch-page', {
         page,
         itemsPerPage,
-        sortBy: sort ?? null,
+        sortBy: sortBy ?? sortedColumns.value,
     });
 };
 
@@ -117,11 +116,10 @@ const handleSort = (key, sortable, event) => {
 
 // Emit sorting changes
 const emitSorting = () => {
-    const [sort] = sortedColumns.value;
     fetchPage({
         page: props.pagination?.current_page || 1,
         itemsPerPage: props.pagination?.per_page,
-        sortBy: sort ?? null, // Send single object or null
+        sortBy: sortedColumns.value,
     });
 };
 
